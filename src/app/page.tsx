@@ -42,6 +42,14 @@ const tools = [
     color: "#ef4444",
   },
   {
+    slug: "pdf-compressor",
+    icon: "🗜️",
+    name: "Compressão de PDF",
+    description: "Reduz o tamanho de PDFs em 3 níveis de qualidade. 100% no browser.",
+    category: "Texto",
+    color: "#f97316",
+  },
+  {
     slug: "image-converter",
     icon: "🖼️",
     name: "Conversor de Imagens",
@@ -77,7 +85,7 @@ export default function Home() {
       {/* Stats */}
       <div style={{ display: "flex", gap: 12, marginBottom: 36, flexWrap: "wrap" }}>
         {[
-          { label: "Ferramentas", value: tools.length },
+          { label: tools.length === 1 ? "Ferramenta" : "Ferramentas", value: tools.length },
           { label: "Categorias", value: categories.length },
           { label: "100% gratuito", value: "✓" },
           { label: "Sem upload", value: "✓" },
