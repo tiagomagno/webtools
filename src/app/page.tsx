@@ -36,8 +36,8 @@ const tools = [
   {
     slug: "pdf-extractor",
     icon: "📄",
-    name: "Extrator de PDF",
-    description: "Extrai texto de PDFs por página, sem upload.",
+    name: "Extrator de Documentos",
+    description: "Extrai texto de PDF e DOCX por página, sem upload.",
     category: "Texto",
     color: "#ef4444",
   },

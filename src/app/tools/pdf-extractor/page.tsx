@@ -8,14 +8,32 @@ interface PageResult {
   text: string;
 }
 
+type FileType = "pdf" | "docx" | null;
+
+const ACCEPTED = [
+  "application/pdf",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+];
+
 function fmtSize(bytes: number) {
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   return `${(bytes / 1024 / 1024).toFixed(2)} MB`;
 }
 
+function detectType(file: File): FileType {
+  if (file.type === "application/pdf" || file.name.endsWith(".pdf")) return "pdf";
+  if (
+    file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+    file.name.endsWith(".docx")
+  )
+    return "docx";
+  return null;
+}
+
 export default function PdfExtractorPage() {
   const [fileName, setFileName] = useState<string | null>(null);
   const [fileSize, setFileSize] = useState(0);
+  const [fileType, setFileType] = useState<FileType>(null);
   const [pages, setPages] = useState<PageResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -25,35 +43,68 @@ export default function PdfExtractorPage() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const extractText = useCallback(async (file: File) => {
+    const type = detectType(file);
+    if (!type) {
+      setError("Formato não suportado. Use PDF ou DOCX.");
+      return;
+    }
+
     setLoading(true);
     setError(null);
     setPages([]);
     setActivePage("all");
     setFileName(file.name);
     setFileSize(file.size);
+    setFileType(type);
 
     try {
-      const pdfjsLib = await import("pdfjs-dist");
-      pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
+      if (type === "pdf") {
+        const pdfjsLib = await import("pdfjs-dist");
+        pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
 
-      const arrayBuffer = await file.arrayBuffer();
-      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-      const results: PageResult[] = [];
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        const results: PageResult[] = [];
 
-      for (let i = 1; i <= pdf.numPages; i++) {
-        const page = await pdf.getPage(i);
-        const content = await page.getTextContent();
-        const text = content.items
-          .map((item) => ("str" in item ? item.str : ""))
-          .join(" ")
-          .replace(/\s+/g, " ")
-          .trim();
-        results.push({ page: i, text });
+        for (let i = 1; i <= pdf.numPages; i++) {
+          const page = await pdf.getPage(i);
+          const content = await page.getTextContent();
+          const text = content.items
+            .map((item) => ("str" in item ? item.str : ""))
+            .join(" ")
+            .replace(/\s+/g, " ")
+            .trim();
+          results.push({ page: i, text });
+        }
+        setPages(results);
+      } else {
+        const mammoth = await import("mammoth");
+        const arrayBuffer = await file.arrayBuffer();
+        const result = await mammoth.extractRawText({ arrayBuffer });
+
+        // Split by paragraphs into logical "pages" of ~3000 chars each
+        const paragraphs = result.value.split(/\n+/).filter((p) => p.trim());
+        const chunks: PageResult[] = [];
+        let current = "";
+        let pageNum = 1;
+
+        for (const para of paragraphs) {
+          if ((current + para).length > 3000 && current.length > 0) {
+            chunks.push({ page: pageNum++, text: current.trim() });
+            current = para + "\n";
+          } else {
+            current += para + "\n";
+          }
+        }
+        if (current.trim()) chunks.push({ page: pageNum, text: current.trim() });
+        setPages(chunks.length > 0 ? chunks : [{ page: 1, text: result.value }]);
       }
-
-      setPages(results);
     } catch (e) {
-      setError("Não foi possível processar o PDF. Certifique-se de que não é um PDF protegido por senha.");
+      setError(
+        type === "pdf"
+          ? "Não foi possível processar o PDF. Certifique-se de que não é protegido por senha."
+          : "Não foi possível processar o DOCX. O arquivo pode estar corrompido."
+      );
       console.error(e);
     } finally {
       setLoading(false);
@@ -64,12 +115,16 @@ export default function PdfExtractorPage() {
     e.preventDefault();
     setDragging(false);
     const file = e.dataTransfer.files[0];
-    if (file?.type === "application/pdf") extractText(file);
+    if (file) extractText(file);
   };
 
-  const activeText = activePage === "all"
-    ? pages.map((p) => `--- Página ${p.page} ---\n${p.text}`).join("\n\n")
-    : pages.find((p) => p.page === activePage)?.text ?? "";
+  const isPdf = fileType === "pdf";
+  const sectionLabel = isPdf ? "Página" : "Bloco";
+
+  const activeText =
+    activePage === "all"
+      ? pages.map((p) => `--- ${sectionLabel} ${p.page} ---\n${p.text}`).join("\n\n")
+      : pages.find((p) => p.page === activePage)?.text ?? "";
 
   const totalChars = pages.reduce((acc, p) => acc + p.text.length, 0);
   const totalWords = pages.reduce((acc, p) => acc + p.text.split(/\s+/).filter(Boolean).length, 0);
@@ -84,7 +139,7 @@ export default function PdfExtractorPage() {
     const blob = new Blob([activeText], { type: "text/plain;charset=utf-8" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = `${(fileName ?? "documento").replace(".pdf", "")}.txt`;
+    a.download = `${(fileName ?? "documento").replace(/\.(pdf|docx)$/i, "")}.txt`;
     a.click();
     URL.revokeObjectURL(a.href);
   };
@@ -96,10 +151,11 @@ export default function PdfExtractorPage() {
           ← Ferramentas
         </Link>
         <h1 style={{ fontSize: 28, fontWeight: 700, letterSpacing: "-0.03em", marginBottom: 6 }}>
-          📄 Extrator de Texto de PDF
+          📄 Extrator de Documentos
         </h1>
         <p style={{ color: "var(--text-muted)", fontSize: 14 }}>
-          Extrai todo o texto de PDFs diretamente no browser. Sem upload para servidores, sem limites.
+          Extrai texto de <strong style={{ color: "var(--text)" }}>PDF</strong> e <strong style={{ color: "var(--text)" }}>DOCX</strong> diretamente no browser. Sem upload para servidores.{" "}
+          <span style={{ color: "var(--text-subtle)" }}>Formato .doc (Word antigo) não é suportado.</span>
         </p>
       </div>
 
@@ -123,22 +179,35 @@ export default function PdfExtractorPage() {
         <input
           ref={inputRef}
           type="file"
-          accept="application/pdf"
+          accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
           style={{ display: "none" }}
           onChange={(e) => { const f = e.target.files?.[0]; if (f) extractText(f); }}
         />
         <div style={{ fontSize: 36, marginBottom: 12 }}>📑</div>
         <div style={{ fontSize: 15, fontWeight: 500, color: "var(--text)", marginBottom: 6 }}>
-          {loading ? "Extraindo texto..." : fileName ?? "Arraste um PDF ou clique para selecionar"}
+          {loading ? "Extraindo texto..." : fileName ?? "Arraste um PDF ou DOCX, ou clique para selecionar"}
         </div>
         {fileName && !loading && (
-          <div style={{ fontSize: 13, color: "var(--text-muted)" }}>
-            {fmtSize(fileSize)} · {pages.length} páginas · {totalWords.toLocaleString()} palavras · {totalChars.toLocaleString()} caracteres
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+            <span
+              style={{
+                fontSize: 11,
+                fontWeight: 700,
+                padding: "2px 8px",
+                borderRadius: 4,
+                background: fileType === "pdf" ? "#ef444420" : "#6366f120",
+                color: fileType === "pdf" ? "#f87171" : "var(--accent)",
+                letterSpacing: "0.04em",
+              }}
+            >
+              {fileType?.toUpperCase()}
+            </span>
+            <span style={{ fontSize: 13, color: "var(--text-muted)" }}>
+              {fmtSize(fileSize)} · {pages.length} {isPdf ? "páginas" : "blocos"} · {totalWords.toLocaleString()} palavras · {totalChars.toLocaleString()} caracteres
+            </span>
           </div>
         )}
-        {loading && (
-          <div style={{ fontSize: 13, color: "var(--text-muted)" }}>Aguarde...</div>
-        )}
+        {loading && <div style={{ fontSize: 13, color: "var(--text-muted)" }}>Aguarde...</div>}
       </div>
 
       {error && (
@@ -149,7 +218,7 @@ export default function PdfExtractorPage() {
 
       {pages.length > 0 && (
         <div style={{ display: "grid", gridTemplateColumns: "180px 1fr", gap: 16 }}>
-          {/* Page list */}
+          {/* Section list */}
           <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
             <button
               onClick={() => setActivePage("all")}
@@ -166,7 +235,7 @@ export default function PdfExtractorPage() {
                 textAlign: "left",
               }}
             >
-              Todas as páginas
+              {isPdf ? "Todas as páginas" : "Documento completo"}
             </button>
             <div style={{ maxHeight: 480, overflowY: "auto", display: "flex", flexDirection: "column", gap: 4 }}>
               {pages.map((p) => (
@@ -187,7 +256,7 @@ export default function PdfExtractorPage() {
                     justifyContent: "space-between",
                   }}
                 >
-                  <span>Página {p.page}</span>
+                  <span>{sectionLabel} {p.page}</span>
                   <span style={{ fontSize: 11, opacity: 0.6 }}>{p.text.split(/\s+/).filter(Boolean).length}p</span>
                 </button>
               ))}

@@ -36,7 +36,7 @@ const sections = [
     label: "Texto",
     items: [
       { href: "/tools/text-cleaner", icon: Scissors, label: "Limpeza de Texto" },
-      { href: "/tools/pdf-extractor", icon: FileText, label: "Extrator de PDF" },
+      { href: "/tools/pdf-extractor", icon: FileText, label: "Extrator de Documentos" },
       { href: "/tools/pdf-compressor", icon: FileDown, label: "Compressão de PDF" },
     ],
   },
