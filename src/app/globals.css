@@ -43,3 +43,24 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text-subtle);
 }
+
+/* Responsive layout */
+.desktop-only { display: flex; }
+.mobile-only  { display: none; }
+
+.main-content {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 100vh;
+}
+
+@media (max-width: 767px) {
+  .desktop-only { display: none !important; }
+  .mobile-only  { display: block !important; }
+
+  .main-content {
+    padding-top: 52px;   /* mobile header height */
+    padding-bottom: 80px; /* bottom nav height */
+    min-height: 100vh;
+  }
+}
