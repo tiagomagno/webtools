@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Header from "./components/Header";
+import Sidebar from "./components/Sidebar";
 
 export const metadata: Metadata = {
   title: "Webtools",
@@ -14,9 +14,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <body>
-        <Header />
-        <main>{children}</main>
+      <body style={{ display: "flex", minHeight: "100vh" }}>
+        <Sidebar />
+        <main style={{ flex: 1, overflowY: "auto", minHeight: "100vh" }}>
+          {children}
+        </main>
       </body>
     </html>
   );
