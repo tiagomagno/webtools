@@ -1,12 +1,21 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Sidebar from "./components/Sidebar";
 import MobileLayout from "./components/MobileLayout";
 
 export const metadata: Metadata = {
-  title: "Webtools",
-  description: "Ferramentas web úteis",
-  viewport: "width=device-width, initial-scale=1, viewport-fit=cover",
+  metadataBase: new URL("https://webtools.local"),
+  title: {
+    default: "Webtools — Ferramentas web gratuitas",
+    template: "%s · Webtools",
+  },
+  description: "Ferramentas web úteis e gratuitas, sem cadastro e sem upload.",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
