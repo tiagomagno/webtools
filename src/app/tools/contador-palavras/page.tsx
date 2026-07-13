@@ -3,30 +3,30 @@ import { toolMetadata } from "../../lib/seo";
 import WordCounter from "./WordCounter";
 
 const DESCRIPTION =
-  "Conte palavras, caracteres, frases, parágrafos e o tempo de leitura do seu texto em tempo real. 100% gratuito, funciona no navegador e nada é enviado para servidores.";
+  "Conte palavras, caracteres, frases, verifique limites de SEO/redes e estime tempo de leitura/fala em tempo real. Tudo no navegador e 100% gratuito.";
 
 export const metadata = toolMetadata({
   slug: "contador-palavras",
-  title: "Contador de Palavras Online — Grátis e Sem Upload",
+  title: "Contador de Palavras e Caracteres Online — Análise Completa de Texto",
   description: DESCRIPTION,
 });
 
 const FAQ = [
   {
-    q: "Como o contador de palavras funciona?",
-    a: "Ele separa o texto por espaços em branco e conta cada sequência como uma palavra. Caracteres, frases, parágrafos e tempo de leitura são calculados ao mesmo tempo, atualizando em tempo real conforme você digita.",
+    q: "O que essa ferramenta calcula?",
+    a: "Ela calcula simultaneamente: palavras, caracteres (com e sem espaços), frases, parágrafos, linhas, além do tempo estimado de leitura e fala.",
   },
   {
     q: "Meu texto é enviado para algum servidor?",
     a: "Não. Todo o processamento acontece localmente no seu navegador. Nenhum texto é enviado, armazenado ou compartilhado — é totalmente privado.",
   },
   {
-    q: "Como o tempo de leitura é calculado?",
-    a: "Dividimos o número de palavras pela velocidade de leitura escolhida (padrão de 200 palavras por minuto). Você pode ajustar a velocidade para estimativas de leitura mais lenta ou mais rápida.",
+    q: "Quais limites de caracteres são exibidos?",
+    a: "Mostramos os limites mais usados: título SEO (60), meta description (160), tweet/X (280), SMS (160) e bio do Instagram (150), com barra de progresso para cada um.",
   },
   {
-    q: "Existe limite de caracteres ou palavras?",
-    a: "Não há limite prático. Como o cálculo é feito no seu dispositivo, você pode colar textos longos, artigos ou documentos inteiros.",
+    q: "Como o tempo de leitura é calculado?",
+    a: "Dividimos o número de palavras pela velocidade de leitura (padrão de 200 ppm) para o tempo de leitura, e usamos ~130 ppm para o tempo de fala.",
   },
 ];
 
@@ -35,28 +35,27 @@ export default function Page() {
     <ToolPage
       slug="contador-palavras"
       emoji="📝"
-      title="Contador de Palavras"
+      title="Analisador e Contador de Texto"
       heroDescription={
         <>
-          Conte <strong style={{ color: "var(--text)" }}>palavras, caracteres, frases, parágrafos</strong> e o
-          tempo de leitura do seu texto em tempo real. Tudo no navegador, sem upload e 100% gratuito.
+          Conte <strong style={{ color: "var(--text)" }}>palavras, caracteres, frases</strong>, acompanhe os limites de SEO e estime o
+          tempo de leitura. Tudo no navegador, 100% gratuito.
         </>
       }
-      schemaName="Contador de Palavras"
+      schemaName="Analisador e Contador de Texto"
       schemaDescription={DESCRIPTION}
       content={{
-        heading: "Como contar palavras de um texto",
+        heading: "Análise completa do seu texto",
         body: (
           <p>
             Cole ou digite seu texto na caixa acima. A contagem de palavras, caracteres (com e sem espaços),
-            frases, parágrafos e o tempo estimado de leitura aparecem instantaneamente. É ideal para redatores,
-            estudantes e profissionais que precisam respeitar limites de palavras em redações, posts, meta
-            descrições ou trabalhos acadêmicos.
+            frases, parágrafos e o tempo estimado de leitura/fala aparecem instantaneamente. Acompanhe também os
+            limites comuns para redes sociais e SEO. Ideal para redatores, criadores de conteúdo e estudantes.
           </p>
         ),
       }}
       faq={FAQ}
-      related={["contador-caracteres", "tempo-leitura", "text-cleaner"]}
+      related={["comparador-textos", "removedor-linhas", "text-cleaner"]}
       ctaText="Precisa de mais ferramentas de texto?"
     >
       <WordCounter />

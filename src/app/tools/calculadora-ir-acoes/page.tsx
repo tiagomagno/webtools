@@ -25,7 +25,7 @@ export default function Page() {
         { q: 'Existe isenção para ações?', a: 'Sim. No mercado à vista, vendas totais até R$20.000 no mês são isentas de IR para pessoa física.' },
         { q: 'O prejuízo pode ser compensado?', a: 'Sim. Prejuízos em ações podem ser compensados com lucros futuros na mesma categoria (day trade com day trade, swing com swing).' },
       ]}
-      related={['calculadora-investimento', 'calculadora-salario', 'calculadora-porcentagem']}
+      related={['calculadora-investimento', 'salario', 'calculadora-porcentagem']}
     >
       <IrAcoes />
     </ToolPage>

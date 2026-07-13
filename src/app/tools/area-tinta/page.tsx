@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useCallback } from "react";
 
@@ -371,7 +371,7 @@ export default function AreaTintaPage() {
   const [tab, setTab] = useState<"area" | "tinta">("area");
 
   return (
-    <div style={{ padding: "32px 24px", maxWidth: 720 }}>
+    <div>
       <div style={{ marginBottom: 24 }}>
         <h1 style={{ fontSize: 22, fontWeight: 700, letterSpacing: "-0.03em", marginBottom: 4 }}>
           🪣 Área e Tinta

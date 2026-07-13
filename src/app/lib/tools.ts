@@ -77,7 +77,6 @@ import {
   Apple,
   Home,
   Wallet,
-  FileCheck,
   BarChart3,
   // P3 icons
   Radio,
@@ -108,6 +107,7 @@ export interface Tool {
   emoji: string;
   description: string;
   category: string;
+  subcategory?: string;
   color: string;
 }
 
@@ -123,16 +123,29 @@ export const HOME: Tool = {
 };
 
 export const TOOLS: Tool[] = [
-  { slug: "color-palette",   href: "/tools/color-palette",   label: "Paleta de Cores",       icon: Palette,      emoji: "🎨", description: "Paletas harmônicas a partir de uma cor base.",           category: "Design",  color: "#ec4899" },
-  { slug: "gradients",       href: "/tools/gradients",       label: "Gradientes",             icon: Blend,        emoji: "🌈", description: "Gradientes CSS com animação e múltiplos tipos.",         category: "Design",  color: "#0ea5e9" },
+  { slug: "color-palette",   href: "/tools/color-palette",   label: "Paleta de Cores",       icon: Palette,      emoji: "🎨", description: "Roda de cores interativa com harmonias HSL e exportação.",     category: "Design", subcategory: "Cores", color: "#ec4899" },
+  { slug: "contraste-cores", href: "/tools/contraste-cores", label: "Contraste de Cores",    icon: Pipette,      emoji: "🔍", description: "Analise o contraste WCAG entre texto e fundo com sugestões.",  category: "Design", subcategory: "Cores", color: "#8b5cf6" },
+  { slug: "gradients",       href: "/tools/gradients",       label: "Gradientes",             icon: Blend,        emoji: "🌈", description: "Gradientes CSS com animação e múltiplos tipos.",         category: "Design", subcategory: "Cores", color: "#0ea5e9" },
+  { slug: "conversor-cores", href: "/tools/conversor-cores", label: "Conversor de Cores",     icon: Droplet,      emoji: "🎨", description: "Converta entre HEX, RGB e HSL com prévia ao vivo.",      category: "Design", subcategory: "Cores", color: "#a855f7" },
   { slug: "css-units",       href: "/tools/css-units",       label: "Conversor CSS",          icon: Ruler,        emoji: "📐", description: "Converta entre px, rem, em, vw, vh e %.",                category: "CSS",     color: "#6366f1" },
+  { slug: "grid-layouts",    href: "/tools/grid-layouts",    label: "Layouts",                icon: LayoutDashboard, emoji: "📐", description: "Gerador visual de layouts com CSS Grid e Flexbox.", category: "Design", subcategory: "Grid",  color: "#22c55e" },
 
-  { slug: "contador-palavras",   href: "/tools/contador-palavras",   label: "Contador de Palavras",   icon: CaseSensitive, emoji: "📝", description: "Conte palavras, caracteres, frases e tempo de leitura.", category: "Texto", color: "#22c55e" },
-  { slug: "contador-caracteres", href: "/tools/contador-caracteres", label: "Contador de Caracteres", icon: Type,          emoji: "🔤", description: "Conte caracteres com e sem espaços, com limites.",       category: "Texto", color: "#14b8a6" },
-  { slug: "tempo-leitura",       href: "/tools/tempo-leitura",       label: "Tempo de Leitura",       icon: Timer,         emoji: "⏱️", description: "Estime o tempo de leitura e de fala de um texto.",       category: "Texto", color: "#06b6d4" },
+  { slug: "contador-palavras",   href: "/tools/contador-palavras",   label: "Analisador de Texto",    icon: CaseSensitive, emoji: "📝", description: "Conte palavras, caracteres, frases, limites de redes e tempo de leitura.", category: "Texto", color: "#22c55e" },
   { slug: "comparador-textos",   href: "/tools/comparador-textos",   label: "Comparador de Textos",   icon: GitCompare,    emoji: "🔀", description: "Compare dois textos e veja as diferenças por linha.",    category: "Texto", color: "#0ea5e9" },
-  { slug: "removedor-linhas",    href: "/tools/removedor-linhas",    label: "Removedor de Linhas",    icon: ListX,         emoji: "📋", description: "Remova duplicadas, vazias e ordene linhas de texto.",    category: "Texto", color: "#10b981" },
-  { slug: "text-cleaner",    href: "/tools/text-cleaner",    label: "Limpeza de Texto",       icon: Scissors,     emoji: "✂️", description: "Substituição e remoção com regex em tempo real.",        category: "Texto",   color: "#10b981" },
+  { slug: "text-cleaner",        href: "/tools/text-cleaner",        label: "Limpeza de Texto",       icon: Scissors,      emoji: "✂️", description: "Substituição e remoção com regex em tempo real.",        category: "Texto", color: "#10b981" },
+  { slug: "texto-para-slug",     href: "/tools/texto-para-slug",     label: "Texto para Slug",        icon: Link2,         emoji: "🔗", description: "Gere slugs amigáveis para URL a partir de texto.",       category: "Texto", color: "#14b8a6" },
+  { slug: "lorem-ipsum",         href: "/tools/lorem-ipsum",         label: "Gerador de Lorem Ipsum", icon: Pilcrow,       emoji: "📄", description: "Texto de preenchimento em parágrafos, frases ou palavras.", category: "Texto", color: "#06b6d4" },
+  { slug: "formatador-texto",    href: "/tools/formatador-texto",    label: "Formatador de Texto",    icon: CaseUpper,     emoji: "✏️", description: "Transforme texto para MAIÚSCULAS, camelCase, snake_case e outros.",       category: "Texto", color: "#6366f1" },
+  { slug: "inversor-texto",      href: "/tools/inversor-texto",      label: "Inversor de Texto",      icon: Repeat2,       emoji: "🔄", description: "Inverta texto por caracteres, palavras ou linhas.",                     category: "Texto", color: "#0ea5e9" },
+  { slug: "contador-linhas",     href: "/tools/contador-linhas",     label: "Contador de Linhas",     icon: AlignJustify,  emoji: "📋", description: "Conte total, não-vazias, vazias e linhas únicas de um texto.",           category: "Texto", color: "#14b8a6" },
+  { slug: "removedor-acentos",   href: "/tools/removedor-acentos",   label: "Removedor de Acentos",   icon: Eraser,        emoji: "✂️", description: "Remova ã, é, ç, õ e todos os diacríticos do seu texto.",               category: "Texto", color: "#f59e0b" },
+  { slug: "ordenador-linhas",    href: "/tools/ordenador-linhas",    label: "Ordenador de Linhas",    icon: ArrowUpDown,   emoji: "↕️", description: "Ordene linhas A→Z, Z→A, por comprimento ou de forma aleatória.",       category: "Texto", color: "#22c55e" },
+  { slug: "cifra-cesar",         href: "/tools/cifra-cesar",         label: "Cifra de César",         icon: Lock,          emoji: "🔐", description: "Codifique e decodifique textos com ROT13 ou qualquer deslocamento.",   category: "Texto", color: "#8b5cf6" },
+  { slug: "numero-por-extenso",  href: "/tools/numero-por-extenso",  label: "Número por Extenso",     icon: Languages,     emoji: "🔢", description: "Converta números para extenso em português até 999 bilhões.",          category: "Texto", color: "#ec4899" },
+  { slug: "texto-para-morse",    href: "/tools/texto-para-morse",    label: "Texto para Morse",       icon: Radio,         emoji: "📡", description: "Converta texto em código Morse e Morse em texto instantaneamente.",  category: "Texto", color: "#f97316" },
+  { slug: "contador-vogais",     href: "/tools/contador-vogais",     label: "Frequência de Letras",   icon: BarChart2,     emoji: "🔤", description: "Analise a distribuição de vogais e consoantes no seu texto.",        category: "Texto", color: "#8b5cf6" },
+  { slug: "gerador-anagrama",    href: "/tools/gerador-anagrama",    label: "Gerador de Anagramas",   icon: Shuffle,       emoji: "🔀", description: "Embaralhe letras de palavras ou frases para criar anagramas.",       category: "Texto", color: "#0ea5e9" },
+
   { slug: "pdf-extractor",   href: "/tools/pdf-extractor",   label: "Extrator de Docs",       icon: FileText,     emoji: "📄", description: "Extrai texto de PDF e DOCX por página, sem upload.",    category: "PDF",     color: "#ef4444" },
   { slug: "pdf-compressor",  href: "/tools/pdf-compressor",  label: "Compressão de PDF",      icon: FileArchive,  emoji: "🗜️", description: "Reduz o tamanho de PDFs em 3 níveis de qualidade.",     category: "PDF",     color: "#f97316" },
   { slug: "jpg-para-pdf",    href: "/tools/jpg-para-pdf",    label: "JPG para PDF",           icon: FilePlus2,    emoji: "📄", description: "Junte imagens em um único PDF, ordenando as páginas.",  category: "PDF",     color: "#0ea5e9" },
@@ -140,12 +153,8 @@ export const TOOLS: Tool[] = [
   { slug: "unir-pdf",        href: "/tools/unir-pdf",        label: "Unir PDF",               icon: Combine,      emoji: "🔗", description: "Junte vários PDFs em um só, na ordem que quiser.",      category: "PDF",     color: "#22c55e" },
   { slug: "dividir-pdf",     href: "/tools/dividir-pdf",     label: "Dividir PDF",            icon: Split,        emoji: "✂️", description: "Extraia intervalos ou separe cada página do PDF.",      category: "PDF",     color: "#ec4899" },
 
-  { slug: "json-formatter",  href: "/tools/json-formatter",  label: "JSON Formatter",         icon: Braces,       emoji: "🧩", description: "Formate e idente JSON com indentação ajustável.",        category: "Dev", color: "#eab308" },
-  { slug: "json-validator",  href: "/tools/json-validator",  label: "JSON Validator",         icon: BadgeCheck,   emoji: "✅", description: "Valide JSON e veja o erro com linha e coluna.",          category: "Dev", color: "#22c55e" },
-  { slug: "json-diff",       href: "/tools/json-diff",       label: "JSON Diff",              icon: FileDiff,     emoji: "🔍", description: "Compare dois JSON e veja chaves adicionadas e alteradas.", category: "Dev", color: "#0ea5e9" },
-  { slug: "sql-formatter",   href: "/tools/sql-formatter",   label: "SQL Formatter",          icon: Database,     emoji: "🗄️", description: "Formate consultas SQL com indentação e palavras-chave.", category: "Dev", color: "#8b5cf6" },
-  { slug: "base64-encode",   href: "/tools/base64-encode",   label: "Base64 Encode",          icon: Binary,       emoji: "🔢", description: "Codifique texto e arquivos em Base64 (UTF-8).",          category: "Dev", color: "#6366f1" },
-  { slug: "base64-decode",   href: "/tools/base64-decode",   label: "Base64 Decode",          icon: Code,         emoji: "🔣", description: "Decodifique Base64 de volta para texto legível.",        category: "Dev", color: "#3b82f6" },
+  { slug: "json-formatter",  href: "/tools/json-formatter",  label: "Ferramenta JSON",        icon: Braces,       emoji: "🧩", description: "Formate, valide ou compare (Diff) código JSON em abas.",        category: "Dev", color: "#eab308" },
+  { slug: "base64-encode",   href: "/tools/base64-encode",   label: "Ferramenta Base64",      icon: Binary,       emoji: "🔢", description: "Codifique e decodifique texto em Base64 (UTF-8).",          category: "Dev", color: "#6366f1" },
   { slug: "jwt-decoder",     href: "/tools/jwt-decoder",     label: "JWT Decoder",            icon: KeyRound,     emoji: "🔐", description: "Decodifique header e payload de um token JWT.",          category: "Dev", color: "#ec4899" },
   { slug: "uuid-generator",  href: "/tools/uuid-generator",  label: "Gerador de UUID",        icon: Fingerprint,  emoji: "🆔", description: "Gere UUIDs v4 únicos com um clique.",                    category: "Dev", color: "#f43f5e" },
   { slug: "hash-generator",  href: "/tools/hash-generator",  label: "Gerador de Hash",        icon: Hash,         emoji: "#️⃣", description: "Gere MD5, SHA-1, SHA-256, SHA-384 e SHA-512.",           category: "Dev", color: "#a855f7" },
@@ -154,12 +163,9 @@ export const TOOLS: Tool[] = [
 
   { slug: "csv-para-json",   href: "/tools/csv-para-json",   label: "CSV para JSON",          icon: ArrowLeftRight, emoji: "🔄", description: "Converta CSV em JSON com delimitador e cabeçalho.",    category: "Dados", color: "#22c55e" },
   { slug: "json-para-csv",   href: "/tools/json-para-csv",   label: "JSON para CSV",          icon: ArrowLeftRight, emoji: "🔄", description: "Converta um array de objetos JSON em CSV.",            category: "Dados", color: "#eab308" },
-  { slug: "texto-para-slug", href: "/tools/texto-para-slug", label: "Texto para Slug",        icon: Link2,        emoji: "🔗", description: "Gere slugs amigáveis para URL a partir de texto.",       category: "Texto", color: "#14b8a6" },
-  { slug: "lorem-ipsum",     href: "/tools/lorem-ipsum",     label: "Gerador de Lorem Ipsum", icon: Pilcrow,      emoji: "📄", description: "Texto de preenchimento em parágrafos, frases ou palavras.", category: "Texto", color: "#06b6d4" },
 
-  { slug: "conversor-cores", href: "/tools/conversor-cores", label: "Conversor de Cores",     icon: Droplet,      emoji: "🎨", description: "Converta entre HEX, RGB e HSL com prévia ao vivo.",      category: "Design", color: "#a855f7" },
 
-  { slug: "codificador-url", href: "/tools/codificador-url", label: "Codificador de URL",     icon: Link2,        emoji: "🔗", description: "Codifique e decodifique URLs e parâmetros.",            category: "Dev", color: "#0ea5e9" },
+  { slug: "codificador-url", href: "/tools/codificador-url", label: "Ferramenta de URL",      icon: Globe,        emoji: "🔗", description: "Codifique, decodifique e faça o parser de URLs e parâmetros.",            category: "Dev", color: "#0ea5e9" },
 
   { slug: "open-graph-preview", href: "/tools/open-graph-preview", label: "Open Graph Preview", icon: Share2,  emoji: "🔗", description: "Veja o card de redes sociais e gere meta tags OG.",      category: "SEO", color: "#0ea5e9" },
   { slug: "robots-generator",   href: "/tools/robots-generator",   label: "Gerador de robots.txt", icon: Bot,    emoji: "🤖", description: "Crie robots.txt com Allow, Disallow e Sitemap.",        category: "SEO", color: "#64748b" },
@@ -191,19 +197,9 @@ export const TOOLS: Tool[] = [
   { slug: "calculadora-datas",      href: "/tools/calculadora-datas",      label: "Calculadora de Datas",      icon: CalendarDays, emoji: "📅", description: "Diferença entre duas datas e soma ou subtração de dias a partir de uma data.", category: "Calculadoras", color: "#0ea5e9" },
   { slug: "conversor-temperatura",  href: "/tools/conversor-temperatura",  label: "Conversor de Temperatura",  icon: Thermometer,  emoji: "🌡️", description: "Converta entre Celsius, Fahrenheit e Kelvin instantaneamente.",             category: "Calculadoras", color: "#f43f5e" },
 
-  // Texto P2 (#46–#52)
-  { slug: "formatador-texto",    href: "/tools/formatador-texto",    label: "Formatador de Texto",    icon: CaseUpper,     emoji: "✏️", description: "Transforme texto para MAIÚSCULAS, camelCase, snake_case e outros.",       category: "Texto", color: "#6366f1" },
-  { slug: "inversor-texto",      href: "/tools/inversor-texto",      label: "Inversor de Texto",      icon: Repeat2,       emoji: "🔄", description: "Inverta texto por caracteres, palavras ou linhas.",                     category: "Texto", color: "#0ea5e9" },
-  { slug: "contador-linhas",     href: "/tools/contador-linhas",     label: "Contador de Linhas",     icon: AlignJustify,  emoji: "📋", description: "Conte total, não-vazias, vazias e linhas únicas de um texto.",           category: "Texto", color: "#14b8a6" },
-  { slug: "removedor-acentos",   href: "/tools/removedor-acentos",   label: "Removedor de Acentos",   icon: Eraser,        emoji: "✂️", description: "Remova ã, é, ç, õ e todos os diacríticos do seu texto.",               category: "Texto", color: "#f59e0b" },
-  { slug: "ordenador-linhas",    href: "/tools/ordenador-linhas",    label: "Ordenador de Linhas",    icon: ArrowUpDown,   emoji: "↕️", description: "Ordene linhas A→Z, Z→A, por comprimento ou de forma aleatória.",       category: "Texto", color: "#22c55e" },
-  { slug: "cifra-cesar",         href: "/tools/cifra-cesar",         label: "Cifra de César",         icon: Lock,          emoji: "🔐", description: "Codifique e decodifique textos com ROT13 ou qualquer deslocamento.",   category: "Texto", color: "#8b5cf6" },
-  { slug: "numero-por-extenso",  href: "/tools/numero-por-extenso",  label: "Número por Extenso",     icon: Languages,     emoji: "🔢", description: "Converta números para extenso em português até 999 bilhões.",          category: "Texto", color: "#ec4899" },
 
   // Dev P2 (#53–#57)
   { slug: "regex-tester",        href: "/tools/regex-tester",        label: "Testador de Regex",      icon: FlaskConical,  emoji: "🔎", description: "Teste expressões regulares em tempo real com highlight de matches.",  category: "Dev", color: "#f97316" },
-  { slug: "html-formatter",      href: "/tools/html-formatter",      label: "HTML Formatter",         icon: Code2,         emoji: "🖋️", description: "Formate e indente HTML minificado instantaneamente.",                 category: "Dev", color: "#0ea5e9" },
-  { slug: "css-minifier",        href: "/tools/css-minifier",        label: "Minificador de CSS",     icon: Minimize2,     emoji: "🗜️", description: "Minifique CSS removendo comentários e espaços desnecessários.",      category: "Dev", color: "#6366f1" },
   { slug: "conversor-bases",     href: "/tools/conversor-bases",     label: "Conversor de Bases",     icon: Calculator,    emoji: "🔢", description: "Converta entre decimal, binário, octal e hexadecimal.",              category: "Dev", color: "#22c55e" },
   { slug: "tabela-ascii",        href: "/tools/tabela-ascii",        label: "Tabela ASCII",           icon: Table,         emoji: "🔣", description: "Tabela ASCII 0–255 com decimal, hex, binário e caractere.",           category: "Dev", color: "#a855f7" },
 
@@ -226,22 +222,12 @@ export const TOOLS: Tool[] = [
 
   // Finanças P2 (#71–#75)
   { slug: "simulador-financiamento", href: "/tools/simulador-financiamento", label: "Simulador de Financiamento",icon: Home,        emoji: "🏠", description: "Simule financiamentos SAC e PRICE com tabela de amortização.",      category: "Finanças", color: "#6366f1" },
-  { slug: "calculadora-salario",     href: "/tools/calculadora-salario",     label: "Calculadora de Salário",    icon: Wallet,      emoji: "💳", description: "Calcule salário líquido 2026 com INSS e IRPF progressivos.",        category: "Finanças", color: "#22c55e" },
-  { slug: "calculadora-rescisao",    href: "/tools/calculadora-rescisao",    label: "Calculadora de Rescisão",   icon: FileCheck,   emoji: "📋", description: "Calcule verbas rescisórias: férias, 13°, FGTS e multa de 40%.",    category: "Finanças", color: "#f97316" },
+  { slug: "salario",                 href: "/tools/salario",                 label: "Salário",                   icon: Wallet,      emoji: "💳", description: "Calcule salário líquido (INSS, IRPF) ou verbas rescisórias.",       category: "Finanças", color: "#22c55e" },
   { slug: "reajuste-aluguel",        href: "/tools/reajuste-aluguel",        label: "Reajuste de Aluguel",       icon: Building2,   emoji: "🏘️", description: "Simule reajuste de aluguel por IGP-M, IPCA, INPC ou percentual.",  category: "Finanças", color: "#0ea5e9" },
   { slug: "calculadora-investimento",href: "/tools/calculadora-investimento",label: "Comparador de Investimentos",icon: BarChart3,  emoji: "📊", description: "Compare CDB, LCI/LCA e Poupança com IR incluído.",                  category: "Finanças", color: "#a855f7" },
 
-  // Texto P3 (#76–#78)
-  { slug: "texto-para-morse",   href: "/tools/texto-para-morse",   label: "Texto para Morse",          icon: Radio,       emoji: "📡", description: "Converta texto em código Morse e Morse em texto instantaneamente.",  category: "Texto", color: "#f97316" },
-  { slug: "contador-vogais",    href: "/tools/contador-vogais",    label: "Frequência de Letras",      icon: BarChart2,   emoji: "🔤", description: "Analise a distribuição de vogais e consoantes no seu texto.",        category: "Texto", color: "#8b5cf6" },
-  { slug: "gerador-anagrama",   href: "/tools/gerador-anagrama",   label: "Gerador de Anagramas",      icon: Shuffle,     emoji: "🔀", description: "Embaralhe letras de palavras ou frases para criar anagramas.",       category: "Texto", color: "#0ea5e9" },
-
-  // Dev P3 (#79–#83)
-  { slug: "json-minifier",      href: "/tools/json-minifier",      label: "Minificador de JSON",       icon: Minimize2,   emoji: "🗜️", description: "Compacte JSON removendo espaços para produção.",                    category: "Dev", color: "#eab308" },
-  { slug: "url-parser",         href: "/tools/url-parser",         label: "Parser de URL",             icon: Globe,       emoji: "🔗", description: "Decomponha URLs em protocolo, host, path, query e parâmetros.",     category: "Dev", color: "#14b8a6" },
-  { slug: "xml-formatter",      href: "/tools/xml-formatter",      label: "XML Formatter",             icon: Code2,       emoji: "📋", description: "Formate, indente ou minifique XML com validação automática.",       category: "Dev", color: "#f43f5e" },
+  { slug: "formatador-codigo",   href: "/tools/formatador-codigo",   label: "Formatador de Código",          icon: Code2,     emoji: "🗄️", description: "Formate e minifique SQL, HTML, CSS e XML.", category: "Dev", color: "#8b5cf6" },
   { slug: "cron-helper",        href: "/tools/cron-helper",        label: "Leitor de Cron",            icon: Settings,    emoji: "⏱️", description: "Traduza expressões cron para português e veja as próximas execuções.", category: "Dev", color: "#6366f1" },
-  { slug: "color-generator",    href: "/tools/color-generator",    label: "Gerador de Paleta",         icon: Palette,     emoji: "🎨", description: "Gere paletas de cores harmônicas com HEX, RGB e HSL.",             category: "Design", color: "#a855f7" },
 
   // Imagens P3 (#84–#85)
   { slug: "image-to-base64",    href: "/tools/image-to-base64",    label: "Imagem para Base64",        icon: FileDown,    emoji: "🖼️", description: "Converta imagens para Base64 (data URI) e Base64 de volta.",        category: "Imagens", color: "#0ea5e9" },

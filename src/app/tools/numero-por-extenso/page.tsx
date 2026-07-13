@@ -28,7 +28,7 @@ export default function Page() {
       schemaDescription={DESCRIPTION}
       content={{ heading: "Para que serve número por extenso?", body: <p>Obrigatório em contratos, documentos jurídicos e cheques, onde o valor em algarismos deve ser acompanhado de sua forma por extenso para evitar fraudes e ambiguidades.</p> }}
       faq={FAQ}
-      related={["calculadora-porcentagem", "calculadora-desconto", "calculadora-salario"]}
+      related={["calculadora-porcentagem", "calculadora-desconto", "salario"]}
       ctaText="Precisa de mais ferramentas de texto?"
     >
       <NumberToWords />

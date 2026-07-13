@@ -27,7 +27,7 @@ export default function Page() {
       schemaDescription={DESCRIPTION}
       content={{ heading: "Como usar a calculadora", body: <p>Informe o valor total da conta, escolha o percentual de gorjeta e o número de pessoas. A calculadora mostra instantaneamente o valor da gorjeta, o total e o quanto cada um deve pagar.</p> }}
       faq={FAQ}
-      related={["calculadora-desconto", "calculadora-porcentagem", "calculadora-salario"]}
+      related={["calculadora-desconto", "calculadora-porcentagem", "salario"]}
       ctaText="Precisa de mais calculadoras?"
     >
       <TipCalculator />

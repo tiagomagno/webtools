@@ -3,7 +3,7 @@ import { TOOLS, CATEGORIES } from "./lib/tools";
 
 export default function Home() {
   return (
-    <div style={{ padding: "40px 24px" }}>
+    <div style={{ padding: "40px 0" }}>
       <div style={{ marginBottom: 32 }}>
         <h1 style={{ fontSize: 26, fontWeight: 700, letterSpacing: "-0.03em", marginBottom: 4 }}>
           Início

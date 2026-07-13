@@ -64,34 +64,55 @@ export default function Sidebar() {
           </Link>
         </div>
 
-        {/* By category */}
         {CATEGORIES.map((cat) => {
           const catTools = TOOLS.filter((t) => t.category === cat);
+          if (catTools.length === 0) return null;
+
+          // Extrair subcategorias preservando a ordem
+          const subcats: (string | undefined)[] = [];
+          catTools.forEach((t) => {
+            const sc = t.subcategory || undefined;
+            if (!subcats.includes(sc)) subcats.push(sc);
+          });
+
           return (
             <div key={cat} style={{ marginBottom: 4 }}>
               <div style={{ fontSize: 11, fontWeight: 600, color: "var(--text-subtle)", padding: "12px 8px 4px", letterSpacing: "0.06em", textTransform: "uppercase" }}>
                 {cat}
               </div>
-              {catTools.map((tool) => {
-                const active = isActive(tool.href);
-                const Icon = tool.icon;
+              {subcats.map((subcat) => {
+                const subTools = catTools.filter((t) => (t.subcategory || undefined) === subcat);
                 return (
-                  <Link key={tool.slug} href={tool.href} style={{ textDecoration: "none", display: "block" }}>
-                    <div
-                      className="nav-item"
-                      style={{
-                        display: "flex", alignItems: "center", gap: 10,
-                        padding: "8px 10px", borderRadius: 8,
-                        background: active ? "var(--accent)18" : "transparent",
-                        color: active ? "var(--accent)" : "var(--text-muted)",
-                        fontSize: 13, fontWeight: active ? 600 : 400,
-                        transition: "all 0.1s", cursor: "pointer",
-                      }}
-                    >
-                      <Icon size={16} strokeWidth={active ? 2.2 : 1.8} />
-                      {tool.label}
-                    </div>
-                  </Link>
+                  <div key={subcat || "none"}>
+                    {subcat && (
+                      <div style={{ fontSize: 10, fontWeight: 600, color: "var(--text-muted)", padding: "8px 8px 4px 10px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                        {subcat}
+                      </div>
+                    )}
+                    {subTools.map((tool) => {
+                      const active = isActive(tool.href);
+                      const Icon = tool.icon;
+                      return (
+                        <Link key={tool.slug} href={tool.href} style={{ textDecoration: "none", display: "block" }}>
+                          <div
+                            className="nav-item"
+                            style={{
+                              display: "flex", alignItems: "center", gap: 10,
+                              padding: "8px 10px", borderRadius: 8,
+                              background: active ? "var(--accent)18" : "transparent",
+                              color: active ? "var(--accent)" : "var(--text-muted)",
+                              fontSize: 13, fontWeight: active ? 600 : 400,
+                              transition: "all 0.1s", cursor: "pointer",
+                              marginLeft: subcat ? 8 : 0,
+                            }}
+                          >
+                            <Icon size={16} strokeWidth={active ? 2.2 : 1.8} />
+                            {tool.label}
+                          </div>
+                        </Link>
+                      );
+                    })}
+                  </div>
                 );
               })}
             </div>

@@ -3,7 +3,8 @@
 import { useMemo, useState } from "react";
 import { encodeBase64, decodeBase64 } from "../lib/base64";
 
-export default function Base64Tool({ mode }: { mode: "encode" | "decode" }) {
+export default function Base64Tool() {
+  const [mode, setMode] = useState<"encode" | "decode">("encode");
   const [input, setInput] = useState("");
   const [copied, setCopied] = useState(false);
 
@@ -23,37 +24,74 @@ export default function Base64Tool({ mode }: { mode: "encode" | "decode" }) {
   };
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 12 }}>
-      <div>
-        <label htmlFor="b64-in" style={{ fontSize: 12, color: "var(--text-muted)", display: "block", marginBottom: 6, fontWeight: 500 }}>
-          {mode === "encode" ? "Texto" : "Base64"}
-        </label>
-        <textarea
-          id="b64-in"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          rows={12}
-          spellCheck={false}
-          placeholder={mode === "encode" ? "Digite o texto para codificar..." : "Cole o Base64 para decodificar..."}
-          style={{ width: "100%", background: "var(--surface-2)", border: "1px solid var(--border)", borderRadius: 8, padding: "12px 14px", color: "var(--text)", fontSize: 13, lineHeight: 1.6, resize: "vertical", fontFamily: "monospace" }}
-        />
-      </div>
-      <div>
-        <label htmlFor="b64-out" style={{ fontSize: 12, color: "var(--text-muted)", display: "block", marginBottom: 6, fontWeight: 500 }}>
-          {mode === "encode" ? "Base64" : "Texto"}
-        </label>
-        <textarea
-          id="b64-out"
-          value={error ? "" : output}
-          readOnly
-          rows={12}
-          placeholder="Resultado..."
-          style={{ width: "100%", background: "var(--surface)", border: `1px solid ${error ? "#ef4444" : "var(--border)"}`, borderRadius: 8, padding: "12px 14px", color: "var(--text)", fontSize: 13, lineHeight: 1.6, resize: "vertical", fontFamily: "monospace" }}
-        />
-        {error && <div style={{ color: "#f87171", fontSize: 12, marginTop: 6 }}>⚠ {error}</div>}
-        <button onClick={copy} disabled={output === ""} style={{ marginTop: 10, padding: "8px 16px", borderRadius: 8, border: "1px solid var(--border)", background: output === "" ? "var(--surface-2)" : "var(--accent)", color: output === "" ? "var(--text-subtle)" : "#fff", fontSize: 13, fontWeight: 600, cursor: output === "" ? "default" : "pointer" }}>
-          {copied ? "✓ Copiado" : "Copiar"}
+    <div>
+      <div style={{ display: "flex", gap: 8, marginBottom: 20, borderBottom: "1px solid var(--border)", paddingBottom: 10 }}>
+        <button
+          onClick={() => setMode("encode")}
+          style={{
+            padding: "8px 16px",
+            background: mode === "encode" ? "var(--accent)" : "transparent",
+            color: mode === "encode" ? "#fff" : "var(--text-muted)",
+            border: "none",
+            borderRadius: 8,
+            fontSize: 14,
+            fontWeight: 600,
+            cursor: "pointer",
+            transition: "all 0.2s",
+          }}
+        >
+          Encode
         </button>
+        <button
+          onClick={() => setMode("decode")}
+          style={{
+            padding: "8px 16px",
+            background: mode === "decode" ? "var(--accent)" : "transparent",
+            color: mode === "decode" ? "#fff" : "var(--text-muted)",
+            border: "none",
+            borderRadius: 8,
+            fontSize: 14,
+            fontWeight: 600,
+            cursor: "pointer",
+            transition: "all 0.2s",
+          }}
+        >
+          Decode
+        </button>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 12 }}>
+        <div>
+          <label htmlFor="b64-in" style={{ fontSize: 12, color: "var(--text-muted)", display: "block", marginBottom: 6, fontWeight: 500 }}>
+            {mode === "encode" ? "Texto" : "Base64"}
+          </label>
+          <textarea
+            id="b64-in"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            rows={12}
+            spellCheck={false}
+            placeholder={mode === "encode" ? "Digite o texto para codificar..." : "Cole o Base64 para decodificar..."}
+            style={{ width: "100%", background: "var(--surface-2)", border: "1px solid var(--border)", borderRadius: 8, padding: "12px 14px", color: "var(--text)", fontSize: 13, lineHeight: 1.6, resize: "vertical", fontFamily: "monospace" }}
+          />
+        </div>
+        <div>
+          <label htmlFor="b64-out" style={{ fontSize: 12, color: "var(--text-muted)", display: "block", marginBottom: 6, fontWeight: 500 }}>
+            {mode === "encode" ? "Base64" : "Texto"}
+          </label>
+          <textarea
+            id="b64-out"
+            value={error ? "" : output}
+            readOnly
+            rows={12}
+            placeholder="Resultado..."
+            style={{ width: "100%", background: "var(--surface)", border: `1px solid ${error ? "#ef4444" : "var(--border)"}`, borderRadius: 8, padding: "12px 14px", color: "var(--text)", fontSize: 13, lineHeight: 1.6, resize: "vertical", fontFamily: "monospace" }}
+          />
+          {error && <div style={{ color: "#f87171", fontSize: 12, marginTop: 6 }}>⚠ {error}</div>}
+          <button onClick={copy} disabled={output === ""} style={{ marginTop: 10, padding: "8px 16px", borderRadius: 8, border: "1px solid var(--border)", background: output === "" ? "var(--surface-2)" : "var(--accent)", color: output === "" ? "var(--text-subtle)" : "#fff", fontSize: 13, fontWeight: 600, cursor: output === "" ? "default" : "pointer" }}>
+            {copied ? "✓ Copiado" : "Copiar"}
+          </button>
+        </div>
       </div>
     </div>
   );

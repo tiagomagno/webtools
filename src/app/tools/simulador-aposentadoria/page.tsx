@@ -25,7 +25,7 @@ export default function Page() {
         { q: 'Como é calculado o valor do benefício?', a: 'O benefício começa em 60% da média salarial + 2% por ano de contribuição acima do mínimo, limitado ao teto do INSS.' },
         { q: 'Esta simulação é oficial?', a: 'Não. É uma estimativa simplificada. Para uma simulação oficial, use o portal Meu INSS (meu.inss.gov.br).' },
       ]}
-      related={['calculadora-inss-autonomo', 'calculadora-salario', 'calculadora-mei']}
+      related={['calculadora-inss-autonomo', 'salario', 'calculadora-mei']}
     >
       <AposentadoriaTool />
     </ToolPage>

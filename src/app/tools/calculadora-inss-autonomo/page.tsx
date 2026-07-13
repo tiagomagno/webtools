@@ -25,7 +25,7 @@ export default function Page() {
         { q: 'O que é o plano simplificado (11%)?', a: 'Permite contribuir com 11% sobre o salário mínimo, mas não dá direito a aposentadoria por tempo de contribuição.' },
         { q: 'Qual a diferença para o MEI?', a: 'O MEI tem um valor fixo mensal (DAS MEI), bem menor. Mas tem limite de faturamento anual (R$169.200 em 2026).' },
       ]}
-      related={['calculadora-salario', 'calculadora-mei', 'simulador-aposentadoria']}
+      related={['salario', 'calculadora-mei', 'simulador-aposentadoria']}
     >
       <InssAutonomo />
     </ToolPage>

@@ -25,7 +25,7 @@ export default function Page() {
         { q: 'Qual o faturamento máximo do MEI?', a: 'Em 2026, o MEI pode faturar até R$169.200 por ano (R$14.100/mês em média).' },
         { q: 'O que acontece se faturar acima do limite?', a: 'O empreendedor é desenquadrado do MEI e passa a ser ME (Microempresa), com tributação mais elevada pelo Simples Nacional.' },
       ]}
-      related={['calculadora-inss-autonomo', 'calculadora-salario', 'simulador-aposentadoria']}
+      related={['calculadora-inss-autonomo', 'salario', 'simulador-aposentadoria']}
     >
       <MeiTool />
     </ToolPage>

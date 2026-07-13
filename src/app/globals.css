@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
-:root {
+/* ── Dark theme (default) ─────────────────────────────────────────────────── */
+:root, [data-theme="dark"] {
   --bg: #080808;
   --surface: #111111;
   --surface-2: #1a1a1a;
@@ -10,7 +11,29 @@
   --text: #f4f4f5;
   --text-muted: #71717a;
   --text-subtle: #3f3f46;
+
+  /* Shell layout */
+  --rail-w: 56px;
+  --inner-w: 220px;
 }
+
+/* ── Light theme ──────────────────────────────────────────────────────────── */
+[data-theme="light"] {
+  --bg: #f5f5f7;
+  --surface: #ffffff;
+  --surface-2: #f0f0f2;
+  --border: #e2e2e5;
+  --accent: #6366f1;
+  --accent-dim: #4f46e5;
+  --text: #111111;
+  --text-muted: #6b7280;
+  --text-subtle: #9ca3af;
+}
+
+/* ── Font size scale ──────────────────────────────────────────────────────── */
+[data-font="sm"] { font-size: 13px; }
+[data-font="md"] { font-size: 15px; }
+[data-font="lg"] { font-size: 17px; }
 
 * {
   box-sizing: border-box;
@@ -52,7 +75,15 @@ body {
   flex: 1;
   overflow-y: auto;
   min-height: 100vh;
+  padding: 0 32px;
+  max-width: 100%;
 }
+
+/* Variável para controle centralizado do maxWidth das ferramentas */
+:root {
+  --content-max: 1400px;
+}
+
 
 @media (max-width: 767px) {
   .desktop-only { display: none !important; }

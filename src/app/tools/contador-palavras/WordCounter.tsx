@@ -6,6 +6,16 @@ import { computeStats, formatReadingTime, DEFAULT_WPM } from "../../lib/text-sta
 const SAMPLE =
   "Cole ou digite seu texto aqui. As estatísticas são calculadas em tempo real, direto no seu navegador — nada é enviado para servidores.";
 
+const LIMITS = [
+  { label: "Título SEO", max: 60 },
+  { label: "Meta description", max: 160 },
+  { label: "Tweet / X", max: 280 },
+  { label: "SMS", max: 160 },
+  { label: "Bio Instagram", max: 150 },
+];
+
+const SPEAKING_WPM = 130;
+
 interface StatCard {
   key: string;
   label: string;
@@ -19,6 +29,7 @@ export default function WordCounter() {
   const [copied, setCopied] = useState(false);
 
   const stats = useMemo(() => computeStats(text, wpm), [text, wpm]);
+  const speakingSeconds = useMemo(() => (stats.words / SPEAKING_WPM) * 60, [stats.words]);
 
   const cards: StatCard[] = [
     { key: "words", label: "Palavras", value: stats.words.toLocaleString("pt-BR"), primary: true },
@@ -26,7 +37,9 @@ export default function WordCounter() {
     { key: "charsNo", label: "Sem espaços", value: stats.charactersNoSpaces.toLocaleString("pt-BR") },
     { key: "sentences", label: "Frases", value: stats.sentences.toLocaleString("pt-BR") },
     { key: "paragraphs", label: "Parágrafos", value: stats.paragraphs.toLocaleString("pt-BR") },
-    { key: "reading", label: "Tempo de leitura", value: formatReadingTime(stats.readingSeconds) },
+    { key: "lines", label: "Linhas", value: stats.lines.toLocaleString("pt-BR") },
+    { key: "reading", label: "Leitura", value: formatReadingTime(stats.readingSeconds) },
+    { key: "speaking", label: `Fala (~${SPEAKING_WPM} ppm)`, value: formatReadingTime(speakingSeconds) },
   ];
 
   const copyReport = () => {
@@ -42,7 +55,7 @@ export default function WordCounter() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
+          gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))",
           gap: 12,
           marginBottom: 20,
         }}
@@ -54,21 +67,25 @@ export default function WordCounter() {
               background: c.primary ? "var(--accent)18" : "var(--surface)",
               border: `1px solid ${c.primary ? "var(--accent)" : "var(--border)"}`,
               borderRadius: 12,
-              padding: "16px 18px",
+              padding: "16px 14px",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
             }}
           >
             <div
               style={{
-                fontSize: c.primary ? 30 : 24,
+                fontSize: c.primary ? 28 : 20,
                 fontWeight: 700,
                 letterSpacing: "-0.02em",
                 fontFamily: "monospace",
                 color: c.primary ? "var(--accent)" : "var(--text)",
+                lineHeight: 1.2,
               }}
             >
               {c.value}
             </div>
-            <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 2 }}>{c.label}</div>
+            <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 4 }}>{c.label}</div>
           </div>
         ))}
       </div>
@@ -158,6 +175,33 @@ export default function WordCounter() {
               {wpm} ppm
             </span>
           </div>
+        </div>
+      </div>
+
+      {/* Limites comuns */}
+      <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 12, padding: 16 }}>
+        <div style={{ fontSize: 12, fontWeight: 600, color: "var(--text-subtle)", letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 12 }}>
+          Limites comuns
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          {LIMITS.map((l) => {
+            const used = stats.charactersWithSpaces;
+            const pct = Math.min(100, (used / l.max) * 100);
+            const over = used > l.max;
+            return (
+              <div key={l.label}>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, marginBottom: 4 }}>
+                  <span style={{ color: "var(--text-muted)" }}>{l.label}</span>
+                  <span style={{ fontFamily: "monospace", color: over ? "#ef4444" : "var(--text)" }}>
+                    {used}/{l.max}
+                  </span>
+                </div>
+                <div style={{ height: 6, background: "var(--surface-2)", borderRadius: 3, overflow: "hidden" }}>
+                  <div style={{ height: "100%", width: `${pct}%`, background: over ? "#ef4444" : "var(--accent)", transition: "width 0.1s" }} />
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>

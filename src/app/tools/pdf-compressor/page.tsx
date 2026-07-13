@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useRef, useCallback } from "react";
 import Link from "next/link";
@@ -126,11 +126,9 @@ export default function PdfCompressorPage() {
   };
 
   return (
-    <div style={{ maxWidth: 720, margin: "0 auto", padding: "40px 24px" }}>
+    <div>
       <div style={{ marginBottom: 32 }}>
-        <Link href="/" style={{ fontSize: 13, color: "var(--text-muted)", textDecoration: "none", marginBottom: 16, display: "inline-block" }}>
-          ← Ferramentas
-        </Link>
+        
         <h1 style={{ fontSize: 28, fontWeight: 700, letterSpacing: "-0.03em", marginBottom: 6 }}>
           🗜️ Compressão de PDF
         </h1>

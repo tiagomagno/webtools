@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
-import Sidebar from "./components/Sidebar";
+import AppShell from "./components/AppShell";
 import MobileLayout from "./components/MobileLayout";
 
 export const metadata: Metadata = {
@@ -18,28 +18,22 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR">
-      <body style={{ display: "flex", minHeight: "100vh" }}>
-        {/* Desktop sidebar */}
+      <body style={{ margin: 0, padding: 0 }}>
+        {/* Desktop: 3-col AppShell */}
         <div className="desktop-only">
-          <Sidebar />
+          <AppShell>{children}</AppShell>
         </div>
 
-        {/* Mobile header + bottom nav (shared modal state) */}
+        {/* Mobile: header + bottom nav */}
         <div className="mobile-only">
           <MobileLayout />
+          <main className="main-content" style={{ paddingTop: 52, paddingBottom: 80, padding: "52px 16px 80px" }}>
+            {children}
+          </main>
         </div>
-
-        {/* Content */}
-        <main className="main-content">
-          {children}
-        </main>
       </body>
     </html>
   );
