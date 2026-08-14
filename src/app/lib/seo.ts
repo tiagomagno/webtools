@@ -30,3 +30,31 @@ export function toolMetadata({ slug, title, description }: ToolMetaInput): Metad
     },
   };
 }
+
+interface CategoryMetaInput {
+  slug: string;
+  title: string;
+  description: string;
+}
+
+/** Gera o objeto Metadata padronizado para uma página de categoria. */
+export function categoryMetadata({ slug, title, description }: CategoryMetaInput): Metadata {
+  const path = `/categoria/${slug}`;
+  return {
+    title,
+    description,
+    alternates: { canonical: path },
+    openGraph: {
+      title,
+      description,
+      url: SITE_URL + path,
+      type: "website",
+      locale: "pt_BR",
+    },
+    twitter: {
+      card: "summary",
+      title,
+      description,
+    },
+  };
+}

@@ -4,29 +4,13 @@ import { useState, useEffect, useCallback } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import {
-  LayoutDashboard, Palette, Code, FileText, Database, Search,
-  Image, FilePlus2, Wrench, HardHat, Calculator, Flag, Wallet,
-  ChevronLeft, ChevronRight, Sun, Moon, Type, Home,
+  LayoutDashboard, Wrench,
+  PanelLeft, ChevronDown, Sun, Moon, Home,
 } from "lucide-react";
-import { TOOLS, HOME, CATEGORIES } from "../lib/tools";
+import { TOOLS, CATEGORIES, CATEGORY_META } from "../lib/tools";
+import FavoritesMenu from "./FavoritesMenu";
 
-// ── Category config ───────────────────────────────────────────────────────────
-
-const CAT_META: Record<string, { icon: React.ElementType; color: string }> = {
-  "Design":       { icon: Palette,       color: "#ec4899" },
-  "CSS":          { icon: Code,          color: "#6366f1" },
-  "Texto":        { icon: Type,          color: "#22c55e" },
-  "Dev":          { icon: Code,          color: "#eab308" },
-  "Dados":        { icon: Database,      color: "#14b8a6" },
-  "SEO":          { icon: Search,        color: "#0ea5e9" },
-  "Imagens":      { icon: Image,         color: "#f59e0b" },
-  "PDF":          { icon: FileText,      color: "#ef4444" },
-  "Utilidades":   { icon: Wrench,        color: "#a855f7" },
-  "Construção":   { icon: HardHat,       color: "#84cc16" },
-  "Calculadoras": { icon: Calculator,    color: "#f97316" },
-  "Utilidades BR":{ icon: Flag,          color: "#22c55e" },
-  "Finanças":     { icon: Wallet,        color: "#06b6d4" },
-};
+const CAT_META = CATEGORY_META;
 
 type Theme = "dark" | "light";
 type FontSize = "sm" | "md" | "lg";
@@ -53,10 +37,11 @@ function useLocalStorage<T>(key: string, defaultValue: T) {
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const [theme, setTheme] = useLocalStorage<Theme>("wt-theme", "dark");
+  const router = useRouter();
+  const [theme, setTheme] = useLocalStorage<Theme>("wt-theme", "light");
   const [fontSize, setFontSize] = useLocalStorage<FontSize>("wt-font", "md");
   const [collapsed, setCollapsed] = useLocalStorage<boolean>("wt-collapsed", false);
-  const [activeCat, setActiveCat] = useState<string | null>(null);
+  const [openCat, setOpenCat] = useState<string | null>(null);
 
   // Sync theme/font to <html>
   useEffect(() => {
@@ -64,15 +49,12 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     document.documentElement.setAttribute("data-font", fontSize);
   }, [theme, fontSize]);
 
-  // Detect active category from current route
+  // Auto-open the category of the current tool
   useEffect(() => {
-    if (pathname === "/") { setActiveCat(null); return; }
+    if (pathname === "/") return;
     const tool = TOOLS.find((t) => pathname.startsWith(t.href));
-    if (tool) setActiveCat(tool.category);
+    if (tool) setOpenCat(tool.category);
   }, [pathname]);
-
-  const innerTools = activeCat ? TOOLS.filter((t) => t.category === activeCat) : [];
-  const showInner = activeCat !== null;
 
   const toggleTheme = () => setTheme(theme === "dark" ? "light" : "dark");
   const cycleFont = () => {
@@ -80,26 +62,26 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     setFontSize(order[(order.indexOf(fontSize) + 1) % order.length]);
   };
 
-  // Group innerbar tools by subcategory
-  const subcats: (string | undefined)[] = [];
-  innerTools.forEach((t) => {
-    if (!subcats.includes(t.subcategory)) subcats.push(t.subcategory);
-  });
-
-  const catColor = activeCat ? CAT_META[activeCat]?.color ?? "var(--accent)" : "var(--accent)";
+  const handleCatClick = (cat: string) => {
+    if (collapsed) {
+      const firstTool = TOOLS.find((t) => t.category === cat);
+      if (firstTool) router.push(firstTool.href);
+      return;
+    }
+    setOpenCat(openCat === cat ? null : cat);
+  };
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh", background: "var(--bg)" }}>
+    <div style={{ display: "flex", width: "100%", minHeight: "100vh", background: "var(--bg)" }}>
 
-      {/* ── Col 1 — Icon Rail ──────────────────────────────────────────────── */}
+      {/* ── Sidebar ────────────────────────────────────────────────────────── */}
       <aside style={{
-        width: collapsed ? 56 : 72,
+        width: collapsed ? 64 : 252,
         minHeight: "100vh",
         background: "var(--surface)",
         borderRight: "1px solid var(--border)",
         display: "flex",
         flexDirection: "column",
-        alignItems: "center",
         flexShrink: 0,
         position: "sticky",
         top: 0,
@@ -107,203 +89,218 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         zIndex: 40,
         transition: "width 0.2s",
       }}>
-        {/* Logo */}
-        <Link href="/" onClick={() => setActiveCat(null)} style={{ textDecoration: "none", padding: "16px 0 12px", display: "flex", flexDirection: "column", alignItems: "center", gap: 4, borderBottom: "1px solid var(--border)", width: "100%" }}>
-          <div style={{ width: 32, height: 32, borderRadius: 8, background: "var(--accent)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <svg width="18" height="18" viewBox="0 0 28 28" fill="none">
-              <rect x="3" y="5" width="5" height="18" rx="1.5" fill="white" opacity="0.9" />
-              <rect x="10" y="5" width="15" height="8" rx="1.5" fill="white" opacity="0.7" />
-              <rect x="10" y="15" width="15" height="8" rx="1.5" fill="white" opacity="0.5" />
-            </svg>
-          </div>
-          {!collapsed && <span style={{ fontSize: 9, fontWeight: 700, color: "var(--text-muted)", letterSpacing: "0.08em", textTransform: "uppercase" }}>tools</span>}
-        </Link>
+        {/* Logo + toggle */}
+        <div style={{
+          display: "flex", alignItems: "center",
+          justifyContent: collapsed ? "center" : "space-between",
+          padding: collapsed ? "16px 0" : "16px 14px 16px 18px",
+          borderBottom: "1px solid var(--border)",
+        }}>
+          <Link
+            href="/"
+            onClick={() => { setOpenCat(null); if (collapsed) setCollapsed(false); }}
+            aria-label="webtools — início"
+            style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 10 }}
+          >
+            <div style={{ width: 30, height: 30, borderRadius: 8, background: "var(--accent)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <svg width="16" height="16" viewBox="0 0 28 28" fill="none">
+                <rect x="3" y="5" width="5" height="18" rx="1.5" fill="white" opacity="0.9" />
+                <rect x="10" y="5" width="15" height="8" rx="1.5" fill="white" opacity="0.7" />
+                <rect x="10" y="15" width="15" height="8" rx="1.5" fill="white" opacity="0.5" />
+              </svg>
+            </div>
+            {!collapsed && <span style={{ fontSize: 16, fontWeight: 700, color: "var(--text)", letterSpacing: "-0.02em" }}>webtools</span>}
+          </Link>
 
-        {/* Home */}
-        <div style={{ padding: "8px 0 4px", width: "100%", display: "flex", justifyContent: "center" }}>
-          <RailItem
+          {!collapsed && (
+            <button
+              type="button"
+              onClick={() => setCollapsed(true)}
+              title="Recolher menu"
+              aria-label="Recolher menu lateral"
+              className="sidebar-icon-btn"
+              style={{
+                width: 30, height: 30, borderRadius: 8, border: "1px solid transparent",
+                background: "transparent", color: "var(--text-muted)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                cursor: "pointer", flexShrink: 0,
+              }}
+            >
+              <PanelLeft size={15} />
+            </button>
+          )}
+        </div>
+
+        {/* Nav */}
+        <nav style={{ flex: 1, overflowY: "auto", overflowX: "hidden", padding: "10px 10px" }}>
+          <SidebarLink
             icon={Home}
             label="Início"
             active={pathname === "/"}
-            color="var(--text-muted)"
             collapsed={collapsed}
-            onClick={() => { setActiveCat(null); }}
             href="/"
+            onClick={() => setOpenCat(null)}
           />
-        </div>
 
-        <div style={{ height: 1, background: "var(--border)", width: "70%", marginBottom: 6 }} />
+          <div style={{ height: 1, background: "var(--border)", margin: "10px 6px" }} />
 
-        {/* Categories */}
-        <nav style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 2, padding: "4px 0", width: "100%", overflowY: "auto" }}>
+          {!collapsed && (
+            <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-subtle)", textTransform: "uppercase", letterSpacing: "0.06em", padding: "6px 10px 8px" }}>
+              Ferramentas
+            </div>
+          )}
+
           {CATEGORIES.map((cat) => {
             const meta = CAT_META[cat] ?? { icon: Wrench, color: "#888" };
             const Icon = meta.icon;
-            const isActive = activeCat === cat;
+            const isOpen = openCat === cat;
+            const catTools = TOOLS.filter((t) => t.category === cat);
+
+            const subcats: (string | undefined)[] = [];
+            catTools.forEach((t) => {
+              if (!subcats.includes(t.subcategory)) subcats.push(t.subcategory);
+            });
+
             return (
-              <RailItem
-                key={cat}
-                icon={Icon}
-                label={cat}
-                active={isActive}
-                color={meta.color}
-                collapsed={collapsed}
-                onClick={() => setActiveCat(isActive ? null : cat)}
-              />
+              <div key={cat} style={{ marginBottom: 1 }}>
+                <button
+                  type="button"
+                  onClick={() => handleCatClick(cat)}
+                  title={cat}
+                  aria-expanded={isOpen}
+                  className="sidebar-cat-btn"
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
+                    padding: collapsed ? "10px 0" : "9px 10px",
+                    justifyContent: collapsed ? "center" : "flex-start",
+                    borderRadius: 9,
+                    border: "none",
+                    background: isOpen ? meta.color + "14" : "transparent",
+                    color: isOpen ? meta.color : "var(--text-muted)",
+                    cursor: "pointer",
+                    font: "inherit",
+                    fontSize: 13,
+                    fontWeight: isOpen ? 700 : 500,
+                    transition: "background 0.12s, color 0.12s",
+                  }}
+                >
+                  <Icon size={16} strokeWidth={isOpen ? 2.2 : 1.8} style={{ flexShrink: 0 }} />
+                  {!collapsed && <span style={{ flex: 1, textAlign: "left", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{cat}</span>}
+                  {!collapsed && (
+                    <ChevronDown size={14} style={{ flexShrink: 0, transform: isOpen ? "rotate(180deg)" : "none", transition: "transform 0.15s", opacity: 0.7 }} />
+                  )}
+                </button>
+
+                {isOpen && !collapsed && (
+                  <div style={{ padding: "4px 0 8px 14px", borderLeft: "1px solid var(--border)", marginLeft: 18 }}>
+                    {subcats.map((sc) => {
+                      const tools = catTools.filter((t) => t.subcategory === sc);
+                      return (
+                        <div key={sc ?? "__none"}>
+                          {sc && (
+                            <div style={{ fontSize: 10, fontWeight: 700, color: "var(--text-subtle)", textTransform: "uppercase", letterSpacing: "0.06em", padding: "6px 8px 3px" }}>
+                              {sc}
+                            </div>
+                          )}
+                          {tools.map((tool) => {
+                            const isActive = pathname === tool.href;
+                            return (
+                              <Link key={tool.slug} href={tool.href} style={{ textDecoration: "none", display: "block" }}>
+                                <div
+                                  className="sidebar-tool-item"
+                                  style={{
+                                    display: "flex", alignItems: "center", gap: 8,
+                                    padding: "7px 8px", borderRadius: 8, marginBottom: 1,
+                                    background: isActive ? meta.color + "18" : "transparent",
+                                    color: isActive ? meta.color : "var(--text-muted)",
+                                    fontSize: 12.5, fontWeight: isActive ? 600 : 400,
+                                    whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+                                  }}
+                                >
+                                  <span style={{ fontSize: 14, flexShrink: 0 }}>{tool.emoji}</span>
+                                  <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{tool.label}</span>
+                                </div>
+                              </Link>
+                            );
+                          })}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             );
           })}
         </nav>
 
         {/* Bottom controls */}
-        <div style={{ borderTop: "1px solid var(--border)", width: "100%", padding: "10px 0", display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
-          {/* Theme */}
+        <div style={{
+          borderTop: "1px solid var(--border)", padding: "10px",
+          display: "flex", gap: 6,
+          flexDirection: collapsed ? "column" : "row",
+          alignItems: "center",
+        }}>
+          <FavoritesMenu placement="up-left" />
+
           <button onClick={toggleTheme} title={theme === "dark" ? "Tema claro" : "Tema escuro"}
-            style={{ width: 36, height: 36, borderRadius: 9, border: "1px solid var(--border)", background: "var(--surface-2)", color: "var(--text-muted)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", transition: "all 0.15s" }}>
+            aria-label={theme === "dark" ? "Ativar tema claro" : "Ativar tema escuro"}
+            aria-pressed={theme === "dark"}
+            style={{ width: 36, height: 36, borderRadius: 9, border: "1px solid var(--border)", background: "var(--surface-2)", color: "var(--text-muted)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0 }}>
             {theme === "dark" ? <Sun size={15} /> : <Moon size={15} />}
           </button>
 
-          {/* Font size */}
           <button onClick={cycleFont} title={`Fonte: ${fontSize}`}
-            style={{ width: 36, height: 36, borderRadius: 9, border: "1px solid var(--border)", background: "var(--surface-2)", color: "var(--text-muted)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", transition: "all 0.15s", fontSize: 11, fontWeight: 700, fontFamily: "monospace" }}>
+            aria-label={`Tamanho da fonte: ${fontSize}. Clique para alterar`}
+            style={{ width: 36, height: 36, borderRadius: 9, border: "1px solid var(--border)", background: "var(--surface-2)", color: "var(--text-muted)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0, fontSize: 11, fontWeight: 700, fontFamily: "monospace" }}>
             {fontSize === "sm" ? "A" : fontSize === "md" ? "A·" : "A+"}
-          </button>
-
-          {/* Collapse toggle */}
-          <button onClick={() => setCollapsed(!collapsed)} title={collapsed ? "Expandir" : "Recolher"}
-            style={{ width: 36, height: 36, borderRadius: 9, border: "1px solid var(--border)", background: "var(--surface-2)", color: "var(--text-muted)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", transition: "all 0.15s" }}>
-            {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
           </button>
         </div>
       </aside>
 
-      {/* ── Col 2 — Innerbar ───────────────────────────────────────────────── */}
-      <aside style={{
-        width: showInner ? 220 : 0,
-        minHeight: "100vh",
-        background: "var(--surface)",
-        borderRight: showInner ? "1px solid var(--border)" : "none",
-        flexShrink: 0,
-        position: "sticky",
-        top: 0,
-        height: "100vh",
-        overflowY: "auto",
-        overflowX: "hidden",
-        transition: "width 0.2s",
-        zIndex: 30,
-      }}>
-        {showInner && activeCat && (
-          <div style={{ width: 220 }}>
-            {/* Category header */}
-            <div style={{
-              padding: "14px 14px 10px",
-              borderBottom: "1px solid var(--border)",
-              display: "flex", alignItems: "center", gap: 8,
-            }}>
-              {(() => {
-                const meta = CAT_META[activeCat];
-                const Icon = meta?.icon ?? Wrench;
-                return <Icon size={14} style={{ color: catColor, flexShrink: 0 }} />;
-              })()}
-              <span style={{ fontSize: 11, fontWeight: 800, color: catColor, textTransform: "uppercase", letterSpacing: "0.08em", whiteSpace: "nowrap" }}>
-                {activeCat}
-              </span>
-            </div>
-
-            {/* Tools list grouped by subcategory */}
-            <nav style={{ padding: "8px 6px" }}>
-              {subcats.map((sc) => {
-                const tools = innerTools.filter((t) => t.subcategory === sc);
-                return (
-                  <div key={sc ?? "__none"}>
-                    {sc && (
-                      <div style={{ fontSize: 10, fontWeight: 700, color: "var(--text-subtle)", textTransform: "uppercase", letterSpacing: "0.08em", padding: "8px 8px 4px" }}>
-                        {sc}
-                      </div>
-                    )}
-                    {tools.map((tool) => {
-                      const isActive = pathname === tool.href;
-                      return (
-                        <Link key={tool.slug} href={tool.href} style={{ textDecoration: "none", display: "block" }}>
-                          <div style={{
-                            display: "flex", alignItems: "center", gap: 8,
-                            padding: "7px 8px", borderRadius: 8, marginBottom: 1,
-                            background: isActive ? catColor + "18" : "transparent",
-                            color: isActive ? catColor : "var(--text-muted)",
-                            fontSize: 12, fontWeight: isActive ? 600 : 400,
-                            transition: "all 0.1s", cursor: "pointer",
-                            whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
-                          }}
-                            className="inner-item"
-                          >
-                            <span style={{ fontSize: 14, flexShrink: 0 }}>{tool.emoji}</span>
-                            <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{tool.label}</span>
-                            {isActive && <div style={{ width: 4, height: 4, borderRadius: "50%", background: catColor, marginLeft: "auto", flexShrink: 0 }} />}
-                          </div>
-                        </Link>
-                      );
-                    })}
-                  </div>
-                );
-              })}
-            </nav>
-          </div>
-        )}
-      </aside>
-
-      {/* ── Col 3 — Content ────────────────────────────────────────────────── */}
+      {/* ── Content ────────────────────────────────────────────────────────── */}
       <main style={{ flex: 1, minWidth: 0, overflowY: "auto", minHeight: "100vh", padding: "32px 36px" }}>
         {children}
       </main>
 
       <style>{`
-        .inner-item:hover { background: var(--surface-2) !important; color: var(--text) !important; }
+        .sidebar-cat-btn:hover { background: var(--surface-2) !important; color: var(--text) !important; }
+        .sidebar-tool-item:hover { background: var(--surface-2) !important; color: var(--text) !important; }
+        .sidebar-icon-btn:hover { background: var(--surface-2) !important; border-color: var(--border) !important; color: var(--text) !important; }
       `}</style>
     </div>
   );
 }
 
-// ── RailItem ─────────────────────────────────────────────────────────────────
+// ── SidebarLink ──────────────────────────────────────────────────────────────
 
-function RailItem({
-  icon: Icon, label, active, color, collapsed, onClick, href,
+function SidebarLink({
+  icon: Icon, label, active, collapsed, href, onClick,
 }: {
   icon: React.ElementType;
   label: string;
   active: boolean;
-  color: string;
   collapsed: boolean;
+  href: string;
   onClick: () => void;
-  href?: string;
 }) {
-  const inner = (
-    <div
-      onClick={onClick}
-      title={label}
-      style={{
-        width: collapsed ? 40 : 48,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        gap: 4,
-        padding: "8px 4px",
-        borderRadius: 10,
-        cursor: "pointer",
-        transition: "all 0.15s",
-        background: active ? color + "1a" : "transparent",
-        border: `1px solid ${active ? color + "44" : "transparent"}`,
-      }}
-      className="rail-item"
-    >
-      <Icon size={18} strokeWidth={active ? 2.2 : 1.8} style={{ color: active ? color : "var(--text-muted)", transition: "color 0.15s" }} />
-      {!collapsed && (
-        <span style={{ fontSize: 9, fontWeight: active ? 700 : 500, color: active ? color : "var(--text-subtle)", letterSpacing: "0.04em", textAlign: "center", lineHeight: 1.2, maxWidth: 52, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-          {label}
-        </span>
-      )}
-    </div>
+  return (
+    <Link href={href} onClick={onClick} title={label} aria-label={label} aria-current={active ? "page" : undefined}
+      style={{ textDecoration: "none", display: "block" }}>
+      <div className="sidebar-cat-btn" style={{
+        display: "flex", alignItems: "center", gap: 10,
+        padding: collapsed ? "10px 0" : "9px 10px",
+        justifyContent: collapsed ? "center" : "flex-start",
+        borderRadius: 9,
+        background: active ? "#6366f114" : "transparent",
+        color: active ? "var(--accent)" : "var(--text-muted)",
+        fontSize: 13, fontWeight: active ? 700 : 500,
+      }}>
+        <Icon size={16} strokeWidth={active ? 2.2 : 1.8} style={{ flexShrink: 0 }} />
+        {!collapsed && <span>{label}</span>}
+      </div>
+    </Link>
   );
-
-  return href
-    ? <Link href={href} style={{ textDecoration: "none" }}>{inner}</Link>
-    : inner;
 }

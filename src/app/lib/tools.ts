@@ -96,6 +96,11 @@ import {
   Store,
   Users,
   Banknote,
+  FileCode2,
+  Mic,
+  HardHat,
+  Flag,
+  Wrench,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -145,6 +150,7 @@ export const TOOLS: Tool[] = [
   { slug: "texto-para-morse",    href: "/tools/texto-para-morse",    label: "Texto para Morse",       icon: Radio,         emoji: "📡", description: "Converta texto em código Morse e Morse em texto instantaneamente.",  category: "Texto", color: "#f97316" },
   { slug: "contador-vogais",     href: "/tools/contador-vogais",     label: "Frequência de Letras",   icon: BarChart2,     emoji: "🔤", description: "Analise a distribuição de vogais e consoantes no seu texto.",        category: "Texto", color: "#8b5cf6" },
   { slug: "gerador-anagrama",    href: "/tools/gerador-anagrama",    label: "Gerador de Anagramas",   icon: Shuffle,       emoji: "🔀", description: "Embaralhe letras de palavras ou frases para criar anagramas.",       category: "Texto", color: "#0ea5e9" },
+  { slug: "documento-para-markdown", href: "/tools/documento-para-markdown", label: "Documento para Markdown", icon: FileCode2, emoji: "📝", description: "Converta PDF, DOCX, XLS/XLSX e PPTX em Markdown, sem upload.", category: "Texto", color: "#f43f5e" },
 
   { slug: "pdf-extractor",   href: "/tools/pdf-extractor",   label: "Extrator de Docs",       icon: FileText,     emoji: "📄", description: "Extrai texto de PDF e DOCX por página, sem upload.",    category: "PDF",     color: "#ef4444" },
   { slug: "pdf-compressor",  href: "/tools/pdf-compressor",  label: "Compressão de PDF",      icon: FileArchive,  emoji: "🗜️", description: "Reduz o tamanho de PDFs em 3 níveis de qualidade.",     category: "PDF",     color: "#f97316" },
@@ -152,6 +158,8 @@ export const TOOLS: Tool[] = [
   { slug: "pdf-para-jpg",    href: "/tools/pdf-para-jpg",    label: "PDF para JPG",           icon: FileImage,    emoji: "🖼️", description: "Converta cada página do PDF em imagem JPG ou PNG.",     category: "PDF",     color: "#f59e0b" },
   { slug: "unir-pdf",        href: "/tools/unir-pdf",        label: "Unir PDF",               icon: Combine,      emoji: "🔗", description: "Junte vários PDFs em um só, na ordem que quiser.",      category: "PDF",     color: "#22c55e" },
   { slug: "dividir-pdf",     href: "/tools/dividir-pdf",     label: "Dividir PDF",            icon: Split,        emoji: "✂️", description: "Extraia intervalos ou separe cada página do PDF.",      category: "PDF",     color: "#ec4899" },
+
+  { slug: "transcricao-audio", href: "/tools/transcricao-audio", label: "Transcrição de Áudio", icon: Mic, emoji: "🎙️", description: "Grave ou envie um áudio e receba o texto transcrito, sem upload.", category: "Áudio", color: "#a855f7" },
 
   { slug: "json-formatter",  href: "/tools/json-formatter",  label: "Ferramenta JSON",        icon: Braces,       emoji: "🧩", description: "Formate, valide ou compare (Diff) código JSON em abas.",        category: "Dev", color: "#eab308" },
   { slug: "base64-encode",   href: "/tools/base64-encode",   label: "Ferramenta Base64",      icon: Binary,       emoji: "🔢", description: "Codifique e decodifique texto em Base64 (UTF-8).",          category: "Dev", color: "#6366f1" },
@@ -253,4 +261,28 @@ export const TOOLS: Tool[] = [
   { slug: "calculadora-ir-acoes",     href: "/tools/calculadora-ir-acoes",     label: "IR sobre Ações",           icon: Banknote,   emoji: "📊", description: "Calcule IR sobre ganho de capital em ações (15% ou 20%).",           category: "Finanças", color: "#a855f7" },
 ];
 
-export const CATEGORIES = ["Design", "CSS", "Texto", "Dev", "Dados", "SEO", "Imagens", "PDF", "Utilidades", "Construção", "Calculadoras", "Utilidades BR", "Finanças"];
+export const CATEGORIES = ["Design", "CSS", "Texto", "Dev", "Dados", "SEO", "Imagens", "PDF", "Áudio", "Utilidades", "Construção", "Calculadoras", "Utilidades BR", "Finanças"];
+
+export const CATEGORY_META: Record<string, { icon: LucideIcon; color: string }> = {
+  "Design":        { icon: Palette,    color: "#ec4899" },
+  "CSS":           { icon: Code,       color: "#6366f1" },
+  "Texto":         { icon: Type,       color: "#22c55e" },
+  "Dev":           { icon: Code,       color: "#eab308" },
+  "Dados":         { icon: Database,   color: "#14b8a6" },
+  "SEO":           { icon: Search,     color: "#0ea5e9" },
+  "Imagens":       { icon: Image,      color: "#f59e0b" },
+  "PDF":           { icon: FileText,   color: "#ef4444" },
+  "Áudio":         { icon: Mic,        color: "#f43f5e" },
+  "Utilidades":    { icon: Wrench,     color: "#a855f7" },
+  "Construção":    { icon: HardHat,    color: "#84cc16" },
+  "Calculadoras":  { icon: Calculator, color: "#f97316" },
+  "Utilidades BR": { icon: Flag,       color: "#22c55e" },
+  "Finanças":      { icon: Wallet,     color: "#06b6d4" },
+};
+
+export const categorySlug = (cat: string) =>
+  cat
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+    .replace(/\s+/g, "-");
