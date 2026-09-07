@@ -53,7 +53,7 @@ export async function renderPdfPages(
     canvas.height = Math.ceil(viewport.height);
     const ctx = canvas.getContext("2d");
     if (!ctx) throw new Error("Canvas indisponível.");
-    await page.render({ canvasContext: ctx, viewport }).promise;
+    await page.render({ canvasContext: ctx, viewport } as any).promise;
     pages.push({ index: i, canvas, width: canvas.width, height: canvas.height });
     onProgress?.(i, pdf.numPages);
   }
