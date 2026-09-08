@@ -33,11 +33,20 @@ function formatPhone(raw: string) {
 
 export default function PhoneFormatter() {
   const [input, setInput] = useState("");
+  const [message, setMessage] = useState("");
   const [copied, setCopied] = useState(false);
+  const [copiedLink, setCopiedLink] = useState(false);
 
   const { formatted, type } = formatPhone(input);
+  const digits = input.replace(/\D/g, "");
+  // wa.me exige o número com DDI — assume Brasil (55) para fixo (10) e celular (11 dígitos).
+  const canWhatsapp = (digits.length === 10 || digits.length === 11) && !digits.startsWith("0800");
+  const waLink = canWhatsapp
+    ? `https://wa.me/55${digits}${message.trim() ? `?text=${encodeURIComponent(message.trim())}` : ""}`
+    : "";
 
   function copy() { navigator.clipboard.writeText(formatted); setCopied(true); setTimeout(() => setCopied(false), 1500); }
+  function copyLink() { navigator.clipboard.writeText(waLink); setCopiedLink(true); setTimeout(() => setCopiedLink(false), 1500); }
 
   return (
     <div>
@@ -72,6 +81,42 @@ export default function PhoneFormatter() {
           <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 8, padding: "10px 14px" }}>
             <div style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 4 }}>FORMATADO</div>
             <div style={{ fontFamily: "monospace", fontSize: 14, color: "var(--accent)" }}>{formatted}</div>
+          </div>
+        </div>
+      )}
+
+      {canWhatsapp && (
+        <div style={{ marginTop: 20, background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 12, padding: 18 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+            <span style={{ fontSize: 18 }}>💬</span>
+            <span style={{ fontSize: 13, fontWeight: 700, color: "var(--text)" }}>Link do WhatsApp</span>
+          </div>
+
+          <label style={{ fontSize: 11, fontWeight: 600, color: "var(--text-muted)", marginBottom: 6, display: "block" }}>MENSAGEM (OPCIONAL)</label>
+          <textarea
+            value={message}
+            onChange={e => setMessage(e.target.value)}
+            placeholder="Olá! Gostaria de falar sobre..."
+            rows={2}
+            style={{ width: "100%", background: "var(--surface-2)", border: "1px solid var(--border)", borderRadius: 8, padding: "10px 12px", color: "var(--text)", fontSize: 13, resize: "vertical", marginBottom: 12, boxSizing: "border-box" }}
+          />
+
+          <div style={{ background: "var(--surface-2)", border: "1px solid var(--border)", borderRadius: 8, padding: "10px 12px", fontFamily: "monospace", fontSize: 13, color: "var(--text)", wordBreak: "break-all", marginBottom: 12 }}>
+            {waLink}
+          </div>
+
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            <a
+              href={waLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ flex: "1 1 160px", textAlign: "center", padding: "10px 16px", background: "#22c55e", color: "#fff", borderRadius: 8, fontSize: 13, fontWeight: 600, textDecoration: "none" }}
+            >
+              Abrir no WhatsApp
+            </a>
+            <button onClick={copyLink} style={{ flex: "1 1 160px", padding: "10px 16px", background: "var(--surface-2)", border: "1px solid var(--border)", color: "var(--text)", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+              {copiedLink ? "✓ Link copiado" : "Copiar link"}
+            </button>
           </div>
         </div>
       )}

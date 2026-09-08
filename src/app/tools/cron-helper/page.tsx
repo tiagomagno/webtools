@@ -25,7 +25,7 @@ export default function Page() {
         { q: 'O que significa * (asterisco) em cron?', a: 'O asterisco significa "qualquer valor". Por exemplo, * no campo de hora significa "toda hora".' },
         { q: 'Posso usar cron para rodar algo todo dia?', a: 'Sim. A expressão "0 9 * * *" roda todos os dias às 9:00.' },
       ]}
-      related={['unix-timestamp', 'calculadora-horas', 'calculadora-datas']}
+      related={['unix-timestamp', 'calculadoras']}
     >
       <CronHelper />
     </ToolPage>

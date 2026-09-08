@@ -25,7 +25,7 @@ export default function Page() {
         { q: 'Luhn válido significa cartão ativo?', a: 'Não. A verificação Luhn apenas confirma que o número não tem erro de digitação. Não conecta com nenhum banco ou sistema de pagamento.' },
         { q: 'Como funciona o algoritmo?', a: 'O algoritmo dobra dígitos alternados da direita para a esquerda. Se a soma total for divisível por 10, o número é válido.' },
       ]}
-      related={['gerador-cartao', 'validador-cpf', 'validador-cnpj']}
+      related={['gerador-cartao', 'cpf-cnpj']}
     >
       <LuhnValidator />
     </ToolPage>

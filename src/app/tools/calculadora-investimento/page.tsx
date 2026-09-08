@@ -28,7 +28,7 @@ export default function Page() {
       schemaDescription={DESCRIPTION}
       content={{ heading: "Como comparar investimentos de renda fixa", body: <p>Informe o valor, o prazo e o CDI atual. Configure o percentual de cada produto (ex: CDB a 110% do CDI, LCI a 95% do CDI). O comparador calcula o rendimento líquido de IR e aponta a melhor opção para o seu perfil.</p> }}
       faq={FAQ}
-      related={["juros-compostos", "simulador-financiamento", "salario"]}
+      related={["calculadoras", "simulador-financiamento", "salario"]}
       ctaText="Precisa de mais ferramentas financeiras?"
     >
       <InvestmentCalculator />

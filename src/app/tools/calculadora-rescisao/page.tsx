@@ -27,7 +27,7 @@ export default function Page() {
       schemaDescription={DESCRIPTION}
       content={{ heading: "Verbas rescisórias no Brasil", body: <p>Na demissão sem justa causa, o trabalhador tem direito a: saldo de salário, aviso prévio indenizado, férias proporcionais + 1/3, 13° proporcional, liberação do FGTS e multa de 40%. O pedido de demissão exclui aviso indenizado e multa FGTS.</p> }}
       faq={FAQ}
-      related={["calculadora-salario", "simulador-financiamento", "calculadora-porcentagem"]}
+      related={["calculadora-salario", "simulador-financiamento", "calculadoras"]}
       ctaText="Precisa de mais ferramentas financeiras?"
     >
       <RescisaoCalculator />

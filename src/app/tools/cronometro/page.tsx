@@ -25,7 +25,7 @@ export default function Page() {
         { q: 'Posso usar como timer regressivo?', a: 'Sim. Selecione a aba Timer, configure o tempo e clique em Iniciar.' },
         { q: 'As voltas (laps) são salvas?', a: 'As voltas ficam visíveis enquanto você mantiver a página aberta, mas não são salvas permanentemente.' },
       ]}
-      related={['calculadora-horas', 'unix-timestamp', 'calculadora-datas']}
+      related={['calculadoras', 'unix-timestamp']}
     >
       <Cronometro />
     </ToolPage>

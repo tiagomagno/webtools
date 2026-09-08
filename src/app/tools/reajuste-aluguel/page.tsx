@@ -27,7 +27,7 @@ export default function Page() {
       schemaDescription={DESCRIPTION}
       content={{ heading: "Como funciona o reajuste de aluguel", body: <p>A maioria dos contratos prevê reajuste anual baseado em um índice de inflação. Insira o valor atual, o índice aplicado e o prazo para ver o novo valor e o impacto acumulado no orçamento.</p> }}
       faq={FAQ}
-      related={["calculadora-investimento", "simulador-financiamento", "calculadora-porcentagem"]}
+      related={["calculadora-investimento", "simulador-financiamento", "calculadoras"]}
       ctaText="Precisa de mais ferramentas financeiras?"
     >
       <RentAdjustment />

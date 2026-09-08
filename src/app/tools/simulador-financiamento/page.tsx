@@ -28,7 +28,7 @@ export default function Page() {
       schemaDescription={DESCRIPTION}
       content={{ heading: "Como usar o simulador", body: <p>Informe o valor financiado, a taxa de juros anual e o prazo em meses. Escolha entre SAC (parcelas decrescentes) ou PRICE (parcelas fixas). O simulador exibe o resumo e a tabela completa de amortização mês a mês.</p> }}
       faq={FAQ}
-      related={["calculadora-investimento", "salario", "juros-compostos"]}
+      related={["calculadora-investimento", "salario", "calculadoras"]}
       ctaText="Precisa de mais ferramentas financeiras?"
     >
       <LoanSimulator />

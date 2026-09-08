@@ -25,7 +25,7 @@ export default function Page() {
         { q: 'Para que serve?', a: 'Para testar formulários de pagamento em ambientes de desenvolvimento e sandbox, sem usar dados reais.' },
         { q: 'O que é o algoritmo Luhn?', a: 'É um algoritmo de verificação de dígitos usado para validar números de cartão de crédito. Todo número de cartão válido passa nesta verificação.' },
       ]}
-      related={['validador-luhn', 'gerador-cpf', 'gerador-cnpj']}
+      related={['validador-luhn', 'cpf-cnpj']}
     >
       <CardGenerator />
     </ToolPage>
