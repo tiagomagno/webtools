@@ -1,0 +1,37 @@
+{
+  "name": "webtools-electron",
+  "version": "0.1.0",
+  "private": true,
+  "main": "dist/main.js",
+  "scripts": {
+    "build:web": "npm --prefix ../ run build:electron",
+    "build": "tsc -p tsconfig.json",
+    "dev": "npm run build && electron .",
+    "dist": "npm run build:web && npm run build && electron-builder"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8",
+    "typescript": "^5"
+  },
+  "build": {
+    "appId": "br.com.tiagosmagno.webtools",
+    "productName": "Webtools",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*"
+    ],
+    "extraResources": [
+      { "from": "../out", "to": "web" }
+    ],
+    "protocols": [
+      { "name": "Webtools Auth Callback", "schemes": ["webtools"] }
+    ],
+    "win": {
+      "target": "nsis"
+    }
+  }
+}
