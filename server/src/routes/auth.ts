@@ -2,7 +2,7 @@ import { randomBytes } from "node:crypto";
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
 import { prisma } from "../db.js";
-import { env } from "../env.js";
+import { env, isGoogleOAuthConfigured } from "../env.js";
 import { buildGoogleAuthUrl, decodeState, encodeState, exchangeCodeForProfile } from "../lib/google.js";
 import { hashPassword, verifyPassword } from "../lib/password.js";
 import {
@@ -96,6 +96,9 @@ export async function authRoutes(app: FastifyInstance) {
   });
 
   app.get("/auth/google/start", async (request, reply) => {
+    if (!isGoogleOAuthConfigured) {
+      return reply.code(503).send({ error: "Login com Google ainda não está configurado" });
+    }
     const query = z.object({ client: z.enum(["web", "electron"]).default("web") }).parse(request.query);
     const nonce = randomBytes(16).toString("hex");
     const state = encodeState(query.client, nonce);
@@ -103,6 +106,9 @@ export async function authRoutes(app: FastifyInstance) {
   });
 
   app.get("/auth/google/callback", async (request, reply) => {
+    if (!isGoogleOAuthConfigured) {
+      return reply.code(503).send({ error: "Login com Google ainda não está configurado" });
+    }
     const query = z.object({ code: z.string(), state: z.string() }).parse(request.query);
     const { client } = decodeState(query.state);
     const profile = await exchangeCodeForProfile(query.code);

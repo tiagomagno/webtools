@@ -8,6 +8,20 @@ const GOOGLE_ISSUER = "https://accounts.google.com";
 
 const googleJwks = createRemoteJWKSet(new URL(GOOGLE_JWKS_URL));
 
+// As rotas checam `isGoogleOAuthConfigured` antes de chamar qualquer função
+// daqui; isto só existe pra satisfazer o TS (os três campos são opcionais no
+// env) e como defesa extra caso alguém esqueça o guard.
+function requireGoogleEnv() {
+  if (!env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_SECRET || !env.GOOGLE_REDIRECT_URI) {
+    throw new Error("Login com Google não está configurado (faltam variáveis de ambiente)");
+  }
+  return {
+    clientId: env.GOOGLE_CLIENT_ID,
+    clientSecret: env.GOOGLE_CLIENT_SECRET,
+    redirectUri: env.GOOGLE_REDIRECT_URI,
+  };
+}
+
 export type OAuthClientKind = "web" | "electron";
 
 // `state` carrega o tipo de cliente (web/electron) + um nonce anti-CSRF,
@@ -25,9 +39,10 @@ export function decodeState(state: string): { client: OAuthClientKind; nonce: st
 }
 
 export function buildGoogleAuthUrl(state: string): string {
+  const { clientId, redirectUri } = requireGoogleEnv();
   const url = new URL(GOOGLE_AUTH_URL);
-  url.searchParams.set("client_id", env.GOOGLE_CLIENT_ID);
-  url.searchParams.set("redirect_uri", env.GOOGLE_REDIRECT_URI);
+  url.searchParams.set("client_id", clientId);
+  url.searchParams.set("redirect_uri", redirectUri);
   url.searchParams.set("response_type", "code");
   url.searchParams.set("scope", "openid email profile");
   url.searchParams.set("state", state);
@@ -44,14 +59,15 @@ interface GoogleProfile {
 }
 
 export async function exchangeCodeForProfile(code: string): Promise<GoogleProfile> {
+  const { clientId, clientSecret, redirectUri } = requireGoogleEnv();
   const tokenRes = await fetch(GOOGLE_TOKEN_URL, {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: new URLSearchParams({
       code,
-      client_id: env.GOOGLE_CLIENT_ID,
-      client_secret: env.GOOGLE_CLIENT_SECRET,
-      redirect_uri: env.GOOGLE_REDIRECT_URI,
+      client_id: clientId,
+      client_secret: clientSecret,
+      redirect_uri: redirectUri,
       grant_type: "authorization_code",
     }),
   });
@@ -67,7 +83,7 @@ export async function exchangeCodeForProfile(code: string): Promise<GoogleProfil
 
   const { payload } = await jwtVerify(idToken, googleJwks, {
     issuer: GOOGLE_ISSUER,
-    audience: env.GOOGLE_CLIENT_ID,
+    audience: clientId,
   });
 
   if (typeof payload.sub !== "string" || typeof payload.email !== "string") {
