@@ -16,3 +16,6 @@ yarn-error.log*
 .vercel
 *.tsbuildinfo
 next-env.d.ts
+
+# Docs de planejamento — mantidas localmente, fora do controle de versão
+/project-management/
