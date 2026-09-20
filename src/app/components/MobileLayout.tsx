@@ -2,18 +2,16 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, LogOut } from "lucide-react";
+import { LayoutDashboard } from "lucide-react";
 import { useState } from "react";
 import { usePinnedTools } from "../hooks/usePinnedTools";
 import { TOOLS } from "../lib/tools";
-import { useAuth } from "../lib/auth/AuthProvider";
-import FavoritesMenu from "./FavoritesMenu";
+import MobileUserMenu from "./MobileUserMenu";
 import FavoritesConfigModal from "./FavoritesConfigModal";
 
 export default function MobileLayout() {
   const pathname = usePathname();
   const { pinned, mounted, MAX_PINS } = usePinnedTools();
-  const { user, logout } = useAuth();
   const [configuring, setConfiguring] = useState(false);
 
   if (!mounted) return null;
@@ -38,7 +36,7 @@ export default function MobileLayout() {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          padding: "0 16px",
+          padding: "0 24px",
         }}
       >
         <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 8 }}>
@@ -52,15 +50,7 @@ export default function MobileLayout() {
             webtools
           </span>
         </Link>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <FavoritesMenu />
-          {user && (
-            <button onClick={() => void logout()} aria-label={`Sair da conta ${user.email}`}
-              style={{ width: 32, height: 32, borderRadius: 8, border: "1px solid var(--border)", background: "var(--surface-2)", color: "var(--text-muted)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <LogOut size={14} />
-            </button>
-          )}
-        </div>
+        <MobileUserMenu />
       </header>
 
       {/* Bottom Nav — 5 slots: Home + 4 pinned */}

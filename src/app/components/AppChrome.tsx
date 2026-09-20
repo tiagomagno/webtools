@@ -29,7 +29,7 @@ export default function AppChrome({ children }: { children: React.ReactNode }) {
       {/* Mobile: header + bottom nav */}
       <div className="mobile-only">
         <MobileLayout />
-        <main className="main-content" style={{ paddingTop: 52, paddingBottom: 80, padding: "52px 16px 80px" }}>
+        <main className="main-content" style={{ padding: "52px 24px 80px" }}>
           <AuthGate>{children}</AuthGate>
         </main>
       </div>
