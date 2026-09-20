@@ -2,8 +2,10 @@ import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import "./globals.css";
 import AppShell from "./components/AppShell";
+import AuthGate from "./components/AuthGate";
 import MobileLayout from "./components/MobileLayout";
 import RecentTracker from "./components/RecentTracker";
+import { AuthProvider } from "./lib/auth/AuthProvider";
 
 const THEME_INIT_SCRIPT = `
 (function () {
@@ -42,20 +44,24 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </Script>
       </head>
       <body style={{ margin: 0, padding: 0 }}>
-        <RecentTracker />
+        <AuthProvider>
+          <RecentTracker />
 
-        {/* Desktop: 3-col AppShell */}
-        <div className="desktop-only">
-          <AppShell>{children}</AppShell>
-        </div>
+          {/* Desktop: 3-col AppShell */}
+          <div className="desktop-only">
+            <AppShell>
+              <AuthGate>{children}</AuthGate>
+            </AppShell>
+          </div>
 
-        {/* Mobile: header + bottom nav */}
-        <div className="mobile-only">
-          <MobileLayout />
-          <main className="main-content" style={{ paddingTop: 52, paddingBottom: 80, padding: "52px 16px 80px" }}>
-            {children}
-          </main>
-        </div>
+          {/* Mobile: header + bottom nav */}
+          <div className="mobile-only">
+            <MobileLayout />
+            <main className="main-content" style={{ paddingTop: 52, paddingBottom: 80, padding: "52px 16px 80px" }}>
+              <AuthGate>{children}</AuthGate>
+            </main>
+          </div>
+        </AuthProvider>
       </body>
     </html>
   );

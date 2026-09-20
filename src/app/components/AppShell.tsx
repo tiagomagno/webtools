@@ -5,9 +5,10 @@ import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   LayoutDashboard, Wrench,
-  PanelLeft, ChevronDown, Sun, Moon, Home,
+  PanelLeft, ChevronDown, Sun, Moon, Home, LogOut,
 } from "lucide-react";
 import { TOOLS, CATEGORIES, CATEGORY_META } from "../lib/tools";
+import { useAuth } from "../lib/auth/AuthProvider";
 import FavoritesMenu from "./FavoritesMenu";
 
 const CAT_META = CATEGORY_META;
@@ -38,6 +39,7 @@ function useLocalStorage<T>(key: string, defaultValue: T) {
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
+  const { user, logout } = useAuth();
   const [theme, setTheme] = useLocalStorage<Theme>("wt-theme", "light");
   const [fontSize, setFontSize] = useLocalStorage<FontSize>("wt-font", "md");
   const [collapsed, setCollapsed] = useLocalStorage<boolean>("wt-collapsed", false);
@@ -257,6 +259,15 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             style={{ width: 36, height: 36, borderRadius: 9, border: "1px solid var(--border)", background: "var(--surface-2)", color: "var(--text-muted)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0, fontSize: 11, fontWeight: 700, fontFamily: "monospace" }}>
             {fontSize === "sm" ? "A" : fontSize === "md" ? "A·" : "A+"}
           </button>
+
+          {user && (
+            <button onClick={() => void logout()} title={`Sair (${user.email})`}
+              aria-label={`Sair da conta ${user.email}`}
+              className="sidebar-icon-btn"
+              style={{ width: 36, height: 36, borderRadius: 9, border: "1px solid var(--border)", background: "var(--surface-2)", color: "var(--text-muted)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0 }}>
+              <LogOut size={15} />
+            </button>
+          )}
         </div>
       </aside>
 
