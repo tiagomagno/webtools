@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "../lib/auth/AuthProvider";
 
 const inputStyle: React.CSSProperties = {
@@ -27,7 +27,7 @@ const buttonStyle: React.CSSProperties = {
 };
 
 export default function LoginPage() {
-  const { login, register, loginWithGoogle } = useAuth();
+  const { status, login, register, loginWithGoogle } = useAuth();
   const router = useRouter();
   const [mode, setMode] = useState<"login" | "register">("login");
   const [email, setEmail] = useState("");
@@ -35,6 +35,14 @@ export default function LoginPage() {
   const [name, setName] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  // Sessão já válida (ex: voltou pro /login pelo histórico do navegador) —
+  // não faz sentido mostrar o formulário de novo.
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.replace("/");
+    }
+  }, [status, router]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -55,7 +63,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "80vh", padding: 16 }}>
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh", padding: 16, background: "var(--bg)" }}>
       <div style={{ width: "100%", maxWidth: 360, background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 16, padding: 32 }}>
         <h1 style={{ fontSize: 20, fontWeight: 700, marginBottom: 4, color: "var(--text)" }}>
           {mode === "login" ? "Entrar" : "Criar conta"}

@@ -1,9 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import "./globals.css";
-import AppShell from "./components/AppShell";
-import AuthGate from "./components/AuthGate";
-import MobileLayout from "./components/MobileLayout";
+import AppChrome from "./components/AppChrome";
 import RecentTracker from "./components/RecentTracker";
 import { AuthProvider } from "./lib/auth/AuthProvider";
 
@@ -46,21 +44,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body style={{ margin: 0, padding: 0 }}>
         <AuthProvider>
           <RecentTracker />
-
-          {/* Desktop: 3-col AppShell */}
-          <div className="desktop-only">
-            <AppShell>
-              <AuthGate>{children}</AuthGate>
-            </AppShell>
-          </div>
-
-          {/* Mobile: header + bottom nav */}
-          <div className="mobile-only">
-            <MobileLayout />
-            <main className="main-content" style={{ paddingTop: 52, paddingBottom: 80, padding: "52px 16px 80px" }}>
-              <AuthGate>{children}</AuthGate>
-            </main>
-          </div>
+          <AppChrome>{children}</AppChrome>
         </AuthProvider>
       </body>
     </html>

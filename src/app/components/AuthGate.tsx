@@ -1,26 +1,20 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useAuth } from "../lib/auth/AuthProvider";
 
-// Login é obrigatório em todo o app — só estas rotas ficam de fora do gate,
-// senão ninguém consegue nem chegar na tela de login.
-const PUBLIC_PATHS = ["/login", "/auth/callback"];
-
+// Protege qualquer rota que não seja /login ou /auth/callback (essas já
+// ficam fora da casca do app, ver AppChrome — nunca chegam aqui dentro).
 export default function AuthGate({ children }: { children: React.ReactNode }) {
   const { status } = useAuth();
-  const pathname = usePathname();
   const router = useRouter();
-  const isPublicPath = PUBLIC_PATHS.includes(pathname);
 
   useEffect(() => {
-    if (status === "unauthenticated" && !isPublicPath) {
+    if (status === "unauthenticated") {
       router.replace("/login");
     }
-  }, [status, isPublicPath, router]);
-
-  if (isPublicPath) return <>{children}</>;
+  }, [status, router]);
 
   if (status !== "authenticated") {
     // "loading" (ainda checando sessão) ou "unauthenticated" (prestes a

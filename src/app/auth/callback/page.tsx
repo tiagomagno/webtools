@@ -24,7 +24,7 @@ export default function AuthCallbackPage() {
   }, []);
 
   return (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "80vh", color: "var(--text-muted)" }}>
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh", color: "var(--text-muted)", background: "var(--bg)" }}>
       Concluindo login…
     </div>
   );
