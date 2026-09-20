@@ -9,6 +9,8 @@ export interface AuthUser {
   email: string;
   name: string | null;
   avatarUrl: string | null;
+  hasPassword: boolean;
+  providers: string[];
 }
 
 type AuthStatus = "loading" | "authenticated" | "unauthenticated";
@@ -22,6 +24,8 @@ interface AuthContextValue {
   logout(): Promise<void>;
   authorizedFetch(path: string, init?: RequestInit): Promise<Response>;
   completeOAuthCallback(fragment: string): Promise<void>;
+  refreshUser(): Promise<void>;
+  setPassword(newPassword: string, currentPassword?: string): Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -196,6 +200,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setStatus("unauthenticated");
   }
 
+  async function refreshUser() {
+    const me = await loadUser();
+    if (me) setUser(me);
+  }
+
+  async function setPassword(newPassword: string, currentPassword?: string) {
+    const res = await authorizedFetch("/me/password", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ newPassword, currentPassword }),
+    });
+    if (!res.ok) throw new Error(await parseErrorMessage(res));
+    await refreshUser();
+  }
+
   const value: AuthContextValue = {
     status,
     user,
@@ -205,6 +224,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     logout,
     authorizedFetch,
     completeOAuthCallback,
+    refreshUser,
+    setPassword,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
