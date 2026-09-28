@@ -44,7 +44,7 @@ export default function ContaPage() {
 
   if (!user) return null;
 
-  const isGoogleLinked = user.providers.includes("google");
+  const isGoogleLinked = (user.providers ?? []).includes("google");
 
   async function handlePasswordSubmit(e: React.FormEvent) {
     e.preventDefault();

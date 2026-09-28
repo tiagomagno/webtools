@@ -42,7 +42,7 @@ export default function ContentHeader({ theme, fontSize, onToggleTheme, onCycleF
 
   if (!user || !mounted) return null;
 
-  const statusLabel = user.providers.includes("google") ? "Conectado ao Google" : "Senha local";
+  const statusLabel = (user.providers ?? []).includes("google") ? "Conectado ao Google" : "Senha local";
   const pinnedTools = TOOLS.filter((t) => pinned.includes(t.slug));
   const close = () => setOpen(false);
 
