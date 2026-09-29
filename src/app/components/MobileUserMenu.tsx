@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { LogOut, Settings } from "lucide-react";
+import { LogOut, Settings, Users } from "lucide-react";
 import { usePinnedTools } from "../hooks/usePinnedTools";
 import { TOOLS } from "../lib/tools";
 import { useAuth } from "../lib/auth/AuthProvider";
@@ -83,6 +83,13 @@ export default function MobileUserMenu() {
                 <div style={{ fontSize: 11.5, color: "var(--text-muted)" }}>Minha conta</div>
               </div>
             </Link>
+
+            {user.role === "ADMIN" && (
+              <Link href="/admin" onClick={close} style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 10, padding: 8, borderRadius: 8, marginBottom: 6 }} className="mobile-user-menu-row">
+                <Users size={15} style={{ color: "var(--text-muted)" }} />
+                <span style={{ fontSize: 13, fontWeight: 600, color: "var(--text)" }}>Usuários</span>
+              </Link>
+            )}
 
             <div style={{ height: 1, background: "var(--border)", margin: "6px 4px" }} />
 

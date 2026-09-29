@@ -18,6 +18,7 @@ export async function meRoutes(app: FastifyInstance) {
         email: true,
         name: true,
         avatarUrl: true,
+        role: true,
         createdAt: true,
         passwordHash: true,
         oauthAccounts: { select: { provider: true } },

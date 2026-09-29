@@ -11,6 +11,7 @@ export interface AuthUser {
   avatarUrl: string | null;
   hasPassword: boolean;
   providers: string[];
+  role: "USER" | "ADMIN";
 }
 
 type AuthStatus = "loading" | "authenticated" | "unauthenticated";

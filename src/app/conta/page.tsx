@@ -4,6 +4,7 @@ import { useState } from "react";
 import { LogOut } from "lucide-react";
 import { useAuth } from "../lib/auth/AuthProvider";
 import { initials } from "../lib/initials";
+import Breadcrumbs from "../components/Breadcrumbs";
 
 const inputStyle: React.CSSProperties = {
   width: "100%",
@@ -76,6 +77,7 @@ export default function ContaPage() {
 
   return (
     <div style={{ maxWidth: 560, margin: "0 auto", display: "flex", flexDirection: "column", gap: 20 }}>
+      <Breadcrumbs items={[{ label: "Início", href: "/" }, { label: "Minha conta" }]} />
       <h1 style={{ fontSize: 22, fontWeight: 700, color: "var(--text)", margin: 0 }}>Minha conta</h1>
 
       {/* Perfil */}

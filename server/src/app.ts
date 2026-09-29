@@ -1,6 +1,7 @@
 import cors from "@fastify/cors";
 import Fastify from "fastify";
 import { env } from "./env.js";
+import { adminRoutes } from "./routes/admin.js";
 import { authRoutes } from "./routes/auth.js";
 import { historyRoutes } from "./routes/history.js";
 import { meRoutes } from "./routes/me.js";
@@ -27,6 +28,7 @@ export function buildApp() {
   app.register(authRoutes);
   app.register(meRoutes);
   app.register(historyRoutes);
+  app.register(adminRoutes);
 
   return app;
 }
