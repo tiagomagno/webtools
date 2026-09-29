@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback } from "react";
 import Link from "next/link";
+import Breadcrumbs from "../../components/Breadcrumbs";
 
 type Format = "image/png" | "image/jpeg" | "image/webp" | "image/bmp";
 
@@ -99,8 +100,9 @@ export default function ImageConverterPage() {
 
   return (
     <div>
+      <Breadcrumbs items={[{ label: "Início", href: "/" }, { label: "Design", href: "/categoria/design" }, { label: "Conversor de Imagens" }]} />
       <div style={{ marginBottom: 32 }}>
-        
+
         <h1 style={{ fontSize: 28, fontWeight: 700, letterSpacing: "-0.03em", marginBottom: 6 }}>
           🖼️ Conversor de Imagens
         </h1>

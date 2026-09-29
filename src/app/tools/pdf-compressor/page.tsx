@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback } from "react";
 import Link from "next/link";
+import Breadcrumbs from "../../components/Breadcrumbs";
 
 interface Preset {
   label: string;
@@ -127,8 +128,9 @@ export default function PdfCompressorPage() {
 
   return (
     <div>
+      <Breadcrumbs items={[{ label: "Início", href: "/" }, { label: "Utilidades", href: "/categoria/utilidades" }, { label: "Compressão de PDF" }]} />
       <div style={{ marginBottom: 32 }}>
-        
+
         <h1 style={{ fontSize: 28, fontWeight: 700, letterSpacing: "-0.03em", marginBottom: 6 }}>
           🗜️ Compressão de PDF
         </h1>

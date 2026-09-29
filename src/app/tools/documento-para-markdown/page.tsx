@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback } from "react";
 import { convertToMarkdown, detectDocFormat, isLowTextDensity, isUnsupportedLegacyFormat, type DocFormat } from "@/app/lib/markdown-tools";
+import Breadcrumbs from "@/app/components/Breadcrumbs";
 
 function fmtSize(bytes: number) {
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
@@ -101,6 +102,7 @@ export default function DocumentoParaMarkdownPage() {
 
   return (
     <div>
+      <Breadcrumbs items={[{ label: "Início", href: "/" }, { label: "Utilidades", href: "/categoria/utilidades" }, { label: "Documento para Markdown" }]} />
       <div style={{ marginBottom: 32 }}>
         <h1 style={{ fontSize: 28, fontWeight: 700, letterSpacing: "-0.03em", marginBottom: 6 }}>
           📝 Documento para Markdown

@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import ColorGenerator from "./ColorGenerator";
+import Breadcrumbs from "../../components/Breadcrumbs";
 
 // ─── Utilitários ──────────────────────────────────────────────────────────────
 
@@ -515,6 +516,7 @@ export default function ColorPalettePage() {
 
   return (
     <div>
+      <Breadcrumbs items={[{ label: "Início", href: "/" }, { label: "Design", href: "/categoria/design" }, { label: "Paleta de Cores" }]} />
       {/* Header */}
       <div style={{ marginBottom: 24 }}>
         <h1 style={{ fontSize: 28, fontWeight: 700, letterSpacing: "-0.03em", marginBottom: 6 }}>

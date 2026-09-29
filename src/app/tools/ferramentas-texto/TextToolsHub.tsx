@@ -15,6 +15,7 @@ import NumberToWords from "../numero-por-extenso/NumberToWords";
 import CaesarCipher from "../cifra-cesar/CaesarCipher";
 import MorseTool from "../texto-para-morse/MorseTool";
 import LetterFrequency from "../contador-vogais/LetterFrequency";
+import Breadcrumbs from "../../components/Breadcrumbs";
 
 const TABS = [
   // Análise
@@ -55,6 +56,7 @@ export default function TextToolsHub() {
 
   return (
     <div>
+      <Breadcrumbs items={[{ label: "Início", href: "/" }, { label: "Utilidades", href: "/categoria/utilidades" }, { label: "Ferramentas de Texto" }]} />
       {/* Header */}
       <div style={{ marginBottom: 20 }}>
         <h1 style={{ fontSize: 26, fontWeight: 700, letterSpacing: "-0.03em", marginBottom: 6 }}>

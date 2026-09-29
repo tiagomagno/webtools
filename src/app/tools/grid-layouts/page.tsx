@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import Breadcrumbs from "../../components/Breadcrumbs";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -385,6 +386,7 @@ export default function GridLayoutsPage() {
 
   return (
     <div>
+      <Breadcrumbs items={[{ label: "Início", href: "/" }, { label: "Design", href: "/categoria/design" }, { label: "Layouts" }]} />
       {/* Header */}
       <div style={{ marginBottom: 24 }}>
         <h1 style={{ fontSize: 28, fontWeight: 700, letterSpacing: "-0.03em", marginBottom: 6 }}>

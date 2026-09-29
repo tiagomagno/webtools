@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback } from "react";
 import Link from "next/link";
+import Breadcrumbs from "../../components/Breadcrumbs";
 
 interface PageResult {
   page: number;
@@ -146,8 +147,9 @@ export default function PdfExtractorPage() {
 
   return (
     <div>
+      <Breadcrumbs items={[{ label: "Início", href: "/" }, { label: "Utilidades", href: "/categoria/utilidades" }, { label: "Extrator de Documentos" }]} />
       <div style={{ marginBottom: 32 }}>
-        
+
         <h1 style={{ fontSize: 28, fontWeight: 700, letterSpacing: "-0.03em", marginBottom: 6 }}>
           📄 Extrator de Documentos
         </h1>

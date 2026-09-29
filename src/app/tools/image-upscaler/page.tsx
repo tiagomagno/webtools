@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback } from "react";
 import Link from "next/link";
+import Breadcrumbs from "../../components/Breadcrumbs";
 
 type Scale = 2 | 4 | 8;
 
@@ -98,8 +99,9 @@ export default function ImageUpscalerPage() {
 
   return (
     <div>
+      <Breadcrumbs items={[{ label: "Início", href: "/" }, { label: "Design", href: "/categoria/design" }, { label: "Aumentar Resolução" }]} />
       <div style={{ marginBottom: 32 }}>
-        
+
         <h1 style={{ fontSize: 28, fontWeight: 700, letterSpacing: "-0.03em", marginBottom: 6 }}>
           🔍 Aumentar Resolução
         </h1>

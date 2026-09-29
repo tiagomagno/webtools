@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { useState, useCallback } from "react";
+import Breadcrumbs from "../../components/Breadcrumbs";
 
 // ─── tipos ───────────────────────────────────────────────────────────────────
 
@@ -372,6 +373,7 @@ export default function AreaTintaPage() {
 
   return (
     <div>
+      <Breadcrumbs items={[{ label: "Início", href: "/" }, { label: "Utilidades", href: "/categoria/utilidades" }, { label: "Área e Tinta" }]} />
       <div style={{ marginBottom: 24 }}>
         <h1 style={{ fontSize: 22, fontWeight: 700, letterSpacing: "-0.03em", marginBottom: 4 }}>
           🪣 Área e Tinta

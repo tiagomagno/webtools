@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, LayoutGrid } from "lucide-react";
+import { LayoutGrid } from "lucide-react";
 import { TOOLS, CATEGORIES, CATEGORY_META, categorySlug } from "../../lib/tools";
 import { categoryMetadata } from "../../lib/seo";
+import Breadcrumbs from "../../components/Breadcrumbs";
 import type { Metadata } from "next";
 
 export function generateStaticParams() {
@@ -36,9 +37,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
 
   return (
     <div style={{ padding: "40px 0" }}>
-      <Link href="/" className="back-link" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 600, color: "var(--text-muted)", textDecoration: "none", marginBottom: 20 }}>
-        <ArrowLeft size={14} /> Início
-      </Link>
+      <Breadcrumbs items={[{ label: "Início", href: "/" }, { label: category }]} />
 
       <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 28 }}>
         <div
@@ -108,7 +107,6 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
 
       <style>{`
         .tool-card:hover { border-color: var(--text-subtle) !important; transform: translateY(-1px); }
-        .back-link:hover { color: var(--text) !important; }
         @media (max-width: 767px) {
           .tool-card { padding: 14px !important; }
         }

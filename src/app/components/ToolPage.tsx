@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { TOOLS } from "../lib/tools";
+import { TOOLS, categorySlug } from "../lib/tools";
 import { SITE_URL } from "../lib/seo";
+import Breadcrumbs from "./Breadcrumbs";
 
 export interface FaqItem {
   q: string;
@@ -43,6 +44,7 @@ export default function ToolPage({
   ctaText,
 }: ToolPageProps) {
   const path = `/tools/${slug}`;
+  const tool = TOOLS.find((t) => t.slug === slug);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -69,6 +71,14 @@ export default function ToolPage({
   return (
     <div>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+
+      <Breadcrumbs
+        items={[
+          { label: "Início", href: "/" },
+          ...(tool ? [{ label: tool.category, href: `/categoria/${categorySlug(tool.category)}` }] : []),
+          { label: title },
+        ]}
+      />
 
       <header style={{ marginBottom: 28 }}>
         <h1 style={{ fontSize: 30, fontWeight: 700, letterSpacing: "-0.03em", marginBottom: 8 }}>

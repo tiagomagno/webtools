@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import Breadcrumbs from "../../components/Breadcrumbs";
 
 interface Stop {
   id: number;
@@ -208,8 +209,9 @@ export default function GradientsPage() {
 
   return (
     <div>
+      <Breadcrumbs items={[{ label: "Início", href: "/" }, { label: "Design", href: "/categoria/design" }, { label: "Gradientes" }]} />
       <div style={{ marginBottom: 32 }}>
-        
+
         <h1 style={{ fontSize: 28, fontWeight: 700, letterSpacing: "-0.03em", marginBottom: 6 }}>
           🌈 Gerador de Gradientes
         </h1>
