@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Trash2 } from "lucide-react";
 import { useAuth } from "../lib/auth/AuthProvider";
 import { initials } from "../lib/initials";
 import Breadcrumbs from "../components/Breadcrumbs";
@@ -31,6 +32,7 @@ export default function AdminPage() {
   const { user, authorizedFetch } = useAuth();
   const [users, setUsers] = useState<AdminUser[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   useEffect(() => {
     if (user?.role !== "ADMIN") return;
@@ -49,6 +51,24 @@ export default function AdminPage() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.role]);
+
+  async function handleDelete(target: AdminUser) {
+    const ok = window.confirm(`Excluir a conta de ${target.name || target.email}? Isso apaga histórico e não pode ser desfeito.`);
+    if (!ok) return;
+    setDeletingId(target.id);
+    setError(null);
+    try {
+      const res = await authorizedFetch(`/admin/users/${target.id}`, { method: "DELETE" });
+      if (!res.ok) {
+        const body = await res.json().catch(() => null);
+        setError(body?.error ?? "Não foi possível excluir o usuário.");
+        return;
+      }
+      setUsers((prev) => prev?.filter((u) => u.id !== target.id) ?? prev);
+    } finally {
+      setDeletingId(null);
+    }
+  }
 
   if (!user) return null;
 
@@ -86,7 +106,7 @@ export default function AdminPage() {
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
               <tr style={{ borderBottom: "1px solid var(--border)" }}>
-                {["Usuário", "Login", "Ferramentas usadas", "Desde"].map((h) => (
+                {["Usuário", "Login", "Ferramentas usadas", "Desde", ""].map((h) => (
                   <th
                     key={h}
                     style={{
@@ -133,6 +153,25 @@ export default function AdminPage() {
                   </td>
                   <td style={{ padding: "10px 16px", fontSize: 12.5, color: "var(--text-muted)" }}>
                     {formatDate(u.createdAt)}
+                  </td>
+                  <td style={{ padding: "10px 16px", textAlign: "right" }}>
+                    {u.id !== user.id && (
+                      <button
+                        type="button"
+                        onClick={() => handleDelete(u)}
+                        disabled={deletingId === u.id}
+                        title={`Excluir ${u.email}`}
+                        aria-label={`Excluir ${u.email}`}
+                        style={{
+                          width: 30, height: 30, borderRadius: 8, border: "1px solid var(--border)",
+                          background: "var(--surface-2)", color: "#ef4444", display: "flex",
+                          alignItems: "center", justifyContent: "center", cursor: deletingId === u.id ? "not-allowed" : "pointer",
+                          opacity: deletingId === u.id ? 0.6 : 1,
+                        }}
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}
