@@ -31,8 +31,21 @@ export function fmtBytes(bytes: number): string {
   return `${(bytes / 1024 / 1024).toFixed(2)} MB`;
 }
 
+function isHeicFile(file: File): boolean {
+  // No Windows/alguns navegadores o `type` vem vazio pra HEIC; a extensão é o fallback confiável.
+  return file.type === "image/heic" || file.type === "image/heif" || /\.(heic|heif)$/i.test(file.name);
+}
+
+/** Decodifica HEIC/HEIF (não suportado nativamente por <img>/canvas) via WASM. */
+async function heicToJpegBlob(file: File): Promise<Blob> {
+  const heic2any = (await import("heic2any")).default;
+  const result = await heic2any({ blob: file, toType: "image/jpeg", quality: 0.92 });
+  return Array.isArray(result) ? result[0] : result;
+}
+
 /** Lê um arquivo de imagem e resolve com suas dimensões e data URL. */
-export function loadImageFile(file: File): Promise<LoadedImage> {
+export async function loadImageFile(file: File): Promise<LoadedImage> {
+  const source = isHeicFile(file) ? await heicToJpegBlob(file) : file;
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onerror = () => reject(new Error("Falha ao ler o arquivo."));
@@ -44,7 +57,7 @@ export function loadImageFile(file: File): Promise<LoadedImage> {
         resolve({ name: file.name, width: img.width, height: img.height, size: file.size, src });
       img.src = src;
     };
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(source);
   });
 }
 

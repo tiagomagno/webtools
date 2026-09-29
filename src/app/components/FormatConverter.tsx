@@ -68,7 +68,13 @@ export default function FormatConverter({ to, accept = "image/*", showQuality = 
       <div
         onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
         onDragLeave={() => setDragging(false)}
-        onDrop={(e) => { e.preventDefault(); setDragging(false); const f = e.dataTransfer.files[0]; if (f?.type.startsWith("image/")) load(f); }}
+        onDrop={(e) => {
+          e.preventDefault();
+          setDragging(false);
+          const f = e.dataTransfer.files[0];
+          // HEIC/HEIF costuma vir com `type` vazio no Windows; a extensão cobre esse caso.
+          if (f && (f.type.startsWith("image/") || /\.(heic|heif)$/i.test(f.name))) load(f);
+        }}
         onClick={() => inputRef.current?.click()}
         style={{ border: `2px dashed ${dragging ? "var(--accent)" : "var(--border)"}`, borderRadius: 16, padding: "40px 24px", textAlign: "center", cursor: "pointer", background: "var(--surface)", marginBottom: 20, transition: "all .15s" }}
       >
