@@ -13,6 +13,12 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["--prefix", "server", "run", "dev"],
       "port": 3333
+    },
+    {
+      "name": "portfolio-designer",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "..", "run", "dev"],
+      "port": 3002
     }
   ]
 }
