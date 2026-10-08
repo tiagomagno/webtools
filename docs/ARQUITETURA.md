@@ -74,4 +74,4 @@ Variáveis de ambiente: ver `.env.example` (raiz: `NEXT_PUBLIC_API_URL`) e `serv
 - Build: `npm run build` · Start: `npm start` · Lint: `npm run lint`
 - Build do Electron: `npm run build:electron` e, em `electron/`, `npm run dist`
 - Banco: `npm --prefix server run db:push` / `db:migrate:deploy` · promover admin: `npm --prefix server run promote-admin`
-- Testes: ❓ (não há runner; ver `DECISOES.md`)
+- Testes: `npm test` (Vitest, só utils puros de `src/app/lib/__tests__/`; config em `vitest.config.mts`)

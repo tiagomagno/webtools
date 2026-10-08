@@ -5,7 +5,7 @@
 |---|---|---|---|
 | 0.1 | 2026-10-08 | 📝 Rascunho | 6 (Qualidade e entrega) |
 
-> **Total** 24 · **Concluídas** 21 (88%) · **Em andamento** 0
+> **Total** 25 · **Concluídas** 23 (92%) · **Em andamento** 0
 
 Legenda: ✅ confirmado · 💡 hipótese · ❓ em aberto. Status: ✅ Concluída · 🔄 Em andamento · ⬜ Não iniciada · ⏸️ Bloqueada.
 Datas "💡" vêm do `git log` (18/06 a 29/09/2026), sem data exata por tarefa.
@@ -54,8 +54,9 @@ Datas "💡" vêm do `git log` (18/06 a 29/09/2026), sem data exata por tarefa.
 |---|---|---|---|---|---|---|
 | 6.1 | Trocar o deploy (Coolify) do site e da API para o repo `tiagomagno/webtools` (Base Directory do site vazio; da API `/server`) | — | 🔴 | ✅ | Site e API no ar a partir do repo novo; canonical correto, `401` sem token e CORS só para o site (login Google a conferir pelo usuário) | 2026-10-08 |
 | 6.2 | Corrigir `SITE_URL` (era `https://webtools.local`) para o domínio real | — | 🔴 | ✅ | Canonical e OG com `webtools.tiagosmagno.com.br` (`seo.ts` e `layout.tsx`); `FRONTEND_URL` do exemplo da API ajustado | 2026-10-08 |
-| 6.3 | Remover `ignoreBuildErrors` e zerar os erros de TypeScript (30 em 2026-10-08, ex.: `keywords` fora de `ToolMetaInput`, `title` em ícones lucide) | — | 🟡 | ⬜ | `tsc --noEmit` sem erros e `next build` passa sem a flag | — |
-| 6.4 | Adicionar Vitest e testar os utils puros (precisa de autorização) | — | 🟡 | ⬜ | Utils críticos cobertos; ver `DECISOES.md` | — |
+| 6.3 | Remover `ignoreBuildErrors` e zerar os erros de TypeScript (30 em 2026-10-08, ex.: `keywords` fora de `ToolMetaInput`, `title` em ícones lucide) | — | 🟡 | ✅ | `tsc --noEmit` sem erros e `next build` passa sem a flag (verificado; testar `/tools/pdf-compressor` no navegador) | 2026-10-08 |
+| 6.4 | Adicionar Vitest e testar os utils puros | — | 🟡 | ✅ | `npm test` passa: 76 testes em 4 arquivos (finance, CPF/CNPJ/Luhn, hash/Base64, texto e CSV); `tsc` e `next build` seguem limpos. Achou e corrigiu bug no gerador de cartão (Luhn) | 2026-10-08 |
 | 6.5 | Medir Lighthouse real (metas: Perf ≥95, SEO ≥95, A11y ≥90) | — | 🟢 | ⬜ | Valores medidos registrados | — |
+| 6.6 | Corrigir o `npm run lint` (ESLint 9 falha ao carregar `next/core-web-vitals` via `FlatCompat`: referência circular no plugin react) | — | 🟡 | ⬜ | `npm run lint` roda e reporta sem travar | — |
 
 Fluxo contínuo: novas ferramentas pequenas entram como tarefa nova (fase 2, ID seguinte), uma por conversa.

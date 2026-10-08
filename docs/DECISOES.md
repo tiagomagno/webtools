@@ -36,3 +36,19 @@ Decisões técnicas de 2026-06-21/22 (padrão server page + client component, `T
 - **Decisão:** o site é um subdomínio do domínio principal: `https://webtools.tiagosmagno.com.br` (API em `api.tiagosmagno.com.br`), hospedado no Coolify. `SITE_URL` (`src/app/lib/seo.ts`) é a fonte única; `layout.tsx` a importa. O `FRONTEND_URL` da API deve ser a mesma origem do site (CORS e redirect do login Google).
 - **Tarefa relacionada:** 6.2, 6.1
 - **Certeza:** ✅ (informado pelo usuário)
+
+## 2026-10-08: Tipagem estrita no build (tarefa 6.3)
+- **Contexto:** `ignoreBuildErrors: true` escondia 30 erros de TypeScript.
+- **Decisão:** zerar os erros e remover a flag; o build passa a falhar em erro de tipo. Correções sem mudar o resultado ao usuário, com três exceções de comportamento mínimo: (1) `toolMetadata` aceita `keywords` e agora emite `<meta name="keywords">` nas 14 páginas que já os declaravam; (2) `calcRescisao` passa a declarar `vacationBalance` como `boolean` (o código só usava a verdade do valor); (3) `pdf-compressor` passa `canvas` ao `page.render` do pdfjs v6. Ícones da home trocaram o atributo `title`, que não gerava tooltip, por `aria-label`.
+- **Alternativas descartadas:** manter a flag e tratar erros aos poucos (esconde bugs reais).
+- **Tarefa relacionada:** 6.3
+- **Certeza:** ✅
+
+## 2026-10-08: Vitest adotado para os utils puros (tarefa 6.4)
+- **Contexto:** a decisão de 2026-06-21 (sem runner, por falta de autorização para novas dependências) foi superada: o usuário autorizou o Vitest.
+- **Decisão:** Vitest 4 como devDependency, ambiente Node, testes em `src/app/lib/__tests__/`, script `npm test`. Valores esperados vêm de fontes externas (RFC 1321, FIPS 180, tabelas de INSS/IRPF, cartões de teste públicos). Cobertos: finance, CPF/CNPJ, Luhn, hash, Base64, slugify, text-stats e CSV↔JSON.
+- **Resultado:** os testes expuseram um bug no Gerador de Cartão: `luhnCheckDigit` dobrava os dígitos na paridade errada, e os cartões gerados falhavam no próprio validador. Corrigido em `luhn.ts` (uma linha) e validado contra Visa/Mastercard/Amex de teste.
+- **Fora do escopo:** componentes React, login e ferramentas ainda sem teste (json-tools, line-diff, units, password, uuid, text-transform).
+- **Substitui:** a decisão "Sem runner de testes por enquanto" (2026-06-21).
+- **Tarefa relacionada:** 6.4
+- **Certeza:** ✅

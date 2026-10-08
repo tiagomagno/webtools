@@ -6,7 +6,7 @@ Site de ferramentas online do dia a dia (texto, dev, SEO, imagem, PDF, calculado
 ## Comandos
 - Instalar: `npm install` · `npm --prefix server install` · `npm --prefix electron install`
 - Rodar site: `npm run dev` · Rodar API: `npm --prefix server run dev` (porta 3333)
-- Build: `npm run build` · Lint: `npm run lint` · Testes: ❓ (sem runner)
+- Build: `npm run build` · Lint: `npm run lint` (quebrado, tarefa 6.6) · Testes: `npm test` (Vitest)
 - Banco: `npm --prefix server run db:push` (produção: `db:migrate:deploy`)
 
 ## Documentação (ler antes de alterar algo relacionado)
