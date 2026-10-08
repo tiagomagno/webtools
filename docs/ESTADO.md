@@ -15,7 +15,7 @@
 ## ⚠️ Atenção
 - **Deploy do Coolify é manual** (origem "Manual" no histórico). `git push` sozinho não publica; clicar em Deploy no site e na API, ou ligar o webhook.
 - `FRONTEND_URL` da API (CORS e redirect do login Google) precisa ser exatamente `https://webtools.tiagosmagno.com.br` no Coolify.
-- O build **falha** em erro de tipo: rodar `npx tsc --noEmit`, `npm test` e `npm run lint` antes de subir.
+- O build **falha** em erro de tipo: rodar `npx tsc --noEmit`, `npm test` e `npm run lint` antes de subir. Mudou o build? Teste num clone limpo (`git clone` do GitHub, `npm ci`, `npm run build`): a pasta de trabalho tem `node_modules` de `electron/` e `server/` que o Coolify não tem.
 - Lint: `react-hooks/set-state-in-effect` e `react-hooks/refs` são avisos de propósito (ver `eslint.config.mjs`).
 - Medir Lighthouse **neste computador** dá nota falsa: o Kaspersky injeta ~850 KiB de JS/CSS (Perf cai de 99 para 66). Bloquear `*kaspersky-labs.com*`.
 - Medir as ferramentas por dentro: usar build local com `NEXT_PUBLIC_API_URL=http://localhost:3333`, uma API de mentira (`/auth/refresh`, `/me`, `/history`) e o token fictício em `localStorage` (`wt-auth-tokens`). Nunca usar credenciais reais nem criar usuário em produção. No Git Bash usar `MSYS_NO_PATHCONV=1` ao passar caminhos `/...`.

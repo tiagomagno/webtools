@@ -100,3 +100,10 @@ Decisões técnicas de 2026-06-21/22 (padrão server page + client component, `T
 - **Decisão/achado:** os deploys aparecem como origem "Manual" no Coolify; `git push` não publica. Para publicar: Deploy no site e na API, ou ligar o webhook do GitHub (tarefa 7.5). Medir ou testar produção só depois de publicar.
 - **Tarefa relacionada:** 7.5
 - **Certeza:** ✅
+
+## 2026-10-08: tsconfig da raiz não verifica `electron/` nem `server/`
+- **Contexto:** o deploy do commit `2f2a15a` falhou no Coolify (`Cannot find module 'electron'` em `electron/src/main.ts`). O `next build` verifica os tipos de todo `.ts` da raiz e, num clone limpo, `electron/node_modules` e `server/node_modules` não existem. No computador do autor existem, por isso nunca falhava local. O `ignoreBuildErrors` (removido na 6.3) escondia o problema.
+- **Decisão:** `exclude: ["node_modules", "electron", "server"]` no `tsconfig.json` da raiz; cada pacote tem o próprio `tsconfig` e é verificado pelo próprio build.
+- **Como evitar:** antes de subir mudança de build, testar num clone limpo (`git clone` do GitHub, `npm ci`, `npm run build`), não só na pasta de trabalho.
+- **Tarefa relacionada:** 7.5
+- **Certeza:** ✅ (reproduzido e corrigido em clone limpo)
