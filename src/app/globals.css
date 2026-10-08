@@ -9,6 +9,9 @@
   --border: #e5e7eb;
   --accent: #6366f1;
   --accent-dim: #4f46e5;
+  /* Fundo de botão com texto branco e cor de texto/link: contraste ≥ 4,5 (WCAG AA). */
+  --accent-strong: #4f46e5;
+  --accent-text: #4f46e5;
   --text: #111111;
   --text-muted: #52606d;
   --text-subtle: #6b7280;
@@ -23,6 +26,8 @@
   --border: #242424;
   --accent: #6366f1;
   --accent-dim: #4f46e5;
+  --accent-strong: #4f46e5;
+  --accent-text: #818cf8;
   --text: #f4f4f5;
   --text-muted: #9a9aa2;
   --text-subtle: #7d7d86;

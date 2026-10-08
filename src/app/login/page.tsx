@@ -19,7 +19,7 @@ const buttonStyle: React.CSSProperties = {
   padding: "10px 12px",
   borderRadius: 8,
   border: "none",
-  background: "var(--accent)",
+  background: "var(--accent-strong)",
   color: "#fff",
   fontSize: 15,
   fontWeight: 600,
@@ -63,7 +63,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh", padding: 16, background: "var(--bg)" }}>
+    <main style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh", padding: 16, background: "var(--bg)" }}>
       <div style={{ width: "100%", maxWidth: 360, background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 16, padding: 32 }}>
         <h1 style={{ fontSize: 20, fontWeight: 700, marginBottom: 4, color: "var(--text)" }}>
           {mode === "login" ? "Entrar" : "Criar conta"}
@@ -122,11 +122,11 @@ export default function LoginPage() {
         <button
           type="button"
           onClick={() => setMode(mode === "login" ? "register" : "login")}
-          style={{ background: "none", border: "none", color: "var(--accent)", fontSize: 13, marginTop: 16, cursor: "pointer", width: "100%" }}
+          style={{ background: "none", border: "none", color: "var(--accent-text)", fontSize: 13, marginTop: 16, cursor: "pointer", width: "100%" }}
         >
           {mode === "login" ? "Não tem conta? Criar agora" : "Já tem conta? Entrar"}
         </button>
       </div>
-    </div>
+    </main>
   );
 }

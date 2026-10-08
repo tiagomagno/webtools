@@ -48,7 +48,7 @@ export default function MobileUserMenu() {
           // eslint-disable-next-line @next/next/no-img-element
           <img src={user.avatarUrl} alt="" width={32} height={32} style={{ borderRadius: "50%", objectFit: "cover", display: "block" }} />
         ) : (
-          <div style={{ width: 32, height: 32, borderRadius: "50%", background: "var(--accent)", color: "#fff", fontSize: 11, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <div style={{ width: 32, height: 32, borderRadius: "50%", background: "var(--accent-strong)", color: "#fff", fontSize: 11, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>
             {initials(user.name, user.email)}
           </div>
         )}
@@ -72,7 +72,7 @@ export default function MobileUserMenu() {
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={user.avatarUrl} alt="" width={32} height={32} style={{ borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
               ) : (
-                <div style={{ width: 32, height: 32, borderRadius: "50%", background: "var(--accent)", color: "#fff", fontSize: 11, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <div style={{ width: 32, height: 32, borderRadius: "50%", background: "var(--accent-strong)", color: "#fff", fontSize: 11, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                   {initials(user.name, user.email)}
                 </div>
               )}
