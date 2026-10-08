@@ -52,3 +52,36 @@ Decisões técnicas de 2026-06-21/22 (padrão server page + client component, `T
 - **Substitui:** a decisão "Sem runner de testes por enquanto" (2026-06-21).
 - **Tarefa relacionada:** 6.4
 - **Certeza:** ✅
+
+## 2026-10-08: Lint no formato flat nativo do Next 16 e primeira medição Lighthouse (tarefas 6.5 e 6.6)
+- **Lint (6.6):** o `eslint.config.mjs` usava `FlatCompat` para carregar `next/core-web-vitals`, que quebra com ESLint 9 + `eslint-config-next` 16 (referência circular no plugin react). Trocado por `defineConfig` com `eslint-config-next/core-web-vitals` e `/typescript`, ignorando `server/`, `electron/`, `public/` e `.next/`. Resultado: 246 arquivos analisados, 42 erros e 44 avisos (tarefa 6.7).
+- **Lighthouse (6.5)**, Lighthouse 13.5, `https://webtools.tiagosmagno.com.br/login`, 3 execuções no celular e 2 no desktop, com o Kaspersky bloqueado:
+
+  | Preset | Performance | SEO | Acessibilidade | Boas práticas | FCP / LCP |
+  |---|---|---|---|---|---|
+  | Celular | 99 | 100 | 93 | 77 | 1,6 s / 1,6 s |
+  | Desktop | 100 | 100 | 93 | 77 | 0,5 s / 0,5 s |
+
+  Metas (Perf ≥95, SEO ≥95, A11y ≥90): atendidas **na tela de login**.
+- **Limite da medição:** todas as URLs de ferramenta redirecionam para `/login` sem sessão; as ferramentas por dentro não foram medidas (tarefa 6.9).
+- **Medição contaminada:** sem bloquear `kaspersky-labs.com`, o antivírus do computador injeta ~850 KiB de JS/CSS e a nota de Performance cai para 66 no celular. A cota gratuita da API do PageSpeed estava esgotada (429).
+- **Achados do site (6.8):** `/favicon.ico` dá 404; falta landmark `<main>`; contraste 4,46 (mínimo 4,5) no botão com texto branco sobre `--accent` `#6366f1`. As APIs "deprecated" vêm do script de desafio da Cloudflare, não do código.
+- **Tarefa relacionada:** 6.5, 6.6
+- **Certeza:** ✅
+
+## 2026-10-08: Medição autenticada, correções de acessibilidade e lint (tarefas 6.7, 6.8 e 6.9)
+- **Acesso às ferramentas:** o site em produção exige login e eu não uso credenciais reais nem crio usuário lá. A medição foi feita com um build local (`NEXT_PUBLIC_API_URL=http://localhost:3333`), uma API de mentira em `localhost` (`/auth/refresh`, `/me`, `/history`) com usuário fictício e o token fictício em `localStorage` (`wt-auth-tokens`), Lighthouse 13.5 via Puppeteer, bloqueando `*kaspersky-labs.com*`. Confirmado pela URL final de cada execução (a ferramenta, e não `/login`).
+- **Resultado (local, sem CDN):**
+
+  | Página | Preset | Perf | SEO | A11y | Boas práticas |
+  |---|---|---|---|---|---|
+  | Home, contador-palavras, pdf-compressor | Celular | 100 | 100 | 96–100 | 81 |
+  | Home | Desktop | 100 | 100 | 96 | 81 |
+  | `/login` (sem sessão, após 6.8) | Celular e desktop | 100 | 100 | 100 | 81 |
+
+  Antes da 6.8, em produção, o `/login` tinha A11y 93 e Boas práticas 77. Boas práticas 81 local vem só de um script `http` do Kaspersky (`is-on-https`); não foi confirmado em produção.
+- **Tokens de cor:** `--accent-strong` (#4f46e5, fundo de botão com texto branco) e `--accent-text` (#4f46e5 no claro, #818cf8 no escuro) para contraste ≥ 4,5. O `--accent` (#6366f1) com texto branco dá 4,46. Aplicados no login e no avatar do menu; outros usos de `--accent` com texto branco no site (cerca de 42) não foram trocados.
+- **Lint (6.7):** 21 erros corrigidos; `set-state-in-effect` e `refs` rebaixadas a aviso. Mudanças de comportamento: `RegexTester` calcula resultado e erro no mesmo `useMemo` (antes chamava `setState` dentro dele); `JwtDecoder` avalia a expiração no instante em que o token é colado (antes lia `Date.now()` no render); `QrReader` usa função nomeada no laço da câmera.
+- **SEO x login (achado):** o HTML sem sessão traz só `Carregando…`; o conteúdo de SEO das ferramentas não aparece no servidor. Pendente de decisão do usuário.
+- **Tarefa relacionada:** 6.7, 6.8, 6.9
+- **Certeza:** ✅
