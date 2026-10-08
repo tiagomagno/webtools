@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useRef } from "react";
 import QRCode from "qrcode";
+import SaveToHistory from "../../components/SaveToHistory";
+import { parseHistoryPayload, readHistoryHash } from "../../lib/historico";
 
 type ECLevel = "L" | "M" | "Q" | "H";
 
@@ -13,6 +15,13 @@ export default function QrGenerator() {
   const [bg, setBg] = useState("#ffffff");
   const [error, setError] = useState("");
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  // Reabertura pelo histórico: os dados vêm no fragmento da URL (#h=...).
+  useEffect(() => {
+    const saved = parseHistoryPayload("gerador-qr", readHistoryHash(window.location.hash));
+    if (!saved) return;
+    setText(saved.text); setSize(saved.size); setEc(saved.ec); setFg(saved.fg); setBg(saved.bg);
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -96,6 +105,9 @@ export default function QrGenerator() {
         <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
           <button onClick={downloadPng} style={{ flex: 1, background: "var(--accent)", border: "none", borderRadius: 8, padding: "10px 0", fontSize: 13, fontWeight: 600, color: "#fff", cursor: "pointer" }}>↓ PNG</button>
           <button onClick={downloadSvg} style={{ flex: 1, background: "var(--surface-2)", border: "1px solid var(--border)", borderRadius: 8, padding: "10px 0", fontSize: 13, fontWeight: 600, color: "var(--text-muted)", cursor: "pointer" }}>↓ SVG</button>
+        </div>
+        <div style={{ marginTop: 12 }}>
+          <SaveToHistory slug="gerador-qr" disabled={!text.trim()} getPayload={() => ({ text, size, ec, fg, bg })} />
         </div>
       </div>
     </div>

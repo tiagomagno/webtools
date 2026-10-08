@@ -5,6 +5,7 @@ import { LogOut } from "lucide-react";
 import { useAuth } from "../lib/auth/AuthProvider";
 import { initials } from "../lib/initials";
 import Breadcrumbs from "../components/Breadcrumbs";
+import HistorySection from "../components/HistorySection";
 
 const inputStyle: React.CSSProperties = {
   width: "100%",
@@ -133,6 +134,8 @@ export default function ContaPage() {
           <LogOut size={16} />
         </button>
       </div>
+
+      <HistorySection />
 
       {/* Senha */}
       <div style={cardStyle}>

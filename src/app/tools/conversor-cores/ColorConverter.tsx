@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import SaveToHistory from "../../components/SaveToHistory";
+import { parseHistoryPayload, readHistoryHash } from "../../lib/historico";
 import { hexToRgb, rgbToHex, rgbToHsl, hslToRgb, rgbCss, hslCss, type RGB } from "../../lib/color";
 
 function CopyRow({ label, value }: { label: string; value: string }) {
@@ -16,6 +18,13 @@ function CopyRow({ label, value }: { label: string; value: string }) {
 
 export default function ColorConverter() {
   const [rgb, setRgb] = useState<RGB>({ r: 99, g: 102, b: 241 });
+
+  // Reabertura pelo histórico: a cor vem no fragmento da URL (#h=...).
+  useEffect(() => {
+    const saved = parseHistoryPayload("conversor-cores", readHistoryHash(window.location.hash));
+    const parsed = saved && hexToRgb(saved.hex);
+    if (parsed) setRgb(parsed);
+  }, []);
 
   const hex = rgbToHex(rgb);
   const hsl = rgbToHsl(rgb);
@@ -59,6 +68,9 @@ export default function ColorConverter() {
         <CopyRow label="HSL" value={hslCss(hsl)} />
         <CopyRow label="RGB (valores)" value={`${rgb.r}, ${rgb.g}, ${rgb.b}`} />
         <CopyRow label="HSL (valores)" value={`${hsl.h}, ${hsl.s}, ${hsl.l}`} />
+        <div style={{ padding: 12 }}>
+          <SaveToHistory slug="conversor-cores" getPayload={() => ({ hex })} />
+        </div>
       </div>
     </div>
   );

@@ -1,5 +1,8 @@
 'use client';
-import { useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
+import SaveToHistory from '../../components/SaveToHistory';
+import { parseHistoryPayload, readHistoryHash } from '../../lib/historico';
+import { hexToRgb as parseHex, rgbToHsl } from '../../lib/color';
 
 function randInt(min: number, max: number) { return Math.floor(Math.random() * (max - min + 1)) + min; }
 
@@ -42,6 +45,17 @@ type Swatch = { hex: string; locked: boolean; h?: number; s?: number; l?: number
 export default function ColorGenerator() {
   const [palette, setPalette] = useState<Swatch[]>(() => generatePalette(5, []));
   const [copied, setCopied] = useState<string | null>(null);
+
+  // Reabertura pelo histórico: as cores vêm no fragmento da URL (#h=...).
+  useEffect(() => {
+    const saved = parseHistoryPayload('color-palette', readHistoryHash(window.location.hash));
+    if (!saved) return;
+    setPalette(saved.colors.map((hex) => {
+      const rgb = parseHex(hex);
+      const { h, s, l } = rgb ? rgbToHsl(rgb) : { h: 0, s: 0, l: 0 };
+      return { hex, locked: false, h, s, l };
+    }));
+  }, []);
 
   const generate = () => setPalette(p => generatePalette(5, p));
 
@@ -108,6 +122,10 @@ export default function ColorGenerator() {
             </div>
           );
         })}
+      </div>
+
+      <div style={{ alignSelf: 'flex-start' }}>
+        <SaveToHistory slug="color-palette" getPayload={() => ({ colors: palette.map((sw) => sw.hex) })} />
       </div>
 
       <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textAlign: 'center' }}>

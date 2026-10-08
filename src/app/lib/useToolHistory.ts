@@ -13,10 +13,10 @@ export interface ToolHistoryEntry<T = unknown> {
 // Hook genérico de sincronismo: cada ferramenta que quiser guardar histórico
 // entre dispositivos chama useToolHistory("slug-da-ferramenta") e usa save()
 // nos momentos relevantes (ex: depois de gerar um QR code, comprimir um PDF).
-export function useToolHistory<T = unknown>(tool: string) {
+export function useToolHistory<T = unknown>(tool: string, { autoLoad = true }: { autoLoad?: boolean } = {}) {
   const { authorizedFetch, status } = useAuth();
   const [entries, setEntries] = useState<ToolHistoryEntry<T>[]>([]);
-  const [loadingEntries, setLoadingEntries] = useState(true);
+  const [loadingEntries, setLoadingEntries] = useState(autoLoad);
   // Histórico só existe para quem tem conta; sem sessão não há nada para carregar nem salvar.
   const canSave = status === "authenticated";
   const loading = status === "loading" || (canSave && loadingEntries);
@@ -37,8 +37,8 @@ export function useToolHistory<T = unknown>(tool: string) {
   }, [tool, status]);
 
   useEffect(() => {
-    void reload();
-  }, [reload]);
+    if (autoLoad) void reload();
+  }, [reload, autoLoad]);
 
   const save = useCallback(
     async (payload: T) => {

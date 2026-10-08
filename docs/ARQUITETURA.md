@@ -45,6 +45,8 @@ src/app/
   lib/seo.ts           # toolMetadata() e SITE_URL
   lib/auth/            # AuthProvider e ponte com o Electron
   hooks/               # favoritos e recentes
+  lib/historico.ts     # histórico de uso: ferramentas habilitadas, validação, resumo e link de reabertura (#h=)
+  components/SaveToHistory.tsx, HistorySection.tsx  # botão de salvar nas ferramentas e lista em /conta
   admin/ conta/ login/ auth/callback/ categoria/[slug]/
 server/
   src/{app,db,env,index}.ts   # Fastify

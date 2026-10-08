@@ -107,3 +107,26 @@ Decisões técnicas de 2026-06-21/22 (padrão server page + client component, `T
 - **Como evitar:** antes de subir mudança de build, testar num clone limpo (`git clone` do GitHub, `npm ci`, `npm run build`), não só na pasta de trabalho.
 - **Tarefa relacionada:** 7.5
 - **Certeza:** ✅ (reproduzido e corrigido em clone limpo)
+
+## 2026-10-08: Fases 6 e 7 publicadas e medidas em produção (tarefa 7.5)
+- **Publicação:** o deploy do commit `2f2a15a` falhou (ver entrada do `tsconfig`); o do `83df1cf`, feito manualmente no Coolify, passou. Verificado no site real: `/icon.svg` 200, `<main>` e "Continuar sem entrar" no `/login`, `<meta name="keywords">` em `/tools/validador-luhn`, ferramenta sem sessão com 2 `<h1>`, 3 JSON-LD e sem "Carregando…", `/conta` e `/admin` só com o spinner, API com `401` sem token.
+- **Lighthouse em produção** (Lighthouse 13.5, `*kaspersky-labs.com*` bloqueado):
+
+  | Página | Preset | Perf | SEO | A11y | Boas práticas |
+  |---|---|---|---|---|---|
+  | `/login` | Celular | 99 | 100 | 100 | 81 |
+  | `/login` | Desktop | 100 | 100 | 100 | 81 |
+  | `/tools/contador-palavras` (sem sessão) | Celular | 98 | 100 | 100 | 81 |
+  | `/tools/contador-palavras` (sem sessão) | Desktop | 100 | 100 | 96 | 81 |
+
+  Metas (Perf ≥95, SEO ≥95, A11y ≥90) atendidas. Antes da fase 6, o `/login` tinha 99 · 100 · 93 · 77.
+- **Boas práticas 81:** o único item reprovado é "APIs obsoletas", vindo do script de desafio da Cloudflare (`/cdn-cgi/challenge-platform`), fora do código do site.
+- **Tarefa relacionada:** 7.5
+- **Certeza:** ✅
+
+## 2026-10-08: Histórico por botão, reabertura por fragmento de URL (tarefa 7.2)
+- **Decisão:** só `gerador-qr`, `conversor-cores` e `color-palette` guardam histórico, por botão "Salvar no histórico" (não automático). A lista fica numa seção de `/conta`; clicar numa entrada reabre a ferramenta com os dados em `#h=<base64url>`. Sem limite de entradas. Gerador de Senhas não entra (senha nunca é guardada).
+- **Por quê:** o fragmento nunca vai ao servidor nem aos logs e dispensa um `GET /history/:id`; o botão evita poluir o histórico. Não houve mudança na API nem no schema.
+- **Como evitar problemas:** todo payload é validado por `parseHistoryPayload` (`src/app/lib/historico.ts`) antes de preencher a ferramenta ou aparecer na lista. Para incluir outra ferramenta: registrar em `HISTORY_TOOLS` e acrescentar o teste.
+- **Tarefa relacionada:** 7.2
+- **Certeza:** ✅ (decidido com o usuário); ❓ "sem limite" pode precisar de retenção se o volume crescer.
