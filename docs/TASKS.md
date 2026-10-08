@@ -5,7 +5,7 @@
 |---|---|---|---|
 | 0.1 | 2026-10-08 | 📝 Rascunho | 6 (Qualidade e entrega) |
 
-> **Total** 24 · **Concluídas** 20 (83%) · **Em andamento** 1
+> **Total** 24 · **Concluídas** 21 (88%) · **Em andamento** 0
 
 Legenda: ✅ confirmado · 💡 hipótese · ❓ em aberto. Status: ✅ Concluída · 🔄 Em andamento · ⬜ Não iniciada · ⏸️ Bloqueada.
 Datas "💡" vêm do `git log` (18/06 a 29/09/2026), sem data exata por tarefa.
@@ -52,7 +52,7 @@ Datas "💡" vêm do `git log` (18/06 a 29/09/2026), sem data exata por tarefa.
 ## Fase 6: Qualidade e entrega
 | # | Tarefa | Itens | Prioridade | Status | Pronto quando | Concluída em |
 |---|---|---|---|---|---|---|
-| 6.1 | Trocar o deploy (Coolify) do site e da API para o repo `tiagomagno/webtools` (Base Directory do site vazio; da API `/server`) | — | 🔴 | 🔄 | `webtools.tiagosmagno.com.br` no ar a partir do repo novo, login com Google funcionando | — |
+| 6.1 | Trocar o deploy (Coolify) do site e da API para o repo `tiagomagno/webtools` (Base Directory do site vazio; da API `/server`) | — | 🔴 | ✅ | Site e API no ar a partir do repo novo; canonical correto, `401` sem token e CORS só para o site (login Google a conferir pelo usuário) | 2026-10-08 |
 | 6.2 | Corrigir `SITE_URL` (era `https://webtools.local`) para o domínio real | — | 🔴 | ✅ | Canonical e OG com `webtools.tiagosmagno.com.br` (`seo.ts` e `layout.tsx`); `FRONTEND_URL` do exemplo da API ajustado | 2026-10-08 |
 | 6.3 | Remover `ignoreBuildErrors` e zerar os erros de TypeScript (30 em 2026-10-08, ex.: `keywords` fora de `ToolMetaInput`, `title` em ícones lucide) | — | 🟡 | ⬜ | `tsc --noEmit` sem erros e `next build` passa sem a flag | — |
 | 6.4 | Adicionar Vitest e testar os utils puros (precisa de autorização) | — | 🟡 | ⬜ | Utils críticos cobertos; ver `DECISOES.md` | — |
