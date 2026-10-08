@@ -85,3 +85,18 @@ Decisões técnicas de 2026-06-21/22 (padrão server page + client component, `T
 - **SEO x login (achado):** o HTML sem sessão traz só `Carregando…`; o conteúdo de SEO das ferramentas não aparece no servidor. Pendente de decisão do usuário.
 - **Tarefa relacionada:** 6.7, 6.8, 6.9
 - **Certeza:** ✅
+
+## 2026-10-08: Ferramentas abertas, conta opcional (tarefa 7.1)
+- **Contexto:** o login era obrigatório (commit 30d8149) só para dar histórico por usuário, e isso barrava visitantes e deixava o HTML sem conteúdo para buscadores (`Carregando…`).
+- **Decisão:** abrir todas as ferramentas. Só `/conta` e `/admin` exigem login (`PROTECTED_PREFIXES` em `AppChrome`). Sem sessão aparece "Entrar"; depois do login volta à ferramenta (`?next=` validado por `safeNextPath`, guardado em `sessionStorage` para o login com Google). Sem conta nada é salvo; com conta, histórico por usuário. A ideia é que o visitante use livremente e crie conta pelo histórico.
+- **Alternativas descartadas:** manter o login obrigatório; salvar histórico anônimo no servidor (nada é salvo sem conta, por decisão do usuário).
+- **Substitui:** a regra "login obrigatório" (RN1, `NEGOCIO.md` local).
+- **Descobertas no caminho:** nenhuma ferramenta chama `useToolHistory` ainda (o histórico existe na API e no hook, mas não é usado: tarefa 7.2); o `ToolPage` não renderiza `content`, `faq`, `related` nem `ctaText` (tarefa 7.3); não há `sitemap.xml` nem `robots.txt` (7.4).
+- **Tarefa relacionada:** 7.1 (spec em `docs/tarefas/7.1.md`)
+- **Certeza:** ✅ (pedido do usuário)
+
+## 2026-10-08: Deploy no Coolify é manual
+- **Contexto:** depois de enviar 7 commits ao GitHub, a produção continuou no commit `d7e5a1a` (sem `/icon.svg`, sem `<main>` no login, sem `keywords`).
+- **Decisão/achado:** os deploys aparecem como origem "Manual" no Coolify; `git push` não publica. Para publicar: Deploy no site e na API, ou ligar o webhook do GitHub (tarefa 7.5). Medir ou testar produção só depois de publicar.
+- **Tarefa relacionada:** 7.5
+- **Certeza:** ✅

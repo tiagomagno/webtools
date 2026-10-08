@@ -5,7 +5,7 @@
 |---|---|---|---|
 | 0.1 | 2026-10-08 | 📝 Rascunho | 6 (Qualidade e entrega) |
 
-> **Total** 28 · **Concluídas** 28 (100%) · **Em andamento** 0
+> **Total** 33 · **Concluídas** 29 (88%) · **Em andamento** 0
 
 Legenda: ✅ confirmado · 💡 hipótese · ❓ em aberto. Status: ✅ Concluída · 🔄 Em andamento · ⬜ Não iniciada · ⏸️ Bloqueada.
 Datas "💡" vêm do `git log` (18/06 a 29/09/2026), sem data exata por tarefa.
@@ -61,5 +61,14 @@ Datas "💡" vêm do `git log` (18/06 a 29/09/2026), sem data exata por tarefa.
 | 6.7 | Corrigir os 42 erros do lint | — | 🟡 | ✅ | `npm run lint`: 0 erros (65 avisos). 21 erros corrigidos (RegexTester, JwtDecoder, TimestampTool, QrReader, `const`, `any`, aspas em JSX). As regras `react-hooks/set-state-in-effect` e `react-hooks/refs` (21 casos) ficaram como aviso, com justificativa em `eslint.config.mjs` | 2026-10-08 |
 | 6.8 | Acessibilidade e boas práticas do login e do avatar: `icon.svg` (favicon), `<main>`, tokens `--accent-strong` e `--accent-text` (contraste ≥4,5) | T4 | 🟡 | ✅ | Login local: A11y 100 (era 93), sem erro de console e com landmark `<main>`; avatar do menu corrigido. Falta confirmar em produção após o deploy | 2026-10-08 |
 | 6.9 | Medir Lighthouse das ferramentas autenticadas (home e 2 ferramentas) | T1, T2 | 🟢 | ✅ | Medido em build local com API de mentira e sessão fictícia: Perf 100, SEO 100, A11y 96–100, Boas práticas 81 (celular e desktop). Detalhes em `DECISOES.md` | 2026-10-08 |
+
+## Fase 7: Acesso aberto e histórico
+| # | Tarefa | Itens | Prioridade | Status | Pronto quando | Concluída em |
+|---|---|---|---|---|---|---|
+| 7.1 | Acesso livre às ferramentas: login só em `/conta` e `/admin`, botão "Entrar" com retorno à ferramenta, `useToolHistory` seguro sem sessão | T1, T2, T4 | 🔴 | ✅ | Ver spec `docs/tarefas/7.1.md`. Verificado em build local; **falta publicar e testar em produção** | 2026-10-08 |
+| 7.2 | Histórico de uso de verdade: ligar `useToolHistory` às ferramentas que fizerem sentido (QR, senha, conversões...), criar a página de histórico em `/conta` e convidar quem está sem conta ("Entre para guardar") | T2, T5, E4 | 🔴 | ⬜ | Logado: usar uma ferramenta grava a entrada e ela aparece no histórico; deslogado: nada é gravado. Pede spec antes | — |
+| 7.3 | SEO do conteúdo: o `ToolPage` não renderiza `content`, `faq`, `related` nem `ctaText` (decisão de design do painel compacto); decidir como mostrar (bloco recolhível abaixo da ferramenta) e emitir o JSON-LD `FAQPage` | T2 | 🟡 | ⬜ | `<h1>`, texto explicativo e FAQ no HTML sem sessão; JSON-LD com `FAQPage`; layout aprovado pelo usuário | — |
+| 7.4 | `sitemap.xml` e `robots.txt` (não existem: `src/app/sitemap.ts` e `robots.ts`) | — | 🟡 | ⬜ | `/sitemap.xml` lista as ferramentas e `/robots.txt` aponta para ele | — |
+| 7.5 | Publicar as fases 6 e 7 no Coolify: os deploys são **manuais** (clicar em Deploy no site e na API; ou ligar o webhook do GitHub) e a produção ainda está no commit `d7e5a1a` | — | 🔴 | ⬜ | Em produção: `/icon.svg` 200, `<main>` no `/login`, `<meta name="keywords">` em `/tools/validador-luhn`, ferramenta abre sem login | — |
 
 Fluxo contínuo: novas ferramentas pequenas entram como tarefa nova (fase 2, ID seguinte), uma por conversa.

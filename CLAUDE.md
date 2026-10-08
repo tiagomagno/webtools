@@ -24,5 +24,6 @@ Site de ferramentas online do dia a dia (texto, dev, SEO, imagem, PDF, calculado
 
 ## Convenções do projeto
 - Nova ferramenta: pasta `src/app/tools/<slug>/` com `page.tsx` (server, usa `ToolPage` + `toolMetadata`) e um componente `"use client"`; lógica em `src/app/lib/*.ts`; registrar em `src/app/lib/tools.ts`. Slugs em português.
+- Ferramentas são abertas (sem login). Para guardar histórico use `useToolHistory("slug")`: ele só carrega e salva com sessão (`canSave`). Só `/conta` e `/admin` exigem login (ver `AppChrome`).
 - Não adicionar dependências sem autorização do usuário.
 - Git: não criar branch, commit nem PR sem pedido explícito; nunca versionar `.env`, `project-management/`, `docs/PRODUTO.md` ou `docs/NEGOCIO.md`.
