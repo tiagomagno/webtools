@@ -19,3 +19,9 @@ next-env.d.ts
 
 # Docs de planejamento — mantidas localmente, fora do controle de versão
 /project-management/
+
+# Contexto local (estratégico) e arquivos pessoais do Claude
+/docs/PRODUTO.md
+/docs/NEGOCIO.md
+CLAUDE.local.md
+.claude/settings.local.json
