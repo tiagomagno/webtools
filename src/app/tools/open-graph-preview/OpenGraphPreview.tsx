@@ -54,7 +54,7 @@ export default function OpenGraphPreview() {
       description && `<meta name="twitter:description" content="${escapeHtml(description)}" />`,
       image && `<meta name="twitter:image" content="${escapeHtml(image)}" />`,
     ];
-    return lines.filter((l) => l !== false && l !== undefined).join("\n");
+    return lines.filter((l) => l !== undefined).join("\n");
   }, [title, description, url, image, siteName]);
 
   const copy = () => {

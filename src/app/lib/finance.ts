@@ -81,7 +81,7 @@ export interface RescisaoResult {
 }
 export function calcRescisao(
   salary: number, daysWorked: number, monthsWorked: number,
-  hasNotice: boolean, vacationBalance: number, fgtsBalance: number,
+  hasNotice: boolean, vacationBalance: boolean, fgtsBalance: number,
   type: 'sem-justa-causa' | 'pedido-demissao' | 'justa-causa',
 ): RescisaoResult {
   const saldoSalario = (salary / 30) * daysWorked;

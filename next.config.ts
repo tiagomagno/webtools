@@ -33,9 +33,6 @@ const CALCULATOR_SLUGS = [
 
 const nextConfig: NextConfig = {
   output: isElectronBuild ? "export" : "standalone",
-  typescript: {
-    ignoreBuildErrors: true,
-  },
   // Export estático não aceita redirects() (nem função vazia) — o app
   // desktop não tem as URLs antigas das calculadoras pra redirecionar mesmo.
   ...(!isElectronBuild && {

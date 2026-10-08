@@ -7,14 +7,17 @@ interface ToolMetaInput {
   /** Título completo otimizado para SEO. */
   title: string;
   description: string;
+  /** Palavras-chave da página (meta keywords). */
+  keywords?: string[];
 }
 
 /** Gera o objeto Metadata padronizado para uma página de ferramenta. */
-export function toolMetadata({ slug, title, description }: ToolMetaInput): Metadata {
+export function toolMetadata({ slug, title, description, keywords }: ToolMetaInput): Metadata {
   const path = `/tools/${slug}`;
   return {
     title,
     description,
+    keywords,
     alternates: { canonical: path },
     openGraph: {
       title,

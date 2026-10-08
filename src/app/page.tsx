@@ -77,7 +77,7 @@ export default function Home() {
         {/* Estatísticas */}
         <a href="#categorias" style={{ textDecoration: "none" }}>
           <div className="dash-card dash-card-link" style={{ position: "relative", cursor: "pointer", height: "100%", minHeight: 156, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-            <Wrench size={20} strokeWidth={2.2} title="Total de ferramentas" style={{ position: "absolute", top: 18, right: 20, color: "var(--text-muted)" }} />
+            <Wrench size={20} strokeWidth={2.2} aria-label="Total de ferramentas" style={{ position: "absolute", top: 18, right: 20, color: "var(--text-muted)" }} />
             <div>
               <div style={{ fontSize: 34, fontWeight: 700, letterSpacing: "-0.02em", color: "var(--accent)" }}>
                 {TOOLS.length}
@@ -108,7 +108,7 @@ export default function Home() {
               justifyContent: "space-between",
             }}
           >
-            <Sparkles size={20} strokeWidth={2.2} title="Categoria em destaque" style={{ position: "absolute", top: 18, right: 20, opacity: 0.9 }} />
+            <Sparkles size={20} strokeWidth={2.2} aria-label="Categoria em destaque" style={{ position: "absolute", top: 18, right: 20, opacity: 0.9 }} />
             <div>
               <div style={{ fontSize: 34, fontWeight: 700, letterSpacing: "-0.02em" }}>
                 {spotlightCount}

@@ -109,7 +109,7 @@ export default function ImageCropper() {
         if (d.handle === "sw") { r.x = d.start.x + dx; r.w = d.start.w - dx; r.h = d.start.h + dy; }
         if (d.handle === "ne") { r.y = d.start.y + dy; r.w = d.start.w + dx; r.h = d.start.h - dy; }
         if (d.handle === "nw") { r.x = d.start.x + dx; r.y = d.start.y + dy; r.w = d.start.w - dx; r.h = d.start.h - dy; }
-        if (aspect && d.handle !== "move") {
+        if (aspect) {
           r.h = r.w / aspect;
           if (d.handle === "nw" || d.handle === "ne") r.y = d.start.y + d.start.h - r.h;
         }

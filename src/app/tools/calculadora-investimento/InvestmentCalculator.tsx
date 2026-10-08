@@ -21,7 +21,7 @@ export default function InvestmentCalculator() {
     return calcInvestment(p, m, c, { cdb, lci, poupanca: 70 });
   }, [principal, months, cdi, cdbRate, lciRate]);
 
-  const irNote = months <= 6 ? "22,5% IR" : parseInt(months) <= 12 ? "20% IR" : parseInt(months) <= 24 ? "17,5% IR" : "15% IR";
+  const irNote = Number(months) <= 6 ? "22,5% IR" : parseInt(months) <= 12 ? "20% IR" : parseInt(months) <= 24 ? "17,5% IR" : "15% IR";
   const irNoteM = parseInt(months);
 
   const inp: React.CSSProperties = { width: "100%", background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 8, padding: "8px 12px", color: "var(--text)", fontSize: 14 };

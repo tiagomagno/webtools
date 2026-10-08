@@ -75,8 +75,8 @@ export function canvasToBlob(canvas: HTMLCanvasElement, type = "image/jpeg", qua
 }
 
 /** Dispara o download de bytes como arquivo. */
-export function downloadBytes(bytes: BlobPart, filename: string, mime = "application/octet-stream"): void {
-  const blob = new Blob([bytes], { type: mime });
+export function downloadBytes(bytes: BlobPart | Uint8Array, filename: string, mime = "application/octet-stream"): void {
+  const blob = new Blob([bytes as BlobPart], { type: mime });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;

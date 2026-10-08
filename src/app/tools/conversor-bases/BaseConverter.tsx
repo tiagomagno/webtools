@@ -31,7 +31,7 @@ export default function BaseConverter() {
     setTimeout(() => setCopiedKey(null), 1200);
   }
 
-  const outputs: { key: keyof typeof result; label: string; prefix: string }[] = [
+  const outputs: { key: keyof NonNullable<typeof result>; label: string; prefix: string }[] = [
     { key: "dec", label: "Decimal", prefix: "" },
     { key: "bin", label: "Binário", prefix: "0b" },
     { key: "oct", label: "Octal", prefix: "0o" },

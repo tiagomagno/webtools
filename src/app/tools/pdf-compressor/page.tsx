@@ -92,7 +92,7 @@ export default function PdfCompressorPage() {
         canvas.height = Math.floor(viewport.height);
         const ctx = canvas.getContext("2d")!;
 
-        await page.render({ canvasContext: ctx, viewport }).promise;
+        await page.render({ canvas, canvasContext: ctx, viewport }).promise;
 
         const jpegDataUrl = canvas.toDataURL("image/jpeg", quality);
         const base64 = jpegDataUrl.split(",")[1];
@@ -117,7 +117,7 @@ export default function PdfCompressorPage() {
 
   const download = () => {
     if (!result || !fileName) return;
-    const blob = new Blob([result.bytes], { type: "application/pdf" });
+    const blob = new Blob([result.bytes as BlobPart], { type: "application/pdf" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;

@@ -18,7 +18,7 @@ export default function QrReader() {
   const streamRef = useRef<MediaStream | null>(null);
   const rafRef = useRef<number | null>(null);
 
-  const decodeImageData = (img: HTMLImageElement | HTMLCanvasElement, w: number, h: number): string | null => {
+  const decodeImageData = (img: HTMLImageElement | HTMLCanvasElement | HTMLVideoElement, w: number, h: number): string | null => {
     const canvas = document.createElement("canvas");
     canvas.width = w;
     canvas.height = h;
