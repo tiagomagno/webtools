@@ -23,7 +23,7 @@ function Row({ label, value }: { label: string; value: string }) {
 
 export default function TimestampTool() {
   const [now, setNow] = useState(() => Math.floor(Date.now() / 1000));
-  const [tsInput, setTsInput] = useState(String(Math.floor(Date.now() / 1000)));
+  const [tsInput, setTsInput] = useState(() => String(Math.floor(Date.now() / 1000)));
   const [unit, setUnit] = useState<"s" | "ms">("s");
   const [dateInput, setDateInput] = useState(() => toLocalInput(new Date()));
 

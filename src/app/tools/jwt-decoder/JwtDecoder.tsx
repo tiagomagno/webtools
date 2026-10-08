@@ -35,9 +35,11 @@ function fmtDate(unix: number): string {
 
 export default function JwtDecoder() {
   const [token, setToken] = useState("");
+  // Instante em que o token foi colado: Date.now() é impuro e não pode ser lido durante o render.
+  const [checkedAt, setCheckedAt] = useState(0);
   const decoded = useMemo(() => (token.trim() === "" ? null : decodeJwt(token)), [token]);
 
-  const expired = decoded?.exp ? decoded.exp * 1000 < Date.now() : null;
+  const expired = decoded?.exp ? decoded.exp * 1000 < checkedAt : null;
 
   const panel: React.CSSProperties = { background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 10, padding: 14 };
   const pre: React.CSSProperties = { margin: 0, fontFamily: "monospace", fontSize: 13, color: "var(--text)", whiteSpace: "pre-wrap", wordBreak: "break-all" };
@@ -46,7 +48,7 @@ export default function JwtDecoder() {
     <div>
       <textarea
         value={token}
-        onChange={(e) => setToken(e.target.value)}
+        onChange={(e) => { setToken(e.target.value); setCheckedAt(Date.now()); }}
         rows={5}
         spellCheck={false}
         placeholder="Cole o token JWT (eyJ...)"

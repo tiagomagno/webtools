@@ -198,7 +198,7 @@ export default function TextCleaner() {
         </div>
         {rules.length === 0 && (
           <p style={{ fontSize: 13, color: "var(--text-subtle)", margin: "8px 0 0" }}>
-            Nenhuma regra de substituição. Use as ações rápidas ou clique em "Nova regra".
+            Nenhuma regra de substituição. Use as ações rápidas ou clique em &quot;Nova regra&quot;.
           </p>
         )}
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>

@@ -26,7 +26,7 @@ export default function Page() {
       heroDescription={<>Codifique e decodifique textos com a clássica <strong style={{ color: "var(--text)" }}>Cifra de César</strong>, incluindo ROT13.</>}
       schemaName="Cifra de César"
       schemaDescription={DESCRIPTION}
-      content={{ heading: "Como a Cifra de César funciona", body: <p>Cada letra do texto é deslocada N posições no alfabeto. Com shift 3, 'A' vira 'D', 'B' vira 'E', e assim por diante. Para decodificar, basta usar o deslocamento inverso (-N).</p> }}
+      content={{ heading: "Como a Cifra de César funciona", body: <p>Cada letra do texto é deslocada N posições no alfabeto. Com shift 3, &apos;A&apos; vira &apos;D&apos;, &apos;B&apos; vira &apos;E&apos;, e assim por diante. Para decodificar, basta usar o deslocamento inverso (-N).</p> }}
       faq={FAQ}
       related={["hash-generator", "base64-encode", "jwt-decoder"]}
       ctaText="Precisa de mais ferramentas de Dev?"

@@ -8,13 +8,12 @@ export default function RegexTester() {
   const [pattern, setPattern] = useState("");
   const [flags, setFlags] = useState("g");
   const [text, setText] = useState("");
-  const [error, setError] = useState("");
 
-  const result = useMemo<{ matches: Match[]; highlighted: string } | null>(() => {
-    if (!pattern || !text) { setError(""); return null; }
+  // Resultado e erro saem do mesmo cálculo; nada de setState dentro do useMemo.
+  const { result, error } = useMemo<{ result: { matches: Match[]; highlighted: string } | null; error: string }>(() => {
+    if (!pattern || !text) return { result: null, error: "" };
     try {
       const re = new RegExp(pattern, flags.includes("g") ? flags : flags + "g");
-      setError("");
       const matches: Match[] = [];
       let m: RegExpExecArray | null;
       while ((m = re.exec(text)) !== null) {
@@ -29,10 +28,9 @@ export default function RegexTester() {
         last = match.index + match.length;
       }
       hi += text.slice(last).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-      return { matches, highlighted: hi };
+      return { result: { matches, highlighted: hi }, error: "" };
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Regex inválida");
-      return null;
+      return { result: null, error: e instanceof Error ? e.message : "Regex inválida" };
     }
   }, [pattern, flags, text]);
 

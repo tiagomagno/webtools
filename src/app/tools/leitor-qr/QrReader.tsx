@@ -54,10 +54,11 @@ export default function QrReader() {
     setScanning(false);
   }, []);
 
-  const tick = useCallback(() => {
+  // Função nomeada: o laço se reagenda por "loop", sem referenciar "tick" antes de ele existir.
+  const tick = useCallback(function loop() {
     const video = videoRef.current;
     if (!video || video.readyState !== video.HAVE_ENOUGH_DATA) {
-      rafRef.current = requestAnimationFrame(tick);
+      rafRef.current = requestAnimationFrame(loop);
       return;
     }
     const found = decodeImageData(video, video.videoWidth, video.videoHeight);
@@ -66,7 +67,7 @@ export default function QrReader() {
       stopCamera();
       return;
     }
-    rafRef.current = requestAnimationFrame(tick);
+    rafRef.current = requestAnimationFrame(loop);
   }, [stopCamera]);
 
   const startCamera = useCallback(async () => {

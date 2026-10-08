@@ -79,7 +79,7 @@ export default function AsciiTable() {
             ))}
           </tbody>
         </table>
-        {rows.length === 0 && <p style={{ textAlign: "center", padding: 20, fontSize: 14, color: "var(--text-subtle)" }}>Nenhum resultado para "{search}".</p>}
+        {rows.length === 0 && <p style={{ textAlign: "center", padding: 20, fontSize: 14, color: "var(--text-subtle)" }}>Nenhum resultado para &quot;{search}&quot;.</p>}
       </div>
       <p style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 8 }}>Clique em qualquer linha para copiar o caractere.</p>
     </div>

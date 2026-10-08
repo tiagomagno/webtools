@@ -90,7 +90,7 @@ export function numberToWords(n: number): string {
   if (!Number.isFinite(n) || n > 999_999_999_999) return '(número fora do intervalo)';
   if (n === 0) return 'zero';
   const neg = n < 0;
-  let abs = Math.abs(Math.floor(n));
+  const abs = Math.abs(Math.floor(n));
   const groups: { value: number; singular: string; plural: string }[] = [
     { value: Math.floor(abs / 1_000_000_000), singular: 'bilhão', plural: 'bilhões' },
     { value: Math.floor((abs % 1_000_000_000) / 1_000_000), singular: 'milhão', plural: 'milhões' },

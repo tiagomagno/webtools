@@ -65,7 +65,7 @@ function parseCron(expr: string): { ok: boolean; desc: string; nexts: string[] }
   // Próximas 5 execuções (aproximação)
   const nexts: string[] = [];
   const now = new Date();
-  let check = new Date(now);
+  const check = new Date(now);
   check.setSeconds(0, 0);
   check.setMinutes(check.getMinutes() + 1);
 
