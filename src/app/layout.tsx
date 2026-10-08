@@ -4,6 +4,7 @@ import "./globals.css";
 import AppChrome from "./components/AppChrome";
 import RecentTracker from "./components/RecentTracker";
 import { AuthProvider } from "./lib/auth/AuthProvider";
+import { SITE_URL } from "./lib/seo";
 
 const THEME_INIT_SCRIPT = `
 (function () {
@@ -19,7 +20,7 @@ const THEME_INIT_SCRIPT = `
 `;
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://webtools.local"),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "Webtools — Ferramentas web gratuitas",
     template: "%s · Webtools",

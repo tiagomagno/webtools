@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-export const SITE_URL = "https://webtools.local";
+export const SITE_URL = "https://webtools.tiagosmagno.com.br";
 
 interface ToolMetaInput {
   slug: string;
