@@ -14,7 +14,7 @@ function luhnCheckDigit(partial: string): number {
   const digits = partial.split('').map(Number);
   for (let i = digits.length - 1; i >= 0; i--) {
     let d = digits[i];
-    if ((digits.length - i) % 2 === 0) {
+    if ((digits.length - i) % 2 === 1) {
       d *= 2;
       if (d > 9) d -= 9;
     }
