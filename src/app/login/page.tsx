@@ -1,8 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAuth } from "../lib/auth/AuthProvider";
+import { consumeNext, rememberNext } from "../lib/auth/next";
 
 const inputStyle: React.CSSProperties = {
   width: "100%",
@@ -36,11 +38,16 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  // Guarda para onde voltar (?next=/tools/...): o login com Google sai do site e volta pelo /auth/callback.
+  useEffect(() => {
+    rememberNext(new URLSearchParams(window.location.search).get("next"));
+  }, []);
+
   // Sessão já válida (ex: voltou pro /login pelo histórico do navegador) —
   // não faz sentido mostrar o formulário de novo.
   useEffect(() => {
     if (status === "authenticated") {
-      router.replace("/");
+      router.replace(consumeNext());
     }
   }, [status, router]);
 
@@ -54,7 +61,7 @@ export default function LoginPage() {
       } else {
         await register(email, password, name || undefined);
       }
-      router.replace("/");
+      router.replace(consumeNext());
     } catch (err) {
       setError(err instanceof Error ? err.message : "Não foi possível continuar");
     } finally {
@@ -126,6 +133,10 @@ export default function LoginPage() {
         >
           {mode === "login" ? "Não tem conta? Criar agora" : "Já tem conta? Entrar"}
         </button>
+
+        <Link href="/" style={{ display: "block", textAlign: "center", marginTop: 12, fontSize: 13, color: "var(--text-muted)" }}>
+          Continuar sem entrar
+        </Link>
       </div>
     </main>
   );

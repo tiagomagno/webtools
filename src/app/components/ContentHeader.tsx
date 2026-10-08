@@ -2,10 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Sun, Moon, LogOut, Settings, Type, Users } from "lucide-react";
 import { usePinnedTools } from "../hooks/usePinnedTools";
 import { TOOLS } from "../lib/tools";
 import { useAuth } from "../lib/auth/AuthProvider";
+import { loginHref } from "../lib/auth/next";
 import { initials } from "../lib/initials";
 import FavoritesConfigModal from "./FavoritesConfigModal";
 
@@ -22,7 +24,8 @@ interface ContentHeaderProps {
 const fontLabel: Record<FontSize, string> = { sm: "Pequena", md: "Média", lg: "Grande" };
 
 export default function ContentHeader({ theme, fontSize, onToggleTheme, onCycleFont }: ContentHeaderProps) {
-  const { user, logout } = useAuth();
+  const { user, logout, status } = useAuth();
+  const pathname = usePathname();
   const { pinned, mounted } = usePinnedTools();
   const [open, setOpen] = useState(false);
   const [configuring, setConfiguring] = useState(false);
@@ -39,6 +42,21 @@ export default function ContentHeader({ theme, fontSize, onToggleTheme, onCycleF
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [open]);
+
+  // Sem sessão: as ferramentas são abertas; o convite é entrar para guardar histórico.
+  if (!user && status === "unauthenticated") {
+    return (
+      <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", gap: 12 }}>
+        <span style={{ fontSize: 12.5, color: "var(--text-muted)" }}>Entre para guardar seu histórico</span>
+        <Link
+          href={loginHref(pathname)}
+          style={{ padding: "8px 18px", borderRadius: 999, background: "var(--accent-strong)", color: "#fff", fontSize: 13, fontWeight: 600, textDecoration: "none" }}
+        >
+          Entrar
+        </Link>
+      </div>
+    );
+  }
 
   if (!user || !mounted) return null;
 

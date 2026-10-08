@@ -16,11 +16,14 @@ export interface ToolHistoryEntry<T = unknown> {
 export function useToolHistory<T = unknown>(tool: string) {
   const { authorizedFetch, status } = useAuth();
   const [entries, setEntries] = useState<ToolHistoryEntry<T>[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loadingEntries, setLoadingEntries] = useState(true);
+  // Histórico só existe para quem tem conta; sem sessão não há nada para carregar nem salvar.
+  const canSave = status === "authenticated";
+  const loading = status === "loading" || (canSave && loadingEntries);
 
   const reload = useCallback(async () => {
     if (status !== "authenticated") return;
-    setLoading(true);
+    setLoadingEntries(true);
     try {
       const res = await authorizedFetch(`/history?tool=${encodeURIComponent(tool)}`);
       if (res.ok) {
@@ -28,7 +31,7 @@ export function useToolHistory<T = unknown>(tool: string) {
         setEntries(data.entries);
       }
     } finally {
-      setLoading(false);
+      setLoadingEntries(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tool, status]);
@@ -39,6 +42,7 @@ export function useToolHistory<T = unknown>(tool: string) {
 
   const save = useCallback(
     async (payload: T) => {
+      if (!canSave) return false; // sem conta, nada é salvo
       const res = await authorizedFetch("/history", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -51,7 +55,7 @@ export function useToolHistory<T = unknown>(tool: string) {
       return res.ok;
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [tool],
+    [tool, canSave],
   );
 
   const remove = useCallback(
@@ -66,5 +70,5 @@ export function useToolHistory<T = unknown>(tool: string) {
     [],
   );
 
-  return { entries, loading, save, remove, reload };
+  return { entries, loading, canSave, save, remove, reload };
 }

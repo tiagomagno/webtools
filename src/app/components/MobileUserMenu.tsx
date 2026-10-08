@@ -2,15 +2,18 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { LogOut, Settings, Users } from "lucide-react";
 import { usePinnedTools } from "../hooks/usePinnedTools";
 import { TOOLS } from "../lib/tools";
 import { useAuth } from "../lib/auth/AuthProvider";
+import { loginHref } from "../lib/auth/next";
 import { initials } from "../lib/initials";
 import FavoritesConfigModal from "./FavoritesConfigModal";
 
 export default function MobileUserMenu() {
-  const { user, logout } = useAuth();
+  const { user, logout, status } = useAuth();
+  const pathname = usePathname();
   const { pinned, mounted } = usePinnedTools();
   const [open, setOpen] = useState(false);
   const [configuring, setConfiguring] = useState(false);
@@ -27,6 +30,18 @@ export default function MobileUserMenu() {
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [open]);
+
+  // Sem sessão: as ferramentas são abertas; o convite é entrar para guardar histórico.
+  if (!user && status === "unauthenticated") {
+    return (
+      <Link
+        href={loginHref(pathname)}
+        style={{ flexShrink: 0, padding: "6px 14px", borderRadius: 999, background: "var(--accent-strong)", color: "#fff", fontSize: 12.5, fontWeight: 600, textDecoration: "none" }}
+      >
+        Entrar
+      </Link>
+    );
+  }
 
   if (!user || !mounted) return null;
 

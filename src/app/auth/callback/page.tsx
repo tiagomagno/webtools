@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { useAuth } from "../../lib/auth/AuthProvider";
+import { consumeNext } from "../../lib/auth/next";
 
 export default function AuthCallbackPage() {
   const { completeOAuthCallback } = useAuth();
@@ -18,7 +19,7 @@ export default function AuthCallbackPage() {
     const fragment = window.location.hash.replace(/^#/, "");
     completeOAuthCallback(fragment).finally(() => {
       window.history.replaceState(null, "", window.location.pathname);
-      router.replace("/");
+      router.replace(consumeNext());
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
