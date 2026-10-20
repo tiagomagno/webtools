@@ -4,10 +4,10 @@ Site de ferramentas online do dia a dia (texto, dev, SEO, imagem, PDF, calculado
 @docs/ESTADO.md
 
 ## Comandos
-- Instalar: `npm install` · `npm --prefix server install` · `npm --prefix electron install`
-- Rodar site: `npm run dev` · Rodar API: `npm --prefix server run dev` (porta 3333)
-- Build: `npm run build` · Lint: `npm run lint` (0 erros; avisos restantes são esperados) · Testes: `npm test` (Vitest)
-- Banco: `npm --prefix server run db:push` (produção: `db:migrate:deploy`)
+- Instalar (workspace pnpm único: raiz + `server/` + `electron/`): `pnpm install`
+- Rodar site: `pnpm dev` · Rodar API: `pnpm --filter webtools-server run dev` (porta 3333)
+- Build: `pnpm build` · Lint: `pnpm lint` (0 erros; avisos restantes são esperados) · Testes: `pnpm test` (Vitest)
+- Banco: `pnpm --filter webtools-server run db:push` (produção: `db:migrate:deploy`)
 
 ## Documentação (ler antes de alterar algo relacionado)
 - Arquitetura: docs/ARQUITETURA.md · Design: docs/DESIGN.md

@@ -130,3 +130,11 @@ Decisões técnicas de 2026-06-21/22 (padrão server page + client component, `T
 - **Como evitar problemas:** todo payload é validado por `parseHistoryPayload` (`src/app/lib/historico.ts`) antes de preencher a ferramenta ou aparecer na lista. Para incluir outra ferramenta: registrar em `HISTORY_TOOLS` e acrescentar o teste.
 - **Tarefa relacionada:** 7.2
 - **Certeza:** ✅ (decidido com o usuário); ❓ "sem limite" pode precisar de retenção se o volume crescer.
+
+## 2026-10-20: Migração de npm para pnpm workspace (raiz + server/ + electron/)
+- **Decisão:** um único `pnpm-workspace.yaml` na raiz unindo os 3 `package.json` (site, `server/`, `electron/`), substituindo os 3 `node_modules`/lockfiles npm independentes. `electron/package.json`'s `build:web` passou de `npm --prefix ../` para `pnpm --filter webtools run build:electron`.
+- **Por quê:** parte de uma limpeza de espaço em disco em todos os projetos de `C:\Projects`; o pnpm deduplica pacotes via store global com hardlinks, sem mudar nenhum comportamento do app.
+- **Como evitar problemas:** pacotes com script de build nativo (sharp, electron, esbuild, onnxruntime-node, protobufjs, prisma) precisam estar listados em `allowBuilds`/`onlyBuiltDependencies` no `pnpm-workspace.yaml`, senão `pnpm install` os ignora silenciosamente.
+- **Observação lateral:** `src/app/robots.ts` e `src/app/sitemap.ts` (tarefa 7.4, ainda não publicada) não tinham `export const dynamic = "force-static"`, o que quebrava especificamente o `build:electron` (`output: export`). Corrigido nesta mudança — não é um problema do pnpm, só apareceu ao validar o build do Electron de ponta a ponta.
+- **Tarefa relacionada:** nenhuma em TASKS.md (infraestrutura entre projetos, pedida fora do fluxo de tarefas)
+- **Certeza:** ✅ build, testes (104) e lint (0 erros) validados nos 3 sub-projetos.
