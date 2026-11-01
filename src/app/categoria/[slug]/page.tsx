@@ -88,6 +88,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
         .tool-card:hover { --cut-border: var(--text-subtle); }
         .cat-list { columns: 1; column-gap: 16px; }
         @media (min-width: 900px) { .cat-list { columns: 2; } }
+        @media (min-width: 1400px) { .cat-list { columns: 3; } }
       `}</style>
     </div>
   );

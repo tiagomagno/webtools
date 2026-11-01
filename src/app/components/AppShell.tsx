@@ -44,7 +44,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="page-bg" style={{ width: "100%", minHeight: "100vh" }}>
-      <div style={{ maxWidth: 1352, margin: "0 auto", padding: 16, display: "flex", flexDirection: "column", gap: 16, minHeight: "100vh" }}>
+      <div style={{ width: "100%", padding: 16, display: "flex", flexDirection: "column", gap: 16, minHeight: "100vh" }}>
         <SiteHeader theme={theme} fontSize={fontSize} onToggleTheme={toggleTheme} onCycleFont={cycleFont} />
 
         <main className="cut-box" style={{
