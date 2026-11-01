@@ -29,7 +29,7 @@ function TabsInner({ tabs, label }: { tabs: ToolTab[]; label: string }) {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-      <div role="tablist" aria-label={label} style={{ display: "flex", gap: 20, borderBottom: "1px solid var(--border)", overflowX: "auto" }}>
+      <div role="tablist" className="hide-scrollbar" aria-label={label} style={{ display: "flex", gap: 20, borderBottom: "1px solid var(--border)", overflowX: "auto" }}>
         {tabs.map(({ id, label: text, icon: TabIcon }) => {
           const isActive = id === active;
           return (

@@ -156,3 +156,7 @@ input:focus-visible,
     min-height: 100vh;
   }
 }
+
+/* Rolagem por toque ou arrasto sem mostrar a barra (abas com muitas opções). */
+.hide-scrollbar { scrollbar-width: none; }
+.hide-scrollbar::-webkit-scrollbar { display: none; }

@@ -15,7 +15,7 @@ export default function SubTabs({ tabs, label }: { tabs: SubTab[]; label: string
 
   return (
     <div>
-      <div role="tablist" aria-label={label} style={{ display: "flex", gap: 16, marginBottom: 20, borderBottom: "1px solid var(--border)", overflowX: "auto" }}>
+      <div role="tablist" className="hide-scrollbar" aria-label={label} style={{ display: "flex", gap: 16, marginBottom: 20, borderBottom: "1px solid var(--border)", overflowX: "auto" }}>
         {tabs.map(({ id, label: text }) => {
           const isActive = id === current.id;
           return (
