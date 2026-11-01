@@ -5,6 +5,7 @@ import { Trash2 } from "lucide-react";
 import { useAuth } from "../lib/auth/AuthProvider";
 import { initials } from "../lib/initials";
 import Breadcrumbs from "../components/Breadcrumbs";
+import AdminFeedback from "../components/AdminFeedback";
 
 interface AdminUser {
   id: string;
@@ -74,7 +75,7 @@ export default function AdminPage() {
 
   if (user.role !== "ADMIN") {
     return (
-      <div style={{ maxWidth: 560, margin: "0 auto" }}>
+      <div>
         <Breadcrumbs items={[{ label: "Início", href: "/" }, { label: "Usuários" }]} />
         <div style={cardStyle}>
           <p style={{ fontSize: 14, color: "var(--text-muted)", margin: 0 }}>
@@ -86,7 +87,7 @@ export default function AdminPage() {
   }
 
   return (
-    <div style={{ maxWidth: 860, margin: "0 auto", display: "flex", flexDirection: "column", gap: 20 }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
       <Breadcrumbs items={[{ label: "Início", href: "/" }, { label: "Usuários" }]} />
       <div>
         <h1 style={{ fontSize: 22, fontWeight: 700, color: "var(--text)", margin: 0 }}>Usuários</h1>
@@ -95,7 +96,7 @@ export default function AdminPage() {
         </p>
       </div>
 
-      <div style={{ ...cardStyle, padding: 0, overflow: "hidden" }}>
+      <div className="cut-box" style={{ overflow: "hidden" }}>
         {error ? (
           <p style={{ fontSize: 13, color: "#ef4444", margin: 0, padding: 24 }}>{error}</p>
         ) : !users ? (
@@ -179,6 +180,8 @@ export default function AdminPage() {
           </table>
         )}
       </div>
+
+      <AdminFeedback />
     </div>
   );
 }

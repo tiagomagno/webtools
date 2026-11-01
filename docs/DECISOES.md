@@ -182,3 +182,8 @@ Decisões técnicas de 2026-06-21/22 (padrão server page + client component, `T
 ## 2026-10-31 · 7.13 — Utilidades e Finanças em abas
 - **Decisão:** agrupamento aprovado pelo usuário (ver `docs/tarefas/7.13.md`): Utilidades 32 → 10 e Finanças 8 → 3; Comparador de Textos e Cronômetro ficam soltos; Área e Tinta vira aba de Calculadoras. A página `ferramentas-texto` (hub antigo) e `salario` (hub de Salário/Rescisão) foram removidas e redirecionam.
 - **Como:** mesmo `ToolTabs` da 7.12; redirects em `MERGED_TOOLS`. O histórico do QR continua guardado com a chave `gerador-qr` (não muda o que já está no banco), mas o link para reabrir aponta para `/tools/qr-code?tipo=gerar#h=…` (`HISTORY_PAGES` em `lib/historico.ts`).
+
+## 2026-10-31 · 7.15 — Feedback guardado no banco
+- **Decisão:** sugestões e bugs vão para uma tabela `Feedback` e aparecem no `/admin` (em vez de e-mail ou issue no GitHub).
+- **Por quê:** a maioria dos usuários não tem GitHub, e o e-mail depende do app da pessoa e não deixa histórico no site.
+- **Limite:** 5 mensagens por hora por usuário, para evitar spam; só quem está logado envia.

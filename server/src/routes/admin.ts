@@ -40,4 +40,23 @@ export async function adminRoutes(app: FastifyInstance) {
     }
     return reply.code(204).send();
   });
+
+  app.get("/admin/feedback", { preHandler: [requireAuth, requireAdmin] }, async () => {
+    const items = await prisma.feedback.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 200,
+      select: { id: true, type: true, message: true, page: true, createdAt: true, user: { select: { email: true, name: true } } },
+    });
+    return items;
+  });
+
+  app.delete("/admin/feedback/:id", { preHandler: [requireAuth, requireAdmin] }, async (request, reply) => {
+    const { id } = paramsSchema.parse(request.params);
+    try {
+      await prisma.feedback.delete({ where: { id } });
+    } catch {
+      return reply.code(404).send({ error: "Mensagem não encontrada" });
+    }
+    return reply.code(204).send();
+  });
 }

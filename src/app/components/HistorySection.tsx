@@ -60,7 +60,7 @@ export default function HistorySection() {
   const visible = entries.filter((e) => isHistoryTool(e.tool) && parseHistoryPayload(e.tool, e.payload));
 
   return (
-    <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 16, padding: 24 }}>
+    <div className="cut-box" style={{ padding: 24 }}>
       <h2 style={{ fontSize: 15, fontWeight: 700, color: "var(--text)", margin: "0 0 4px" }}>Meu histórico</h2>
       <p style={{ fontSize: 13, color: "var(--text-muted)", margin: "0 0 16px" }}>
         O que você salvou nas ferramentas. Clique em uma entrada para reabri-la.

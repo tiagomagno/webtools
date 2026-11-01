@@ -51,7 +51,7 @@ src/app/
   admin/ conta/ login/ auth/callback/ categoria/[slug]/
 server/
   src/{app,db,env,index}.ts   # Fastify
-  src/routes/{auth,me,history,admin}.ts
+  src/routes/{auth,me,history,feedback,admin}.ts
   prisma/schema.prisma + migrations/
   scripts/promote-admin.ts
 electron/src/{main,preload}.ts
@@ -78,3 +78,8 @@ Variáveis de ambiente: ver `.env.example` (raiz: `NEXT_PUBLIC_API_URL`) e `serv
 - Build do Electron: `npm run build:electron` e, em `electron/`, `npm run dist`
 - Banco: `npm --prefix server run db:push` / `db:migrate:deploy` · promover admin: `npm --prefix server run promote-admin`
 - Testes: `npm test` (Vitest, só utils puros de `src/app/lib/__tests__/`; config em `vitest.config.mts`)
+
+### Feedback (7.15)
+- Tabela `Feedback` (id, userId → User com exclusão em cascata, `type` SUGGESTION|BUG, `message` TEXT até 2000, `page` opcional, createdAt). Migration aditiva `20261031120000_add_feedback` (não destrutiva).
+- `POST /feedback` (login obrigatório, máx. 5 por hora por usuário); `GET /admin/feedback` e `DELETE /admin/feedback/:id` (só ADMIN).
+- Telas: `FeedbackSection` em `/conta` e `AdminFeedback` em `/admin`.

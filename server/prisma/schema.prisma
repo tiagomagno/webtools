@@ -7,6 +7,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum FeedbackType {
+  SUGGESTION
+  BUG
+}
+
 enum Role {
   USER
   ADMIN
@@ -23,6 +28,7 @@ model User {
   oauthAccounts  OAuthAccount[]
   refreshTokens  RefreshToken[]
   historyEntries ToolHistoryEntry[]
+  feedbacks      Feedback[]
 }
 
 model OAuthAccount {
@@ -57,4 +63,17 @@ model ToolHistoryEntry {
   createdAt DateTime @default(now())
 
   @@index([userId, tool])
+}
+
+model Feedback {
+  id        String       @id @default(cuid())
+  userId    String
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      FeedbackType
+  message   String       @db.Text
+  page      String?
+  createdAt DateTime     @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
 }

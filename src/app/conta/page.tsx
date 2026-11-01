@@ -6,6 +6,7 @@ import { useAuth } from "../lib/auth/AuthProvider";
 import { initials } from "../lib/initials";
 import Breadcrumbs from "../components/Breadcrumbs";
 import HistorySection from "../components/HistorySection";
+import FeedbackSection from "../components/FeedbackSection";
 
 const inputStyle: React.CSSProperties = {
   width: "100%",
@@ -26,13 +27,6 @@ const buttonStyle: React.CSSProperties = {
   fontSize: 14,
   fontWeight: 600,
   cursor: "pointer",
-};
-
-const cardStyle: React.CSSProperties = {
-  background: "var(--surface)",
-  border: "1px solid var(--border)",
-  borderRadius: 16,
-  padding: 24,
 };
 
 export default function ContaPage() {
@@ -77,12 +71,12 @@ export default function ContaPage() {
   }
 
   return (
-    <div style={{ maxWidth: 560, margin: "0 auto", display: "flex", flexDirection: "column", gap: 20 }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
       <Breadcrumbs items={[{ label: "Início", href: "/" }, { label: "Minha conta" }]} />
       <h1 style={{ fontSize: 22, fontWeight: 700, color: "var(--text)", margin: 0 }}>Minha conta</h1>
 
       {/* Perfil */}
-      <div style={{ ...cardStyle, display: "flex", alignItems: "center", gap: 16 }}>
+      <div className="cut-box" style={{ padding: 24, display: "flex", alignItems: "center", gap: 16 }}>
         {user.avatarUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -135,10 +129,13 @@ export default function ContaPage() {
         </button>
       </div>
 
+      <div className="conta-grid">
       <HistorySection />
 
+      <FeedbackSection />
+
       {/* Senha */}
-      <div style={cardStyle}>
+      <div className="cut-box" style={{ padding: 24 }}>
         <h2 style={{ fontSize: 15, fontWeight: 700, color: "var(--text)", margin: "0 0 4px" }}>
           {user.hasPassword ? "Alterar senha" : "Definir senha"}
         </h2>
@@ -188,6 +185,13 @@ export default function ContaPage() {
           </button>
         </form>
       </div>
+      </div>
+
+      <style>{`
+        .conta-grid { display: grid; grid-template-columns: 1fr; gap: 16px; align-items: start; }
+        @media (min-width: 900px) { .conta-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 1400px) { .conta-grid { grid-template-columns: repeat(3, 1fr); } }
+      `}</style>
     </div>
   );
 }

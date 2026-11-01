@@ -5,7 +5,7 @@
 |---|---|---|---|
 | 0.1 | 2026-10-08 | 📝 Rascunho | 6 (Qualidade e entrega) |
 
-> **Total** 42 · **Concluídas** 30 (71%) · **Em andamento** 11
+> **Total** 43 · **Concluídas** 30 (70%) · **Em andamento** 12
 
 Legenda: ✅ confirmado · 💡 hipótese · ❓ em aberto. Status: ✅ Concluída · 🔄 Em andamento · ⬜ Não iniciada · ⏸️ Bloqueada.
 Datas "💡" vêm do `git log` (18/06 a 29/09/2026), sem data exata por tarefa.
@@ -79,5 +79,6 @@ Datas "💡" vêm do `git log` (18/06 a 29/09/2026), sem data exata por tarefa.
 | 7.12 | Unificar as ferramentas de Dev (16 + UUID em massa → 5, com abas): Formatador de Dados e Código, Codificadores, Hash e UUID, Conversores Técnicos, Regex e Cron; páginas antigas redirecionam | T2, T3 | 🟡 | 🔄 | Ver spec `docs/tarefas/7.12.md`; cada aba funciona como a ferramenta antiga; usuário testou as abas | — |
 | 7.13 | Agrupar Utilidades (32 → 10; Área e Tinta entra em Calculadoras) e Finanças (8 → 3) em ferramentas com abas; páginas antigas redirecionam | T2, T3 | 🟡 | 🔄 | Ver spec `docs/tarefas/7.13.md`; cada aba funciona como a ferramenta antiga; usuário testou as abas | — |
 | 7.14 | Home no layout novo: título Kode Mono, busca, cartões de categoria com cantos cortados (contagem e primeiras ferramentas) e últimas ferramentas; Calculadoras com seletor agrupado no cabeçalho | T2 | 🟡 | 🔄 | Home em 360, 900 e 1440 px nos dois temas; usuário aprovou o visual | — |
+| 7.15 | Sugestões e relato de bug em `/conta`: formulário (tipo, mensagem, ferramenta opcional), tabela `Feedback` na API e lista no `/admin` | T2, T5, E4 | 🟡 | 🔄 | Logado envia e vê "Mensagem enviada"; admin vê a mensagem e pode apagar; deslogado não envia; migration aplicada em produção | — |
 
 Fluxo contínuo: novas ferramentas pequenas entram como tarefa nova (fase 2, ID seguinte), uma por conversa.
