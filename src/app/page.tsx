@@ -31,9 +31,11 @@ export default function Home() {
 
   return (
     <div>
-      <PageHeader title="Webtools">
-        {TOOLS.length} ferramentas gratuitas para o dia a dia, direto no navegador e sem cadastro.
-      </PageHeader>
+      <div className="home-hero">
+        <PageHeader title="Webtools">
+          {TOOLS.length} ferramentas gratuitas para o dia a dia, direto no navegador e sem cadastro.
+        </PageHeader>
+      </div>
 
       {/* Busca */}
       <div style={{ position: "relative", marginBottom: 24 }}>
@@ -107,6 +109,7 @@ export default function Home() {
       </div>
 
       <style>{`
+        @media (max-width: 767px) { .home-hero { display: none; } }
         .home-cats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
         @media (min-width: 640px) { .home-cats { grid-template-columns: repeat(3, 1fr); gap: 16px; } }
         @media (min-width: 1024px) { .home-cats { grid-template-columns: repeat(5, 1fr); } }

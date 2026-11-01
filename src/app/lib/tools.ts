@@ -131,3 +131,15 @@ export const categorySlug = (cat: string) =>
     .replace(/[̀-ͯ]/g, "")
     .toLowerCase()
     .replace(/\s+/g, "-");
+
+/** Nome curto (uma linha) das ferramentas para o menu inferior do celular. */
+const SHORT_LABELS: Record<string, string> = {
+  "color-palette": "Paleta", "contraste-cores": "Contraste", gradients: "Gradientes", "grid-layouts": "Layouts", moodboard: "Moodboard",
+  "editor-imagem": "Imagem", "gerador-favicon": "Favicon", "formatador-dados": "Dados", codificadores: "Codificar", "hash-uuid": "Hash",
+  "conversores-tecnicos": "Conversores", "regex-cron": "Regex", "open-graph-preview": "OG", "robots-generator": "Robots", "gerador-utm": "UTM",
+  "serp-preview": "SERP", "analisador-texto": "Analisar", "editor-texto": "Texto", "comparador-textos": "Comparar", "codificacoes-texto": "Cifras",
+  "extrator-documentos": "Extrator", "ferramentas-pdf": "PDF", "qr-code": "QR Code", geradores: "Geradores", "documentos-br": "Docs BR",
+  cronometro: "Cronômetro", calculadoras: "Calcular", "trabalho-impostos": "Trabalho", imoveis: "Imóveis", investimentos: "Investir",
+};
+
+export const shortLabel = (tool: { slug: string; label: string }): string => SHORT_LABELS[tool.slug] ?? tool.label;
