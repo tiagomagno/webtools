@@ -1,7 +1,12 @@
-"use client";
+﻿"use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import Breadcrumbs from "../../components/Breadcrumbs";
+import PageHeader from "../../components/PageHeader";
+import {
+  AlignCenterHorizontal, ArrowsHorizontal, ArrowsLeftRight, Cards, ChartBar, Check, Code, Copy, CaretDown, Desktop, DeviceMobile, DeviceTablet, Eye, GridFour,
+  Images, Lightbulb, Newspaper, SidebarSimple, Swatches, type Icon,
+} from "@phosphor-icons/react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -45,10 +50,10 @@ const CONTENT_WIDTHS: { value: number | "full"; label: string; desc: string }[] 
   { value: "full", label: "100%",  desc: "Fluido" },
 ];
 
-const VIEWPORTS: { id: Viewport; label: string; width: number; icon: string }[] = [
-  { id: "mobile", label: "Mobile", width: 375, icon: "📱" },
-  { id: "tablet", label: "Tablet", width: 768, icon: "📲" },
-  { id: "desktop", label: "Desktop", width: 1280, icon: "🖥️" },
+const VIEWPORTS: { id: Viewport; label: string; width: number; icon: Icon }[] = [
+  { id: "mobile", label: "Mobile", width: 375, icon: DeviceMobile },
+  { id: "tablet", label: "Tablet", width: 768, icon: DeviceTablet },
+  { id: "desktop", label: "Desktop", width: 1280, icon: Desktop },
 ];
 
 // ─── CSS Generator ────────────────────────────────────────────────────────────
@@ -120,64 +125,9 @@ function generateResponsiveCSS(cfg: GridConfig): string {
   return `${wrapperLines}.container {\n  ${base.split("\n").join("\n  ")}\n}\n\n/* Tablet (≤ 768px) */\n@media (max-width: 768px) {\n  .container {\n    grid-template-columns: repeat(${tabletCols}, 1fr);\n  }\n}\n\n/* Mobile (≤ 480px) */\n@media (max-width: 480px) {\n  .container {\n    grid-template-columns: repeat(${mobileCols}, 1fr);\n  }\n}`;
 }
 
-// ─── Subcomponents ────────────────────────────────────────────────────────────
-
-function Slider({ label, value, min, max, step = 1, unit = "px", onChange }: {
-  label: string; value: number; min: number; max: number; step?: number; unit?: string; onChange: (v: number) => void;
-}) {
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <label style={{ fontSize: 12, fontWeight: 600, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em" }}>{label}</label>
-        <span style={{ fontSize: 13, fontWeight: 700, color: "var(--text)", fontFamily: "monospace", background: "var(--surface-2)", padding: "2px 8px", borderRadius: 6 }}>
-          {value}{unit}
-        </span>
-      </div>
-      <input type="range" min={min} max={max} step={step} value={value}
-        onChange={(e) => onChange(Number(e.target.value))}
-        style={{ width: "100%", accentColor: "var(--accent)" }} />
-      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: "var(--text-muted)" }}>
-        <span>{min}{unit}</span><span>{max}{unit}</span>
-      </div>
-    </div>
-  );
-}
-
-function Select<T extends string>({ label, value, options, onChange }: {
-  label: string; value: T; options: { value: T; label: string }[]; onChange: (v: T) => void;
-}) {
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-      <label style={{ fontSize: 12, fontWeight: 600, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em" }}>{label}</label>
-      <select value={value} onChange={(e) => onChange(e.target.value as T)}
-        style={{ background: "var(--surface-2)", border: "1px solid var(--border)", borderRadius: 8, padding: "8px 10px", color: "var(--text)", fontSize: 13, cursor: "pointer" }}>
-        {options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-      </select>
-    </div>
-  );
-}
-
-function CopyButton({ text }: { text: string }) {
-  const [copied, setCopied] = useState(false);
-  const copy = () => {
-    navigator.clipboard.writeText(text).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1800);
-    });
-  };
-  return (
-    <button onClick={copy}
-      style={{ padding: "6px 14px", borderRadius: 7, background: copied ? "#22c55e22" : "var(--surface-2)", border: `1px solid ${copied ? "#22c55e55" : "var(--border)"}`, color: copied ? "#22c55e" : "var(--text-muted)", fontSize: 12, fontWeight: 600, cursor: "pointer", transition: "all 0.15s", whiteSpace: "nowrap" }}>
-      {copied ? "✓ Copiado" : "Copiar CSS"}
-    </button>
-  );
-}
-
 // ─── Grid Preview ─────────────────────────────────────────────────────────────
 
-const ITEM_COLORS = ["#6366f1", "#0ea5e9", "#22c55e", "#f59e0b", "#ec4899", "#8b5cf6", "#14b8a6", "#f43f5e", "#a855f7", "#06b6d4", "#84cc16", "#fb923c"];
-
-function GridPreview({ cfg, scale = 1 }: { cfg: GridConfig; scale?: number }) {
+function GridPreview({ cfg, scale = 1, containerRef }: { cfg: GridConfig; scale?: number; containerRef?: React.Ref<HTMLDivElement> }) {
   const items = Array.from({ length: cfg.itemCount }, (_, i) => i);
 
   const containerStyle: React.CSSProperties = cfg.mode === "grid"
@@ -204,18 +154,18 @@ function GridPreview({ cfg, scale = 1 }: { cfg: GridConfig; scale?: number }) {
     };
 
   return (
-    <div style={containerStyle}>
+    <div ref={containerRef} style={containerStyle}>
       {items.map((i) => (
         <div key={i} style={{
-          background: ITEM_COLORS[i % ITEM_COLORS.length] + "33",
-          border: `2px solid ${ITEM_COLORS[i % ITEM_COLORS.length]}66`,
+          background: "color-mix(in srgb, var(--accent-strong) 16%, transparent)",
+          border: "2px solid color-mix(in srgb, var(--accent-strong) 55%, transparent)",
           borderRadius: 8,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           fontSize: 12 * scale,
           fontWeight: 700,
-          color: ITEM_COLORS[i % ITEM_COLORS.length],
+          color: "var(--accent-text)",
           minHeight: 52,
           ...(cfg.mode === "flex" && cfg.flexWrap !== "nowrap" && cfg.minItemWidth > 0
             ? { flex: `0 0 ${cfg.minItemWidth}px`, minWidth: 0 }
@@ -228,121 +178,17 @@ function GridPreview({ cfg, scale = 1 }: { cfg: GridConfig; scale?: number }) {
   );
 }
 
-// ─── Responsive Analysis ──────────────────────────────────────────────────────
-
-function ResponsivePanel({ cfg }: { cfg: GridConfig }) {
-  const [activeVp, setActiveVp] = useState<Viewport>("desktop");
-
-  const getColsForVp = (vp: Viewport) => {
-    if (cfg.mode === "flex") return null;
-    if (vp === "mobile") return Math.max(1, Math.min(2, cfg.columns));
-    if (vp === "tablet") return Math.max(1, Math.ceil(cfg.columns / 2));
-    return cfg.columns;
-  };
-
-  const vpCfg = (vp: Viewport): GridConfig => {
-    const cols = getColsForVp(vp);
-    if (!cols || vp === "desktop") return cfg;
-    return { ...cfg, columns: cols };
-  };
-
-  const currentVp = VIEWPORTS.find((v) => v.id === activeVp)!;
-
-  return (
-    <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 14, overflow: "hidden" }}>
-      <div style={{ padding: "14px 20px", borderBottom: "1px solid var(--border)", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 10 }}>
-        <span style={{ fontSize: 14, fontWeight: 700, color: "var(--text)" }}>Análise de Responsividade</span>
-        <div style={{ display: "flex", gap: 6 }}>
-          {VIEWPORTS.map((vp) => (
-            <button key={vp.id} onClick={() => setActiveVp(vp.id)}
-              style={{
-                padding: "6px 14px", borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: "pointer", transition: "all 0.15s",
-                background: activeVp === vp.id ? "var(--accent)" : "var(--surface-2)",
-                border: `1px solid ${activeVp === vp.id ? "var(--accent)" : "var(--border)"}`,
-                color: activeVp === vp.id ? "#fff" : "var(--text-muted)",
-              }}>
-              {vp.icon} {vp.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div style={{ padding: 20 }}>
-        <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
-          <span style={{ fontSize: 11, color: "var(--text-muted)", background: "var(--surface-2)", padding: "4px 10px", borderRadius: 6, fontFamily: "monospace" }}>
-            {currentVp.width}px
-          </span>
-          {cfg.mode === "grid" && activeVp !== "desktop" && (
-            <span style={{ fontSize: 11, color: "#0ea5e9", background: "#0ea5e922", padding: "4px 10px", borderRadius: 6, fontFamily: "monospace", border: "1px solid #0ea5e944" }}>
-              {getColsForVp(activeVp)} colunas
-            </span>
-          )}
-          {cfg.mode === "grid" && activeVp === "desktop" && (
-            <span style={{ fontSize: 11, color: "#22c55e", background: "#22c55e22", padding: "4px 10px", borderRadius: 6, fontFamily: "monospace", border: "1px solid #22c55e44" }}>
-              {cfg.columns} colunas
-            </span>
-          )}
-        </div>
-
-        {/* Simulação visual do viewport */}
-        <div style={{
-          width: "100%", overflow: "hidden", borderRadius: 10,
-          border: "2px solid var(--border)", background: "var(--surface-2)",
-          position: "relative",
-        }}>
-          {/* Barra de "browser" */}
-          <div style={{ height: 28, background: "var(--surface)", borderBottom: "1px solid var(--border)", display: "flex", alignItems: "center", gap: 6, padding: "0 12px" }}>
-            <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#ef4444" }} />
-            <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#eab308" }} />
-            <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#22c55e" }} />
-            <div style={{ flex: 1, height: 14, background: "var(--surface-2)", borderRadius: 4, marginLeft: 8 }} />
-          </div>
-
-          <div style={{ padding: 12, minHeight: 140 }}>
-            <GridPreview cfg={vpCfg(activeVp)} scale={0.85} />
-          </div>
-        </div>
-
-        {/* Comparativo de breakpoints */}
-        {cfg.mode === "grid" && (
-          <div style={{ marginTop: 16, display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
-            {VIEWPORTS.map((vp) => {
-              const cols = getColsForVp(vp.id) ?? cfg.columns;
-              const isActive = vp.id === activeVp;
-              return (
-                <div key={vp.id} onClick={() => setActiveVp(vp.id)}
-                  style={{
-                    padding: "10px 12px", borderRadius: 10, cursor: "pointer", transition: "all 0.15s",
-                    background: isActive ? "var(--accent)11" : "var(--surface-2)",
-                    border: `1px solid ${isActive ? "var(--accent)55" : "var(--border)"}`,
-                  }}>
-                  <div style={{ fontSize: 16, marginBottom: 4 }}>{vp.icon}</div>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: isActive ? "var(--accent)" : "var(--text)" }}>{vp.label}</div>
-                  <div style={{ fontSize: 10, color: "var(--text-muted)", fontFamily: "monospace" }}>{vp.width}px</div>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: isActive ? "var(--accent)" : "var(--text)", marginTop: 4 }}>
-                    {cols} col{cols !== 1 ? "s" : ""}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
 // ─── Presets ──────────────────────────────────────────────────────────────────
 
-const PRESETS: { label: string; icon: string; cfg: Partial<GridConfig> }[] = [
-  { label: "Blog", icon: "📰", cfg: { mode: "grid", columns: 3, rows: 1, colGap: 24, rowGap: 24, itemCount: 6, useCustomTemplate: false } },
-  { label: "Cards", icon: "🃏", cfg: { mode: "grid", columns: 4, rows: 1, colGap: 16, rowGap: 16, itemCount: 8, useCustomTemplate: false } },
-  { label: "Dashboard", icon: "📊", cfg: { mode: "grid", columns: 12, rows: 1, colGap: 16, rowGap: 16, itemCount: 12, useCustomTemplate: false } },
-  { label: "Galeria", icon: "🖼️", cfg: { mode: "grid", columns: 3, rows: 1, colGap: 8, rowGap: 8, itemCount: 9, useCustomTemplate: false } },
-  { label: "Flex Row", icon: "↔️", cfg: { mode: "flex", flexDirection: "row", flexWrap: "wrap", justifyContent: "flex-start", alignItems: "stretch", colGap: 16, rowGap: 16, itemCount: 6, minItemWidth: 200 } },
-  { label: "Flex Center", icon: "⬛", cfg: { mode: "flex", flexDirection: "row", flexWrap: "nowrap", justifyContent: "center", alignItems: "center", colGap: 12, rowGap: 12, itemCount: 4, minItemWidth: 0 } },
-  { label: "Auto-fill", icon: "🔲", cfg: { mode: "grid", columns: 4, rows: 1, colGap: 16, rowGap: 16, itemCount: 8, useCustomTemplate: true, customColTemplate: "repeat(auto-fill, minmax(150px, 1fr))", customRowTemplate: "" } },
-  { label: "Sidebar", icon: "📋", cfg: { mode: "grid", columns: 2, rows: 1, colGap: 24, rowGap: 0, itemCount: 2, useCustomTemplate: true, customColTemplate: "280px 1fr", customRowTemplate: "" } },
+const PRESETS: { label: string; icon: Icon; cfg: Partial<GridConfig> }[] = [
+  { label: "Blog", icon: Newspaper, cfg: { mode: "grid", columns: 3, rows: 1, colGap: 24, rowGap: 24, itemCount: 6, useCustomTemplate: false } },
+  { label: "Cards", icon: Cards, cfg: { mode: "grid", columns: 4, rows: 1, colGap: 16, rowGap: 16, itemCount: 8, useCustomTemplate: false } },
+  { label: "Dashboard", icon: ChartBar, cfg: { mode: "grid", columns: 12, rows: 1, colGap: 16, rowGap: 16, itemCount: 12, useCustomTemplate: false } },
+  { label: "Galeria", icon: Images, cfg: { mode: "grid", columns: 3, rows: 1, colGap: 8, rowGap: 8, itemCount: 9, useCustomTemplate: false } },
+  { label: "Flex Row", icon: ArrowsLeftRight, cfg: { mode: "flex", flexDirection: "row", flexWrap: "wrap", justifyContent: "flex-start", alignItems: "stretch", colGap: 16, rowGap: 16, itemCount: 6, minItemWidth: 200 } },
+  { label: "Flex Center", icon: AlignCenterHorizontal, cfg: { mode: "flex", flexDirection: "row", flexWrap: "nowrap", justifyContent: "center", alignItems: "center", colGap: 12, rowGap: 12, itemCount: 4, minItemWidth: 0 } },
+  { label: "Auto-fill", icon: GridFour, cfg: { mode: "grid", columns: 4, rows: 1, colGap: 16, rowGap: 16, itemCount: 8, useCustomTemplate: true, customColTemplate: "repeat(auto-fill, minmax(150px, 1fr))", customRowTemplate: "" } },
+  { label: "Sidebar", icon: SidebarSimple, cfg: { mode: "grid", columns: 2, rows: 1, colGap: 24, rowGap: 0, itemCount: 2, useCustomTemplate: true, customColTemplate: "280px 1fr", customRowTemplate: "" } },
 ];
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
@@ -369,330 +215,433 @@ const DEFAULT_CFG: GridConfig = {
   marginInline: 0,
 };
 
+// ─── Componentes de interface ─────────────────────────────────────────────────
+
+const mono = "var(--font-kode), ui-monospace, monospace";
+const sectionTitle: React.CSSProperties = { fontFamily: mono, fontSize: 14, fontWeight: 600, color: "var(--text)", margin: "0 0 12px" };
+const divider: React.CSSProperties = { borderTop: "1px solid var(--border)", paddingTop: 20 };
+const fieldLabel: React.CSSProperties = { fontSize: 12, fontWeight: 600, color: "var(--text-muted)" };
+const chip = (active: boolean): React.CSSProperties => ({
+  display: "flex", alignItems: "center", gap: 6, padding: "8px 12px", minHeight: 36, fontSize: 12, fontWeight: 600, cursor: "pointer", borderRadius: 8,
+  border: `1px solid ${active ? "var(--accent-strong)" : "var(--border)"}`, background: active ? "var(--accent-strong)" : "var(--surface)", color: active ? "#fff" : "var(--text)",
+});
+const selectStyle: React.CSSProperties = { background: "var(--surface-2)", border: "1px solid var(--border)", borderRadius: 8, padding: "8px 10px", color: "var(--text)", fontSize: 12, fontWeight: 600, cursor: "pointer", width: "100%", minWidth: 0 };
+const codeBox: React.CSSProperties = { background: "var(--surface-2)", border: "1px solid var(--border)", borderRadius: 8, padding: 16, fontSize: 12, fontFamily: mono, color: "var(--text)", lineHeight: 1.7, overflowX: "auto", margin: 0 };
+const tag: React.CSSProperties = { fontSize: 11, color: "var(--text-muted)", background: "var(--surface-2)", padding: "3px 8px", borderRadius: 6, fontFamily: mono };
+
+function Select<T extends string>({ label, value, options, onChange }: {
+  label: string; value: T; options: { value: T; label: string }[]; onChange: (v: T) => void;
+}) {
+  return (
+    <label style={{ display: "flex", flexDirection: "column", gap: 6, minWidth: 0 }}>
+      <span style={fieldLabel}>{label}</span>
+      <select value={value} onChange={(e) => onChange(e.target.value as T)} style={selectStyle}>
+        {options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+      </select>
+    </label>
+  );
+}
+
+function CopyButton({ text, label = "Copiar" }: { text: string; label?: string }) {
+  const [copied, setCopied] = useState(false);
+  const copy = () => {
+    void navigator.clipboard.writeText(text).then(() => { setCopied(true); setTimeout(() => setCopied(false), 1500); });
+  };
+  return (
+    <button type="button" onClick={copy} style={{ ...chip(false), minHeight: 32, padding: "6px 12px", background: copied ? "#16a34a" : "var(--surface)", color: copied ? "#fff" : "var(--text)", borderColor: copied ? "#16a34a" : "var(--border)" }}>
+      {copied ? <Check size={14} weight="bold" /> : <Copy size={14} />} {copied ? "Copiado" : label}
+    </button>
+  );
+}
+
+// ─── Responsividade ───────────────────────────────────────────────────────────
+
+function ResponsivePanel({ cfg }: { cfg: GridConfig }) {
+  const [activeVp, setActiveVp] = useState<Viewport>("desktop");
+
+  const getColsForVp = (vp: Viewport) => {
+    if (cfg.mode === "flex") return null;
+    if (vp === "mobile") return Math.max(1, Math.min(2, cfg.columns));
+    if (vp === "tablet") return Math.max(1, Math.ceil(cfg.columns / 2));
+    return cfg.columns;
+  };
+
+  const vpCfg = (vp: Viewport): GridConfig => {
+    const cols = getColsForVp(vp);
+    if (!cols || vp === "desktop") return cfg;
+    return { ...cfg, columns: cols };
+  };
+
+  const currentVp = VIEWPORTS.find((v) => v.id === activeVp)!;
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+      <div role="group" aria-label="Tamanho da tela" style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+        {VIEWPORTS.map(({ id, label, width, icon: Icon }) => (
+          <button key={id} type="button" aria-pressed={activeVp === id} onClick={() => setActiveVp(id)} style={chip(activeVp === id)}>
+            <Icon size={16} /> {label} <span style={{ fontFamily: mono, opacity: 0.75 }}>{width}px</span>
+          </button>
+        ))}
+        {cfg.mode === "grid" && <span style={{ ...tag, marginLeft: "auto" }}>{getColsForVp(activeVp)} {getColsForVp(activeVp) === 1 ? "coluna" : "colunas"}</span>}
+      </div>
+
+      <div style={{ border: "1px solid var(--border)", borderRadius: 8, overflow: "hidden", background: "var(--surface-2)" }}>
+        <div style={{ height: 28, background: "var(--surface)", borderBottom: "1px solid var(--border)", display: "flex", alignItems: "center", gap: 6, padding: "0 12px" }} aria-hidden="true">
+          {["#ef4444", "#eab308", "#22c55e"].map((c) => <div key={c} style={{ width: 8, height: 8, borderRadius: "50%", background: c }} />)}
+          <div style={{ flex: 1, height: 14, background: "var(--surface-2)", borderRadius: 4, marginLeft: 8 }} />
+        </div>
+        <div style={{ padding: 12, minHeight: 140 }}>
+          <div style={{ maxWidth: Math.min(currentVp.width, 1280), margin: "0 auto" }}>
+            <GridPreview cfg={vpCfg(activeVp)} scale={0.85} />
+          </div>
+        </div>
+      </div>
+
+    </div>
+  );
+}
+
+// ─── Página ───────────────────────────────────────────────────────────────────
+
+type Tab = "preview" | "responsive" | "code";
+const TABS: { id: Tab; label: string; icon: typeof Eye }[] = [
+  { id: "preview", label: "Preview", icon: Eye },
+  { id: "responsive", label: "Responsividade", icon: DeviceMobile },
+  { id: "code", label: "Código CSS", icon: Code },
+];
+
+const FLEX_JUSTIFY: JustifyContent[] = ["flex-start", "flex-end", "center", "space-between", "space-around", "space-evenly"];
+const FLEX_ALIGN: AlignItems[] = ["flex-start", "flex-end", "center", "stretch", "baseline"];
+const asOptions = <T extends string>(values: T[]) => values.map((v) => ({ value: v, label: v }));
+
+const small = (active: boolean): React.CSSProperties => ({ ...chip(active), minHeight: 32, padding: "6px 10px" });
+const linkButton: React.CSSProperties = { display: "flex", alignItems: "center", gap: 6, padding: 0, fontSize: 12, fontWeight: 600, background: "none", border: "none", cursor: "pointer", color: "var(--accent-text)" };
+const menuItem: React.CSSProperties = { width: "100%", display: "flex", alignItems: "center", gap: 10, padding: "8px 10px", fontSize: 12, fontWeight: 600, textAlign: "left", background: "none", border: "none", borderRadius: 6, cursor: "pointer", color: "var(--text)" };
+const range = (from: number, to: number) => Array.from({ length: to - from + 1 }, (_, i) => from + i);
+const GAP_STEPS = [0, 2, 4, 6, 8, 10, 12, 16, 20, 24, 28, 32, 40, 48, 56, 64];
+
+/** Lista de números para escolher; se o valor atual (de um preset, por exemplo) não está na lista, ele entra. */
+function NumberSelect({ label, value, options, unit = "", onChange }: { label: string; value: number; options: number[]; unit?: string; onChange: (v: number) => void }) {
+  const list = options.includes(value) ? options : [...options, value].sort((a, b) => a - b);
+  return (
+    <label style={{ display: "flex", flexDirection: "column", gap: 6, minWidth: 0 }}>
+      <span style={fieldLabel}>{label}</span>
+      <select value={value} onChange={(e) => onChange(Number(e.target.value))} style={selectStyle}>
+        {list.map((n) => <option key={n} value={n}>{n}{unit}</option>)}
+      </select>
+    </label>
+  );
+}
+
+/** Campo para digitar um valor em pixels. */
+function NumberField({ label, value, min = 0, onChange }: { label: string; value: number; min?: number; onChange: (v: number) => void }) {
+  return (
+    <label style={{ display: "flex", flexDirection: "column", gap: 6, minWidth: 0 }}>
+      <span style={fieldLabel}>{label}</span>
+      <span style={{ position: "relative", display: "block" }}>
+        <input type="number" min={min} value={value} onChange={(e) => onChange(Math.max(min, Number(e.target.value) || 0))}
+          style={{ ...selectStyle, fontFamily: mono, cursor: "text", paddingRight: 28 }} />
+        <span aria-hidden="true" style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", fontSize: 11, color: "var(--text-muted)", pointerEvents: "none" }}>px</span>
+      </span>
+    </label>
+  );
+}
+
+// ─── Medidas sobre o preview (estilo Figma) ───────────────────────────────────
+
+interface MeasureBox { x: number; y: number; w: number; h: number; label: string }
+const MEASURE = "#f24822";
+
+/** Faixas vermelhas com o valor em px sobre gap, padding e margens, medidas no próprio preview. */
+function MeasureOverlay({ cfg, areaRef, wrapperRef, containerRef }: {
+  cfg: GridConfig;
+  areaRef: React.RefObject<HTMLDivElement | null>;
+  wrapperRef: React.RefObject<HTMLDivElement | null>;
+  containerRef: React.RefObject<HTMLDivElement | null>;
+}) {
+  const [boxes, setBoxes] = useState<MeasureBox[]>([]);
+
+  useEffect(() => {
+    const area = areaRef.current, wrap = wrapperRef.current, cont = containerRef.current;
+    if (!area || !wrap || !cont) return;
+    const measure = () => {
+      const a = area.getBoundingClientRect();
+      const rel = (el: Element) => {
+        const r = el.getBoundingClientRect();
+        return { x: r.left - a.left + area.scrollLeft, y: r.top - a.top + area.scrollTop, w: r.width, h: r.height };
+      };
+      const out: MeasureBox[] = [];
+      const add = (x: number, y: number, w: number, h: number, value = Math.round(Math.min(w, h))) => { if (w > 0.5 && h > 0.5) out.push({ x, y, w, h, label: String(value) }); };
+      const wr = rel(wrap), c = rel(cont);
+      const items = Array.from(cont.children).map(rel);
+      const first = items[0];
+      if (first && items.length > 1) {
+        const side = items.find((it, i) => i > 0 && Math.abs(it.y - first.y) < 2 && it.x >= first.x + first.w - 0.5);
+        if (side) add(first.x + first.w, first.y, side.x - first.x - first.w, first.h);
+        const below = items.find((it, i) => i > 0 && it.y >= first.y + first.h - 0.5 && it.x < first.x + first.w && it.x + it.w > first.x);
+        if (below) add(first.x, first.y + first.h, first.w, below.y - first.y - first.h);
+      }
+      if (cfg.padding > 0) {
+        add(c.x, c.y, c.w, cfg.padding, cfg.padding);
+        add(c.x, c.y + cfg.padding, cfg.padding, Math.max(0, Math.min(c.h - 2 * cfg.padding, 48)), cfg.padding);
+      }
+      if (cfg.marginTop > 0) add(wr.x, wr.y - 18 - cfg.marginTop, wr.w, cfg.marginTop, cfg.marginTop);
+      if (cfg.marginBottom > 0) add(wr.x, wr.y + wr.h, wr.w, cfg.marginBottom, cfg.marginBottom);
+      if (cfg.marginInline > 0) {
+        add(wr.x - cfg.marginInline, wr.y, cfg.marginInline, wr.h, cfg.marginInline);
+        add(wr.x + wr.w, wr.y, cfg.marginInline, wr.h, cfg.marginInline);
+      }
+      setBoxes(out);
+    };
+    const frame = requestAnimationFrame(measure);
+    const observer = new ResizeObserver(measure);
+    observer.observe(area);
+    observer.observe(cont);
+    return () => { cancelAnimationFrame(frame); observer.disconnect(); };
+  }, [cfg, areaRef, wrapperRef, containerRef]);
+
+  return (
+    <div aria-hidden="true" style={{ position: "absolute", left: 0, top: 0, width: 0, height: 0, overflow: "visible", pointerEvents: "none" }}>
+      {boxes.map((b, i) => (
+        <div key={i} style={{ position: "absolute", left: b.x, top: b.y, width: b.w, height: b.h, boxSizing: "border-box", background: "rgba(242,72,34,0.2)", border: "1px solid rgba(242,72,34,0.7)" }}>
+          <span style={{ position: "absolute", left: "50%", top: "50%", transform: "translate(-50%, -50%)", background: MEASURE, color: "#fff", fontSize: 9, fontFamily: mono, lineHeight: "13px", padding: "0 4px", borderRadius: 3, whiteSpace: "nowrap" }}>{b.label}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function GridLayoutsPage() {
   const [cfg, setCfg] = useState<GridConfig>(DEFAULT_CFG);
-  const [activeTab, setActiveTab] = useState<"preview" | "responsive" | "code">("preview");
+  const [activeTab, setActiveTab] = useState<Tab>("preview");
+  const [presetsOpen, setPresetsOpen] = useState(false);
+  const areaRef = useRef<HTMLDivElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const update = useCallback(<K extends keyof GridConfig>(key: K, value: GridConfig[K]) => {
     setCfg((prev) => ({ ...prev, [key]: value }));
   }, []);
 
-  const applyPreset = (preset: Partial<GridConfig>) => {
-    setCfg((prev) => ({ ...prev, ...preset }));
-  };
+  useEffect(() => {
+    if (!presetsOpen) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setPresetsOpen(false); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [presetsOpen]);
 
   const css = generateCSS(cfg);
   const responsiveCSS = generateResponsiveCSS(cfg);
+  const hasWrapper = cfg.contentWidth !== "full" || cfg.marginTop > 0 || cfg.marginBottom > 0 || cfg.marginInline > 0;
+
+  const headerActions = (
+    <>
+      {([["grid", "CSS Grid", GridFour], ["flex", "Flexbox", ArrowsHorizontal]] as const).map(([m, text, Icon]) => (
+        <button key={m} type="button" aria-pressed={cfg.mode === m} onClick={() => update("mode", m)} style={chip(cfg.mode === m)}>
+          <Icon size={16} /> {text}
+        </button>
+      ))}
+    </>
+  );
 
   return (
-    <div>
+    <div className="gl-root">
       <Breadcrumbs items={[{ label: "Início", href: "/" }, { label: "Design", href: "/categoria/design" }, { label: "Layouts" }]} />
-      {/* Header */}
-      <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontSize: 28, fontWeight: 700, letterSpacing: "-0.03em", marginBottom: 6 }}>
-          📐 Grid & Layout Builder
-        </h1>
-        <p style={{ color: "var(--text-muted)", fontSize: 14, lineHeight: 1.6 }}>
-          Crie layouts CSS Grid e Flexbox com controle de espaçamentos, análise de responsividade e geração de código.
-        </p>
-      </div>
+      <PageHeader title="Layouts" actions={headerActions}>
+        Monte layouts com CSS Grid ou Flexbox, veja como ficam em cada tela e copie o código pronto.
+      </PageHeader>
 
-      {/* Presets */}
-      <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 14, padding: 16, marginBottom: 20 }}>
-        <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Presets rápidos</div>
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-          {PRESETS.map((p) => (
-            <button key={p.label} onClick={() => applyPreset(p.cfg)}
-              style={{ padding: "7px 14px", borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: "pointer", transition: "all 0.15s", background: "var(--surface-2)", border: "1px solid var(--border)", color: "var(--text)", display: "flex", alignItems: "center", gap: 6 }}>
-              <span>{p.icon}</span> {p.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div style={{ display: "grid", gridTemplateColumns: "300px 1fr", gap: 20, alignItems: "start" }}>
-        {/* ── Painel de controles ────────────────────────────────────────────── */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-
-          {/* Modo */}
-          <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 14, padding: 16 }}>
-            <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 12 }}>Modo de layout</div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-              {(["grid", "flex"] as GridMode[]).map((m) => (
-                <button key={m} onClick={() => update("mode", m)}
-                  style={{
-                    padding: "10px", borderRadius: 10, fontSize: 13, fontWeight: 700, cursor: "pointer", transition: "all 0.15s",
-                    background: cfg.mode === m ? "var(--accent)" : "var(--surface-2)",
-                    border: `1px solid ${cfg.mode === m ? "var(--accent)" : "var(--border)"}`,
-                    color: cfg.mode === m ? "#fff" : "var(--text)",
-                  }}>
-                  {m === "grid" ? "⊞ CSS Grid" : "↔ Flexbox"}
+      <div className="gl-grid">
+        {/* Resultado */}
+        <div className="cut-box gl-sticky" style={{ padding: 16, minWidth: 0, display: "flex", flexDirection: "column", gap: 16 }}>
+          <div role="tablist" aria-label="Visualização" style={{ display: "flex", gap: 20, flexWrap: "wrap", borderBottom: "1px solid var(--border)" }}>
+            {TABS.map(({ id, label, icon: Icon }) => {
+              const active = activeTab === id;
+              return (
+                <button key={id} role="tab" aria-selected={active} type="button" onClick={() => setActiveTab(id)}
+                  style={{ display: "flex", alignItems: "center", gap: 6, padding: "10px 0", marginBottom: -1, fontSize: 13, fontWeight: 600, cursor: "pointer", background: "none", border: "none", borderBottom: `2px solid ${active ? "var(--text)" : "transparent"}`, color: active ? "var(--text)" : "var(--text-muted)" }}>
+                  <Icon size={18} /> {label}
                 </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Controles de Grid */}
-          {cfg.mode === "grid" && (
-            <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 14, padding: 16, display: "flex", flexDirection: "column", gap: 14 }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em" }}>CSS Grid</div>
-
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <input type="checkbox" id="custom-template" checked={cfg.useCustomTemplate}
-                  onChange={(e) => update("useCustomTemplate", e.target.checked)}
-                  style={{ accentColor: "var(--accent)", width: 14, height: 14 }} />
-                <label htmlFor="custom-template" style={{ fontSize: 12, color: "var(--text-muted)", cursor: "pointer" }}>Template customizado</label>
-              </div>
-
-              {cfg.useCustomTemplate ? (
-                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                  <div>
-                    <label style={{ fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em", display: "block", marginBottom: 5 }}>grid-template-columns</label>
-                    <input type="text" value={cfg.customColTemplate}
-                      onChange={(e) => update("customColTemplate", e.target.value)}
-                      placeholder="repeat(3, 1fr)"
-                      style={{ width: "100%", background: "var(--surface-2)", border: "1px solid var(--border)", borderRadius: 8, padding: "8px 10px", color: "var(--text)", fontSize: 12, fontFamily: "monospace", boxSizing: "border-box" }} />
-                  </div>
-                  <div>
-                    <label style={{ fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em", display: "block", marginBottom: 5 }}>grid-template-rows (opcional)</label>
-                    <input type="text" value={cfg.customRowTemplate}
-                      onChange={(e) => update("customRowTemplate", e.target.value)}
-                      placeholder="auto"
-                      style={{ width: "100%", background: "var(--surface-2)", border: "1px solid var(--border)", borderRadius: 8, padding: "8px 10px", color: "var(--text)", fontSize: 12, fontFamily: "monospace", boxSizing: "border-box" }} />
-                  </div>
-                </div>
-              ) : (
-                <>
-                  <Slider label="Colunas" value={cfg.columns} min={1} max={12} unit="" onChange={(v) => update("columns", v)} />
-                  <Slider label="Linhas" value={cfg.rows} min={1} max={6} unit="" onChange={(v) => update("rows", v)} />
-                </>
-              )}
-            </div>
-          )}
-
-          {/* Controles de Flex */}
-          {cfg.mode === "flex" && (
-            <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 14, padding: 16, display: "flex", flexDirection: "column", gap: 12 }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em" }}>Flexbox</div>
-              <Select label="flex-direction" value={cfg.flexDirection} onChange={(v) => update("flexDirection", v)}
-                options={[{ value: "row", label: "row" }, { value: "column", label: "column" }]} />
-              <Select label="flex-wrap" value={cfg.flexWrap} onChange={(v) => update("flexWrap", v)}
-                options={[{ value: "nowrap", label: "nowrap" }, { value: "wrap", label: "wrap" }, { value: "wrap-reverse", label: "wrap-reverse" }]} />
-              <Select label="justify-content" value={cfg.justifyContent} onChange={(v) => update("justifyContent", v)}
-                options={[
-                  { value: "flex-start", label: "flex-start" },
-                  { value: "flex-end", label: "flex-end" },
-                  { value: "center", label: "center" },
-                  { value: "space-between", label: "space-between" },
-                  { value: "space-around", label: "space-around" },
-                  { value: "space-evenly", label: "space-evenly" },
-                ]} />
-              <Select label="align-items" value={cfg.alignItems} onChange={(v) => update("alignItems", v)}
-                options={[
-                  { value: "flex-start", label: "flex-start" },
-                  { value: "flex-end", label: "flex-end" },
-                  { value: "center", label: "center" },
-                  { value: "stretch", label: "stretch" },
-                  { value: "baseline", label: "baseline" },
-                ]} />
-              {cfg.flexWrap !== "nowrap" && (
-                <Slider label="Largura mínima do item" value={cfg.minItemWidth} min={80} max={400} onChange={(v) => update("minItemWidth", v)} />
-              )}
-            </div>
-          )}
-
-          {/* Espaçamentos */}
-          <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 14, padding: 16, display: "flex", flexDirection: "column", gap: 14 }}>
-            <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em" }}>Espaçamentos</div>
-            <Slider label="Gap horizontal (column-gap)" value={cfg.colGap} min={0} max={64} onChange={(v) => update("colGap", v)} />
-            <Slider label="Gap vertical (row-gap)" value={cfg.rowGap} min={0} max={64} onChange={(v) => update("rowGap", v)} />
-            <Slider label="Padding do container" value={cfg.padding} min={0} max={64} onChange={(v) => update("padding", v)} />
-            <div style={{ height: 1, background: "var(--border)", marginBlock: 2 }} />
-            <Slider label="Margem lateral (inline)" value={cfg.marginInline} min={0} max={120} onChange={(v) => update("marginInline", v)} />
-            <Slider label="Margem superior (top)" value={cfg.marginTop} min={0} max={120} onChange={(v) => update("marginTop", v)} />
-            <Slider label="Margem inferior (bottom)" value={cfg.marginBottom} min={0} max={120} onChange={(v) => update("marginBottom", v)} />
-          </div>
-
-          {/* Largura do conteúdo */}
-          <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 14, padding: 16 }}>
-            <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 12 }}>Largura do conteúdo</div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
-              {CONTENT_WIDTHS.map((cw) => {
-                const active = cfg.contentWidth === cw.value;
-                return (
-                  <button key={String(cw.value)} onClick={() => update("contentWidth", cw.value)}
-                    style={{
-                      padding: "8px 10px", borderRadius: 9, fontSize: 11, fontWeight: 700, cursor: "pointer", transition: "all 0.15s", textAlign: "left",
-                      background: active ? "var(--accent)" : "var(--surface-2)",
-                      border: `1px solid ${active ? "var(--accent)" : "var(--border)"}`,
-                      color: active ? "#fff" : "var(--text)",
-                    }}>
-                    <div style={{ fontFamily: "monospace" }}>{cw.label}</div>
-                    <div style={{ fontSize: 10, opacity: 0.7, fontWeight: 400, marginTop: 1 }}>{cw.desc}</div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Itens */}
-          <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 14, padding: 16 }}>
-            <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 14 }}>Preview</div>
-            <Slider label="Número de itens" value={cfg.itemCount} min={1} max={24} unit="" onChange={(v) => update("itemCount", v)} />
-          </div>
-        </div>
-
-        {/* ── Painel direito ─────────────────────────────────────────────────── */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          {/* Tabs */}
-          <div style={{ display: "flex", gap: 4, background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 12, padding: 4 }}>
-            {(["preview", "responsive", "code"] as const).map((tab) => (
-              <button key={tab} onClick={() => setActiveTab(tab)}
-                style={{
-                  flex: 1, padding: "8px", borderRadius: 9, fontSize: 12, fontWeight: 700, cursor: "pointer", transition: "all 0.15s",
-                  background: activeTab === tab ? "var(--accent)" : "transparent",
-                  border: "none",
-                  color: activeTab === tab ? "#fff" : "var(--text-muted)",
-                }}>
-                {tab === "preview" ? "⬛ Preview" : tab === "responsive" ? "📱 Responsividade" : "📋 Código CSS"}
-              </button>
-            ))}
+              );
+            })}
           </div>
 
           {activeTab === "preview" && (
-            <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 14, overflow: "hidden" }}>
-              <div style={{ padding: "14px 20px", borderBottom: "1px solid var(--border)", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
-                <span style={{ fontSize: 14, fontWeight: 700, color: "var(--text)" }}>Preview do Layout</span>
-                <div style={{ display: "flex", gap: 6, flexWrap: "wrap", alignItems: "center" }}>
-                  <span style={{ fontSize: 11, color: "var(--text-muted)", background: "var(--surface-2)", padding: "3px 8px", borderRadius: 5, fontFamily: "monospace" }}>
-                    {cfg.mode === "grid"
-                      ? (cfg.useCustomTemplate ? cfg.customColTemplate : `repeat(${cfg.columns}, 1fr)`)
-                      : `flex ${cfg.flexDirection}`}
-                  </span>
-                  <span style={{ fontSize: 11, color: "var(--text-muted)", background: "var(--surface-2)", padding: "3px 8px", borderRadius: 5, fontFamily: "monospace" }}>
-                    gap: {cfg.colGap}×{cfg.rowGap}
-                  </span>
-                  <span style={{ fontSize: 11, color: "#0ea5e9", background: "#0ea5e922", padding: "3px 8px", borderRadius: 5, fontFamily: "monospace", border: "1px solid #0ea5e944" }}>
-                    max: {cfg.contentWidth === "full" ? "100%" : `${cfg.contentWidth}px`}
-                  </span>
-                </div>
+            <>
+              <div style={{ display: "flex", gap: 6, flexWrap: "wrap", alignItems: "center" }}>
+                <span style={tag}>{cfg.mode === "grid" ? (cfg.useCustomTemplate ? cfg.customColTemplate : `repeat(${cfg.columns}, 1fr)`) : `flex ${cfg.flexDirection}`}</span>
+                <span style={tag}>gap: {cfg.colGap}×{cfg.rowGap}</span>
+                <span style={{ ...tag, color: "#0369a1", background: "#0ea5e91f" }}>max: {cfg.contentWidth === "full" ? "100%" : `${cfg.contentWidth}px`}</span>
               </div>
-
-              {/* Régua de referência */}
-              <div style={{ height: 20, background: "var(--surface-2)", borderBottom: "1px solid var(--border)", display: "flex", alignItems: "center", padding: "0 8px", overflow: "hidden" }}>
-                {Array.from({ length: 20 }, (_, i) => (
-                  <div key={i} style={{ flex: 1, height: "100%", borderLeft: i > 0 ? "1px solid var(--border)" : "none", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <span style={{ fontSize: 8, color: "var(--text-muted)", userSelect: "none" }}>{i * 5}%</span>
-                  </div>
-                ))}
-              </div>
-
-              <div style={{ padding: 20, background: "repeating-linear-gradient(0deg, transparent, transparent 23px, var(--border) 23px, var(--border) 24px), repeating-linear-gradient(90deg, transparent, transparent 23px, var(--border) 23px, var(--border) 24px)" }}>
-                {/* Wrapper com max-width simulado — escala relativa ao container */}
-                <div style={{
+              <div ref={areaRef} style={{ position: "relative", padding: 20, border: "1px solid var(--border)", borderRadius: 8, background: "repeating-linear-gradient(0deg, transparent, transparent 23px, var(--border) 23px, var(--border) 24px), repeating-linear-gradient(90deg, transparent, transparent 23px, var(--border) 23px, var(--border) 24px)", backgroundColor: "var(--surface-2)", overflowX: "auto" }}>
+                <div ref={wrapperRef} style={{
                   maxWidth: cfg.contentWidth === "full" ? "100%" : `min(100%, ${cfg.contentWidth}px)`,
                   marginInline: cfg.marginInline > 0 ? `${cfg.marginInline}px` : "auto",
-                  marginTop: cfg.marginTop > 0 ? cfg.marginTop : undefined,
+                  marginTop: cfg.marginTop > 0 ? cfg.marginTop + 18 : 18,
                   marginBottom: cfg.marginBottom > 0 ? cfg.marginBottom : undefined,
                   position: "relative",
                 }}>
                   {cfg.contentWidth !== "full" && (
-                    <div style={{
-                      position: "absolute", top: -18, left: 0, right: 0,
-                      display: "flex", justifyContent: "space-between", alignItems: "center",
-                    }}>
-                      <div style={{ height: 1, flex: 1, background: "#0ea5e966", borderTop: "1px dashed #0ea5e966" }} />
-                      <span style={{ fontSize: 9, color: "#0ea5e9", background: "var(--surface-2)", padding: "1px 6px", borderRadius: 4, fontFamily: "monospace", whiteSpace: "nowrap", margin: "0 6px" }}>
-                        max-width: {cfg.contentWidth}px
-                      </span>
-                      <div style={{ height: 1, flex: 1, background: "#0ea5e966", borderTop: "1px dashed #0ea5e966" }} />
+                    <div style={{ position: "absolute", top: -18, left: 0, right: 0, display: "flex", alignItems: "center" }} aria-hidden="true">
+                      <div style={{ flex: 1, borderTop: "1px dashed #0ea5e999" }} />
+                      <span style={{ fontSize: 10, color: "#0369a1", background: "var(--surface-2)", padding: "1px 6px", fontFamily: mono, whiteSpace: "nowrap", margin: "0 6px" }}>max-width: {cfg.contentWidth}px</span>
+                      <div style={{ flex: 1, borderTop: "1px dashed #0ea5e999" }} />
                     </div>
                   )}
-                  <GridPreview cfg={cfg} />
+                  <GridPreview cfg={cfg} containerRef={containerRef} />
                 </div>
+                <MeasureOverlay cfg={cfg} areaRef={areaRef} wrapperRef={wrapperRef} containerRef={containerRef} />
               </div>
-            </div>
+            </>
           )}
 
           {activeTab === "responsive" && <ResponsivePanel cfg={cfg} />}
 
           {activeTab === "code" && (
-            <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 14, overflow: "hidden" }}>
-              <div style={{ padding: "14px 20px", borderBottom: "1px solid var(--border)", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
-                <span style={{ fontSize: 14, fontWeight: 700, color: "var(--text)" }}>Código CSS Gerado</span>
-                <div style={{ display: "flex", gap: 8 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+              {hasWrapper && (
+                <div>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                    <span style={{ ...fieldLabel, color: "var(--text)" }}>Wrapper{cfg.contentWidth !== "full" ? ` — ${cfg.contentWidth}px` : ""}{cfg.marginTop > 0 || cfg.marginBottom > 0 || cfg.marginInline > 0 ? " + margens" : ""}</span>
+                    <CopyButton text={`.wrapper {\n  ${generateWrapperCSS(cfg).split("\n").join("\n  ")}\n}`} />
+                  </div>
+                  <pre style={codeBox}>{`.wrapper {\n  ${generateWrapperCSS(cfg).split("\n").join("\n  ")}\n}`}</pre>
+                </div>
+              )}
+              <div>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                  <span style={{ ...fieldLabel, color: "var(--text)" }}>CSS básico (.container)</span>
                   <CopyButton text={css} />
+                </div>
+                <pre style={codeBox}>{`.container {\n  ${css.split("\n").join("\n  ")}\n}`}</pre>
+              </div>
+              <div>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                  <span style={{ ...fieldLabel, color: "var(--text)" }}>CSS responsivo com media queries</span>
                   <CopyButton text={responsiveCSS} />
                 </div>
+                <pre style={codeBox}>{responsiveCSS}</pre>
               </div>
-
-              <div style={{ padding: 20, display: "flex", flexDirection: "column", gap: 16 }}>
-                {/* Wrapper CSS */}
-                {(cfg.contentWidth !== "full" || cfg.marginTop > 0 || cfg.marginBottom > 0 || cfg.marginInline > 0) && (
-                  <div>
-                    <div style={{ fontSize: 11, fontWeight: 700, color: "#0ea5e9", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>
-                      Wrapper{cfg.contentWidth !== "full" ? ` — ${cfg.contentWidth}px` : ""}{(cfg.marginTop > 0 || cfg.marginBottom > 0 || cfg.marginInline > 0) ? " + margens" : ""}
-                    </div>
-                    <pre style={{
-                      background: "#0ea5e908", borderRadius: 10, padding: 16, fontSize: 13, fontFamily: "monospace", color: "var(--text)", lineHeight: 1.7,
-                      overflowX: "auto", margin: 0, border: "1px solid #0ea5e933",
-                    }}>
-                      {`.wrapper {\n  ${generateWrapperCSS(cfg).split("\n").join("\n  ")}\n}`}
-                    </pre>
-                  </div>
-                )}
-
-                {/* CSS simples */}
-                <div>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>CSS básico — .container</div>
-                  <pre style={{
-                    background: "var(--surface-2)", borderRadius: 10, padding: 16, fontSize: 13, fontFamily: "monospace", color: "var(--text)", lineHeight: 1.7,
-                    overflowX: "auto", margin: 0, border: "1px solid var(--border)",
-                  }}>
-                    {`.container {\n  ${css.split("\n").join("\n  ")}\n}`}
-                  </pre>
-                </div>
-
-                {/* CSS responsivo */}
-                <div>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>CSS responsivo com media queries</div>
-                  <pre style={{
-                    background: "var(--surface-2)", borderRadius: 10, padding: 16, fontSize: 13, fontFamily: "monospace", color: "var(--text)", lineHeight: 1.7,
-                    overflowX: "auto", margin: 0, border: "1px solid var(--border)",
-                  }}>
-                    {responsiveCSS}
-                  </pre>
-                </div>
-
-                {/* Dicas */}
-                <div style={{ background: "var(--surface-2)", borderRadius: 10, padding: 14, border: "1px solid var(--border)" }}>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text)", marginBottom: 8 }}>💡 Dicas</div>
-                  <ul style={{ margin: 0, paddingLeft: 16, display: "flex", flexDirection: "column", gap: 5 }}>
-                    {cfg.mode === "grid" ? [
-                      "Use repeat(auto-fill, minmax(200px, 1fr)) para grids totalmente responsivos sem media queries.",
-                      "grid-template-areas permite nomear células e criar layouts complexos semanticamente.",
-                      "gap é shorthand para row-gap e column-gap — suportado em todos os browsers modernos.",
-                    ] : [
-                      "flex-wrap: wrap com flex-basis define colunas que quebram automaticamente.",
-                      "Use gap ao invés de margin nos itens — funciona melhor com wrap.",
-                      "align-self no item sobrescreve o align-items do container.",
-                    ].map((tip, i) => (
-                      <li key={i} style={{ fontSize: 12, color: "var(--text-muted)", lineHeight: 1.5 }}>{tip}</li>
-                    ))}
-                  </ul>
-                </div>
+              <div style={{ background: "var(--surface-2)", borderRadius: 8, padding: 14, border: "1px solid var(--border)" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, fontWeight: 600, color: "var(--text)", marginBottom: 8 }}><Lightbulb size={16} /> Dicas</div>
+                <ul style={{ margin: 0, paddingLeft: 16, display: "flex", flexDirection: "column", gap: 5 }}>
+                  {(cfg.mode === "grid" ? [
+                    "Use repeat(auto-fill, minmax(200px, 1fr)) para grids totalmente responsivos sem media queries.",
+                    "grid-template-areas permite nomear células e criar layouts complexos semanticamente.",
+                    "gap é a forma curta de row-gap e column-gap, aceita em todos os navegadores modernos.",
+                  ] : [
+                    "flex-wrap: wrap com flex-basis define colunas que quebram automaticamente.",
+                    "Use gap em vez de margin nos itens: funciona melhor com wrap.",
+                    "align-self no item sobrescreve o align-items do container.",
+                  ]).map((t, i) => <li key={i} style={{ fontSize: 12, color: "var(--text-muted)", lineHeight: 1.5 }}>{t}</li>)}
+                </ul>
               </div>
             </div>
           )}
         </div>
+
+        {/* Ajustes agrupados */}
+        <div className="cut-box" style={{ padding: 16, minWidth: 0, display: "flex", flexDirection: "column", gap: 20 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+              <h2 style={{ ...sectionTitle, margin: 0 }}>{cfg.mode === "grid" ? "CSS Grid" : "Flexbox"}</h2>
+              <div style={{ position: "relative" }}>
+                <button type="button" aria-haspopup="menu" aria-expanded={presetsOpen} onClick={() => setPresetsOpen(!presetsOpen)} style={linkButton}>
+                  <Swatches size={14} /> Presets <CaretDown size={12} />
+                </button>
+                {presetsOpen && (
+                  <>
+                    <div onClick={() => setPresetsOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 40 }} />
+                    <div role="menu" aria-label="Presets" style={{ position: "absolute", zIndex: 41, top: "calc(100% + 8px)", right: 0, width: 220, padding: 6, background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 8, boxShadow: "0 8px 24px rgba(0,0,0,0.16)" }}>
+                      {PRESETS.map(({ label, icon: Icon, cfg: preset }) => (
+                        <button key={label} role="menuitem" type="button" className="gl-menu-item" onClick={() => { setCfg((prev) => ({ ...prev, ...preset })); setPresetsOpen(false); }} style={menuItem}>
+                          <Icon size={16} /> {label}
+                        </button>
+                      ))}
+                      <div style={{ height: 1, background: "var(--border)", margin: "6px 4px" }} />
+                      <button role="menuitemcheckbox" aria-checked={cfg.mode === "grid" && cfg.useCustomTemplate} type="button" className="gl-menu-item"
+                        onClick={() => { setCfg((prev) => ({ ...prev, mode: "grid", useCustomTemplate: !prev.useCustomTemplate })); setPresetsOpen(false); }} style={menuItem}>
+                        <GridFour size={16} /> Template customizado
+                        {cfg.mode === "grid" && cfg.useCustomTemplate && <Check size={14} weight="bold" style={{ marginLeft: "auto" }} />}
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+
+            {cfg.mode === "grid" ? (
+              cfg.useCustomTemplate ? (
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  <label style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                    <span style={fieldLabel}>grid-template-columns</span>
+                    <input type="text" value={cfg.customColTemplate} onChange={(e) => update("customColTemplate", e.target.value)} placeholder="repeat(3, 1fr)" style={{ ...selectStyle, fontFamily: mono, cursor: "text" }} />
+                  </label>
+                  <label style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                    <span style={fieldLabel}>grid-template-rows (opcional)</span>
+                    <input type="text" value={cfg.customRowTemplate} onChange={(e) => update("customRowTemplate", e.target.value)} placeholder="auto" style={{ ...selectStyle, fontFamily: mono, cursor: "text" }} />
+                  </label>
+                </div>
+              ) : (
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 12 }}>
+                  <NumberSelect label="Colunas" value={cfg.columns} options={range(1, 12)} onChange={(v) => update("columns", v)} />
+                  <NumberSelect label="Linhas" value={cfg.rows} options={range(1, 6)} onChange={(v) => update("rows", v)} />
+                </div>
+              )
+            ) : (
+              <>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 12 }}>
+                  <Select label="Direção" value={cfg.flexDirection} onChange={(v) => update("flexDirection", v)} options={asOptions<FlexDirection>(["row", "column"])} />
+                  <Select label="Quebra de linha" value={cfg.flexWrap} onChange={(v) => update("flexWrap", v)} options={asOptions<FlexWrap>(["nowrap", "wrap", "wrap-reverse"])} />
+                  <Select label="Alinhamento principal" value={cfg.justifyContent} onChange={(v) => update("justifyContent", v)} options={asOptions(FLEX_JUSTIFY)} />
+                  <Select label="Alinhamento cruzado" value={cfg.alignItems} onChange={(v) => update("alignItems", v)} options={asOptions(FLEX_ALIGN)} />
+                </div>
+                {cfg.flexWrap !== "nowrap" && (
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 12 }}>
+                    <NumberField label="Largura mínima do item" value={cfg.minItemWidth} min={0} onChange={(v) => update("minItemWidth", v)} />
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+
+          <div style={divider}>
+            <h2 style={sectionTitle}>Espaçamentos</h2>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 12 }}>
+              <NumberSelect label="Gap horizontal" value={cfg.colGap} options={GAP_STEPS} unit="px" onChange={(v) => update("colGap", v)} />
+              <NumberSelect label="Gap vertical" value={cfg.rowGap} options={GAP_STEPS} unit="px" onChange={(v) => update("rowGap", v)} />
+              <NumberSelect label="Padding" value={cfg.padding} options={GAP_STEPS} unit="px" onChange={(v) => update("padding", v)} />
+            </div>
+          </div>
+
+          <div style={divider}>
+            <h2 style={sectionTitle}>Largura, margens e itens</h2>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 2fr) minmax(0, 1fr)", gap: 12 }}>
+                <label style={{ display: "flex", flexDirection: "column", gap: 6, minWidth: 0 }}>
+                  <span style={fieldLabel}>Largura do conteúdo</span>
+                  <select value={String(cfg.contentWidth)} onChange={(e) => update("contentWidth", e.target.value === "full" ? "full" : Number(e.target.value))} style={selectStyle}>
+                    {CONTENT_WIDTHS.map((cw) => <option key={String(cw.value)} value={String(cw.value)}>{cw.label} — {cw.desc}</option>)}
+                  </select>
+                </label>
+                <NumberSelect label="Itens" value={cfg.itemCount} options={range(1, 24)} onChange={(v) => update("itemCount", v)} />
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 12 }}>
+                <NumberField label="Margem lateral" value={cfg.marginInline} onChange={(v) => update("marginInline", v)} />
+                <NumberField label="Superior" value={cfg.marginTop} onChange={(v) => update("marginTop", v)} />
+                <NumberField label="Inferior" value={cfg.marginBottom} onChange={(v) => update("marginBottom", v)} />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <style>{`
-        @media (max-width: 768px) {
-          div[style*="grid-template-columns: 300px 1fr"] {
-            grid-template-columns: 1fr !important;
-          }
-        }
+        .gl-root { container-type: inline-size; }
+        .gl-menu-item:hover { background: var(--surface-2) !important; }
+        .gl-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; align-items: start; }
+        @container (min-width: 860px) { .gl-grid { grid-template-columns: minmax(0, 1fr) 360px; } .gl-sticky { position: sticky; top: 16px; } }
+        @media (max-width: 767px) { .gl-action-label { display: none; } }
       `}</style>
     </div>
   );

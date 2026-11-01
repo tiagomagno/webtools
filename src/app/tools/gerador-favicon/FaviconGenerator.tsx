@@ -1,7 +1,9 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
-import { loadImageFile, encodeImage, downloadUrl, type LoadedImage } from "../../lib/image-tools";
+import { useCallback, useState } from "react";
+import { Check, Copy, DownloadSimple } from "@phosphor-icons/react";
+import ImageDrop from "../../components/ImageDrop";
+import { downloadUrl, encodeImage, loadImageFile, type LoadedImage } from "../../lib/image-tools";
 
 const SIZES = [16, 32, 48, 64, 128, 180, 192, 512];
 
@@ -11,16 +13,25 @@ const SNIPPET = `<link rel="icon" type="image/png" sizes="32x32" href="/favicon-
 <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png" />
 <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png" />`;
 
+const mono = "var(--font-kode), ui-monospace, monospace";
+const checker = "repeating-conic-gradient(#d4d4d8 0% 25%, #fff 0% 50%)";
+const title: React.CSSProperties = { fontFamily: mono, fontSize: 14, fontWeight: 600, color: "var(--text)", margin: 0 };
+const button: React.CSSProperties = {
+  display: "flex", alignItems: "center", gap: 6, padding: "8px 14px", minHeight: 36, fontSize: 12, fontWeight: 600, cursor: "pointer",
+  borderRadius: 8, border: "1px solid var(--border)", background: "var(--surface)", color: "var(--text)",
+};
+
 interface Generated { size: number; url: string }
+
+const nameFor = (size: number) =>
+  size === 180 ? "apple-touch-icon.png" : size >= 192 ? `android-chrome-${size}x${size}.png` : `favicon-${size}x${size}.png`;
 
 export default function FaviconGenerator() {
   const [original, setOriginal] = useState<LoadedImage | null>(null);
   const [icons, setIcons] = useState<Generated[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  const [dragging, setDragging] = useState(false);
   const [copied, setCopied] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
 
   const generate = useCallback(async (img: LoadedImage) => {
     setBusy(true);
@@ -32,13 +43,7 @@ export default function FaviconGenerator() {
     try {
       const out: Generated[] = [];
       for (const size of SIZES) {
-        const enc = await encodeImage({
-          src: img.src,
-          type: "image/png",
-          width: size,
-          height: size,
-          crop: { x: cx, y: cy, w: side, h: side },
-        });
+        const enc = await encodeImage({ src: img.src, type: "image/png", width: size, height: size, crop: { x: cx, y: cy, w: side, h: side } });
         out.push({ size, url: enc.url });
       }
       setIcons(out);
@@ -61,69 +66,88 @@ export default function FaviconGenerator() {
     }
   }, [generate]);
 
-  const nameFor = (size: number) =>
-    size === 180 ? "apple-touch-icon.png" : size >= 192 ? `android-chrome-${size}x${size}.png` : `favicon-${size}x${size}.png`;
-
-  const downloadAll = () => icons.forEach((i) => downloadUrl(i.url, nameFor(i.size)));
-
   const copySnippet = () => {
-    navigator.clipboard.writeText(SNIPPET);
+    void navigator.clipboard.writeText(SNIPPET);
     setCopied(true);
     setTimeout(() => setCopied(false), 1400);
   };
 
   return (
-    <div>
-      <div
-        onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
-        onDragLeave={() => setDragging(false)}
-        onDrop={(e) => { e.preventDefault(); setDragging(false); const f = e.dataTransfer.files[0]; if (f?.type.startsWith("image/")) load(f); }}
-        onClick={() => inputRef.current?.click()}
-        style={{ border: `2px dashed ${dragging ? "var(--accent)" : "var(--border)"}`, borderRadius: 16, padding: "40px 24px", textAlign: "center", cursor: "pointer", background: "var(--surface)", marginBottom: 20, transition: "all .15s" }}
-      >
-        <input ref={inputRef} type="file" accept="image/*" style={{ display: "none" }} onChange={(e) => { const f = e.target.files?.[0]; if (f) load(f); }} />
-        <div style={{ fontSize: 34, marginBottom: 10 }}>⭐</div>
-        <div style={{ fontSize: 15, fontWeight: 500, color: "var(--text)", marginBottom: 4 }}>
-          {original ? original.name : "Arraste uma imagem ou clique para selecionar"}
+    <div className="fv-root">
+      <div className="fv-grid">
+        {/* Imagem de origem */}
+        <div className="cut-box" style={{ padding: 16, minWidth: 0, display: "flex", flexDirection: "column", gap: 12 }}>
+          <h2 style={title}>Imagem</h2>
+          {!original ? (
+            <ImageDrop onFile={load} />
+          ) : (
+            <>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 12, color: "var(--text-muted)" }}>
+                <span style={{ flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: "var(--text)", fontWeight: 600 }}>{original.name}</span>
+                <span style={{ fontFamily: mono, whiteSpace: "nowrap" }}>{original.width}×{original.height}px</span>
+                <label style={{ ...button, minHeight: 32, padding: "6px 10px" }}>
+                  Trocar
+                  <input type="file" accept="image/*,.heic,.heif" hidden onChange={(e) => { const f = e.target.files?.[0]; if (f) void load(f); e.target.value = ""; }} />
+                </label>
+              </div>
+              <div style={{ display: "flex", justifyContent: "center", padding: 12, border: "1px solid var(--border)", borderRadius: 8, background: checker, backgroundSize: "16px 16px" }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={original.src} alt="Imagem enviada" style={{ maxWidth: "100%", maxHeight: 260, objectFit: "cover", aspectRatio: "1 / 1", width: 260, display: "block" }} />
+              </div>
+              <p style={{ margin: 0, fontSize: 12, color: "var(--text-muted)" }}>Os favicons usam o recorte quadrado central da imagem.</p>
+            </>
+          )}
+          {error && <p role="alert" style={{ margin: 0, fontSize: 12, color: "#ef4444" }}>{error}</p>}
         </div>
-        <div style={{ fontSize: 13, color: "var(--text-muted)" }}>
-          {original ? `${original.width}×${original.height}px — recortada no centro` : "Use uma imagem quadrada (PNG recomendado)"}
+
+        {/* Tamanhos gerados */}
+        <div className="cut-box" style={{ padding: 16, minWidth: 0, display: "flex", flexDirection: "column", gap: 12 }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+            <h2 style={title}>Tamanhos gerados</h2>
+            {icons.length > 0 && (
+              <button type="button" onClick={() => icons.forEach((i) => downloadUrl(i.url, nameFor(i.size)))} style={{ ...button, background: "var(--accent-strong)", borderColor: "var(--accent-strong)", color: "#fff" }}>
+                <DownloadSimple size={14} /> Baixar todos
+              </button>
+            )}
+          </div>
+          {busy && <p style={{ margin: 0, fontSize: 12, color: "var(--text-muted)" }}>Gerando tamanhos…</p>}
+          {icons.length === 0 && !busy && <p style={{ margin: 0, fontSize: 12, color: "var(--text-muted)", lineHeight: 1.6 }}>Envie uma imagem (quadrada, de preferência) para gerar os {SIZES.length} tamanhos de favicon.</p>}
+          {icons.length > 0 && (
+            <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(104px, 1fr))", gap: 10 }}>
+              {icons.map((i) => (
+                <li key={i.size}>
+                  <button type="button" onClick={() => downloadUrl(i.url, nameFor(i.size))} aria-label={`Baixar ${i.size} por ${i.size}`}
+                    style={{ width: "100%", padding: 10, textAlign: "center", cursor: "pointer", borderRadius: 8, border: "1px solid var(--border)", background: "var(--surface-2)", color: "var(--text)" }}>
+                    <span style={{ height: 68, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 6, background: checker, backgroundSize: "12px 12px", borderRadius: 6 }}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={i.url} alt="" width={Math.min(i.size, 64)} height={Math.min(i.size, 64)} style={{ imageRendering: i.size <= 32 ? "pixelated" : "auto" }} />
+                    </span>
+                    <span style={{ display: "block", fontSize: 12, fontWeight: 600, fontFamily: mono }}>{i.size}×{i.size}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </div>
 
-      {error && <div style={{ color: "#ef4444", fontSize: 13, marginBottom: 16 }}>{error}</div>}
-      {busy && <div style={{ color: "var(--text-muted)", fontSize: 13, marginBottom: 16 }}>Gerando tamanhos…</div>}
-
       {icons.length > 0 && (
-        <>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text)" }}>Tamanhos gerados</div>
-            <button onClick={downloadAll} style={{ background: "#10b981", border: "none", borderRadius: 8, padding: "9px 18px", fontSize: 13, fontWeight: 600, color: "#fff", cursor: "pointer" }}>↓ Baixar todos</button>
+        <div className="cut-box" style={{ marginTop: 16, padding: 16 }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginBottom: 12 }}>
+            <h2 style={title}>Tags HTML para o &lt;head&gt;</h2>
+            <button type="button" onClick={copySnippet} style={{ ...button, background: copied ? "#16a34a" : "var(--accent-strong)", borderColor: copied ? "#16a34a" : "var(--accent-strong)", color: "#fff" }}>
+              {copied ? <Check size={14} weight="bold" /> : <Copy size={14} />} {copied ? "Copiado" : "Copiar"}
+            </button>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))", gap: 12, marginBottom: 28 }}>
-            {icons.map((i) => (
-              <div key={i.size} onClick={() => downloadUrl(i.url, nameFor(i.size))} style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 10, padding: 14, textAlign: "center", cursor: "pointer" }}>
-                <div style={{ height: 72, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 8, background: "repeating-conic-gradient(#ffffff10 0% 25%, transparent 0% 50%) 0 0 / 12px 12px", borderRadius: 6 }}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={i.url} alt={`${i.size}px`} width={Math.min(i.size, 64)} height={Math.min(i.size, 64)} style={{ imageRendering: i.size <= 32 ? "pixelated" : "auto" }} />
-                </div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text)" }}>{i.size}×{i.size}</div>
-                <div style={{ fontSize: 11, color: "var(--text-subtle)" }}>baixar</div>
-              </div>
-            ))}
-          </div>
-
-          <div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text)" }}>Tags HTML para o &lt;head&gt;</div>
-              <button onClick={copySnippet} style={{ padding: "7px 14px", borderRadius: 8, border: "1px solid var(--border)", background: "var(--surface-2)", color: "var(--text-muted)", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
-                {copied ? "✓ Copiado" : "Copiar"}
-              </button>
-            </div>
-            <pre style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 10, padding: 14, fontSize: 12.5, lineHeight: 1.6, overflowX: "auto", color: "var(--text)", whiteSpace: "pre-wrap" }}>{SNIPPET}</pre>
-          </div>
-        </>
+          <pre style={{ margin: 0, padding: 16, fontSize: 12, lineHeight: 1.7, fontFamily: mono, color: "var(--text)", background: "var(--surface-2)", border: "1px solid var(--border)", borderRadius: 8, overflowX: "auto" }}>{SNIPPET}</pre>
+        </div>
       )}
+
+      <style>{`
+        .fv-root { container-type: inline-size; }
+        .fv-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; align-items: start; }
+        @container (min-width: 760px) { .fv-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+      `}</style>
     </div>
   );
 }

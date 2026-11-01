@@ -1,7 +1,12 @@
-"use client";
+﻿"use client";
 
-import { useEffect, useRef, useState } from "react";
-import { Image as ImageIcon, Palette as PaletteIcon, Smartphone, Monitor, Download, Trash2, X, ImagePlus, Images, RotateCcw } from "lucide-react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import {
+  ArrowCounterClockwise, CaretDown, Check, DeviceMobile, DownloadSimple, ImageSquare, Images, Monitor, Palette, Swatches, TextAlignCenter,
+  TextAlignLeft, TextAlignRight, Trash, UploadSimple, X, type Icon,
+} from "@phosphor-icons/react";
+import Breadcrumbs from "../../components/Breadcrumbs";
+import PageHeader from "../../components/PageHeader";
 import { downloadUrl } from "../../lib/image-tools";
 
 // ─── Tipos ────────────────────────────────────────────────────────────────
@@ -24,6 +29,10 @@ interface BaseElement {
 interface ImageElement extends BaseElement {
   type: "image";
   src: string;
+  /** "contain" mostra a imagem inteira (prints, mockups); "cover" preenche o bloco cortando as bordas (fotos). */
+  fit?: "cover" | "contain";
+  /** Cor do bloco antes da imagem: "Remover imagem" volta para ela em vez de apagar o bloco. */
+  restoreHex?: string;
 }
 interface ColorElement extends BaseElement {
   type: "color";
@@ -53,9 +62,9 @@ const CANVAS_PRESETS: Record<ProjectType, { w: number; h: number }> = {
   website: { w: 1400, h: 900 },
 };
 
-const PROJECT_META: Record<ProjectType, { label: string; icon: typeof PaletteIcon; hint: string }> = {
-  branding: { label: "Branding", icon: PaletteIcon, hint: "Logo, paleta, tipografia e textura da marca." },
-  mobile: { label: "App Mobile", icon: Smartphone, hint: "Logo do app, telas de referência e paleta." },
+const PROJECT_META: Record<ProjectType, { label: string; icon: Icon; hint: string }> = {
+  branding: { label: "Branding", icon: Palette, hint: "Logo, paleta, tipografia e textura da marca." },
+  mobile: { label: "App Mobile", icon: DeviceMobile, hint: "Logo do app, telas de referência e paleta." },
   website: { label: "Website", icon: Monitor, hint: "Logo, prints do site, paleta e tipografia." },
 };
 
@@ -352,34 +361,30 @@ function buildAllTemplates() {
 
 // ─── Estilos compartilhados ───────────────────────────────────────────────
 
-const panelStyle: React.CSSProperties = { background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 12 };
-const labelStyle: React.CSSProperties = { fontSize: 11, fontWeight: 600, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em", marginTop: 14, marginBottom: 6, display: "block" };
-const inputStyle: React.CSSProperties = { width: "100%", background: "var(--surface-2)", border: "1px solid var(--border)", borderRadius: 8, padding: "8px 10px", color: "var(--text)", fontSize: 13, boxSizing: "border-box" };
-const colorInputBoxStyle: React.CSSProperties = { width: "100%", height: 34, borderRadius: 8, border: "1px solid var(--border)", cursor: "pointer", padding: 2, background: "none" };
-
-function toggleBtn(active: boolean): React.CSSProperties {
-  return {
-    flex: 1, fontSize: 12, fontWeight: 600, padding: "6px 8px", borderRadius: 7, cursor: "pointer",
-    border: `1px solid ${active ? "var(--accent)" : "var(--border)"}`,
-    background: active ? "var(--accent)" : "var(--surface-2)",
-    color: active ? "#fff" : "var(--text-muted)",
-  };
-}
-
-function smallBtnStyle(danger = false): React.CSSProperties {
-  return {
-    flex: 1, fontSize: 12, fontWeight: 600, padding: "7px 8px", borderRadius: 7, cursor: "pointer",
-    display: "flex", alignItems: "center", justifyContent: "center", gap: 4,
-    border: `1px solid ${danger ? "#ef444444" : "var(--border)"}`,
-    background: "var(--surface-2)",
-    color: danger ? "#ef4444" : "var(--text)",
-  };
-}
-
-const toolbarBtn: React.CSSProperties = {
-  display: "flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 600, padding: "8px 14px", borderRadius: 8, cursor: "pointer",
-  border: "1px solid var(--border)", background: "var(--surface)", color: "var(--text)",
+const mono = "var(--font-kode), ui-monospace, monospace";
+const boxTitle: React.CSSProperties = { fontFamily: mono, fontSize: 14, fontWeight: 600, color: "var(--text)", margin: "0 0 12px" };
+const btn: React.CSSProperties = {
+  display: "flex", alignItems: "center", gap: 6, padding: "8px 12px", minHeight: 36, fontSize: 12, fontWeight: 600, cursor: "pointer",
+  borderRadius: 8, border: "1px solid var(--border)", background: "var(--surface)", color: "var(--text)",
 };
+const linkBtn: React.CSSProperties = { display: "flex", alignItems: "center", gap: 6, padding: 0, fontSize: 12, fontWeight: 600, background: "none", border: "none", cursor: "pointer", color: "var(--accent-text)" };
+const menuItem: React.CSSProperties = { width: "100%", display: "flex", alignItems: "center", gap: 10, padding: "8px 10px", fontSize: 12, fontWeight: 600, textAlign: "left", background: "none", border: "none", borderRadius: 6, cursor: "pointer", color: "var(--text)" };
+const field: React.CSSProperties = { display: "flex", flexDirection: "column", gap: 6, fontSize: 12, fontWeight: 600, color: "var(--text-muted)", minWidth: 0 };
+const control: React.CSSProperties = { width: "100%", height: 36, padding: "0 10px", fontSize: 12, fontWeight: 600, background: "var(--surface-2)", color: "var(--text)", border: "1px solid var(--border)", borderRadius: 8, minWidth: 0 };
+const swatchInput: React.CSSProperties = { width: 36, height: 36, borderRadius: 8, border: "1px solid var(--border)", padding: 2, cursor: "pointer", background: "none" };
+
+/** Caixa de ajustes, com título e uma ação opcional no canto direito. */
+function Box({ heading, action, children }: { heading: string; action?: ReactNode; children: ReactNode }) {
+  return (
+    <section className="cut-box" style={{ padding: 16, minWidth: 0 }} aria-label={heading}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginBottom: 12 }}>
+        <h2 style={{ ...boxTitle, margin: 0 }}>{heading}</h2>
+        {action}
+      </div>
+      {children}
+    </section>
+  );
+}
 
 // ─── Componente principal ─────────────────────────────────────────────────
 
@@ -388,6 +393,7 @@ export default function MoodboardBuilder() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [scale, setScale] = useState(1);
   const [exporting, setExporting] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   // Cada tipo de projeto mantém seu próprio board — trocar de aba não
   // descarta o trabalho já feito em Branding/Mobile/Website.
@@ -418,7 +424,7 @@ export default function MoodboardBuilder() {
   const uid = () => `el-${++idCounter.current}`;
   const nextZ = () => ++zCounter.current;
 
-  const actionRef = useRef<{ id: string; mode: "move" | "resize"; startClientX: number; startClientY: number; start: { x: number; y: number; w: number; h: number } } | null>(null);
+  const actionRef = useRef<{ id: string; mode: "move" | "resize"; startClientX: number; startClientY: number; start: { x: number; y: number; w: number; h: number }; group?: Array<{ id: string; start: { x: number; y: number; w: number; h: number } }> } | null>(null);
 
   function setElements(updater: MoodboardElement[] | ((prev: MoodboardElement[]) => MoodboardElement[])) {
     setBoardsState((prev) => {
@@ -453,17 +459,19 @@ export default function MoodboardBuilder() {
       if (!a) return;
       const dx = (e.clientX - a.startClientX) / scale;
       const dy = (e.clientY - a.startClientY) / scale;
+      const patches: Record<string, Record<string, number>> = {};
       if (a.mode === "move") {
-        updateElement(a.id, {
-          x: clamp(a.start.x + dx, 0, Math.max(0, canvasW - a.start.w)),
-          y: clamp(a.start.y + dy, 0, Math.max(0, canvasH - a.start.h)),
-        });
+        const x = clamp(a.start.x + dx, 0, Math.max(0, canvasW - a.start.w));
+        const y = clamp(a.start.y + dy, 0, Math.max(0, canvasH - a.start.h));
+        patches[a.id] = { x, y };
+        a.group?.forEach((g) => { patches[g.id] = { x: g.start.x + (x - a.start.x), y: g.start.y + (y - a.start.y) }; });
       } else {
-        updateElement(a.id, {
-          w: clamp(a.start.w + dx, 40, canvasW - a.start.x),
-          h: clamp(a.start.h + dy, 30, canvasH - a.start.y),
-        });
+        const w = clamp(a.start.w + dx, 40, canvasW - a.start.x);
+        const h = clamp(a.start.h + dy, 30, canvasH - a.start.y);
+        patches[a.id] = { w, h };
+        a.group?.forEach((g) => { patches[g.id] = { w: Math.max(40, g.start.w + (w - a.start.w)), h: Math.max(30, g.start.h + (h - a.start.h)) }; });
       }
+      setElements((prev) => prev.map((e) => (patches[e.id] ? ({ ...e, ...patches[e.id] } as MoodboardElement) : e)));
     }
     function up() {
       actionRef.current = null;
@@ -495,14 +503,32 @@ export default function MoodboardBuilder() {
     setElements((prev) => prev.map((e) => (e.id === id ? ({ ...e, ...patch } as MoodboardElement) : e)));
   }
 
+  /** Apaga o item. Uma imagem que estava no lugar de uma cor volta a ser essa cor (o bloco não se perde). */
   function removeElement(id: string) {
-    setElements((prev) => prev.filter((e) => e.id !== id));
-    setSelectedId((cur) => (cur === id ? null : cur));
+    setElements((prev) => {
+      const el = prev.find((e) => e.id === id);
+      if (el?.type === "image" && el.restoreHex) {
+        return prev.map((e) => (e.id === id ? { id: e.id, type: "color" as const, hex: el.restoreHex as string, x: e.x, y: e.y, w: e.w, h: e.h, z: e.z, role: e.role } : e));
+      }
+      return prev.filter((e) => e.id !== id);
+    });
+  }
+
+  /** Os outros elementos do mesmo bloco (fundo "-bg", texto "-text" e subtítulo "-sub" com o mesmo prefixo): andam juntos. */
+  function blockMates(el: MoodboardElement): MoodboardElement[] {
+    const m = el.role?.match(/^(.*)-(bg|text|sub)$/);
+    if (!m) return [];
+    const prefix = m[1];
+    return elements.filter((e) => e.id !== el.id && e.role && e.role.startsWith(prefix + "-") && /-(bg|text|sub)$/.test(e.role) && e.role.slice(0, e.role.lastIndexOf("-")) === prefix);
   }
 
   function bringToFront(id: string) {
-    const z = nextZ();
-    setElements((prev) => prev.map((e) => (e.id === id ? { ...e, z } : e)));
+    const el = elements.find((e) => e.id === id);
+    const mates = el ? blockMates(el) : [];
+    const zs: Record<string, number> = { [id]: nextZ() };
+    // O fundo vai para a frente, mas o texto e o subtítulo do bloco continuam por cima dele.
+    mates.filter((m) => m.type === "text").forEach((m) => { zs[m.id] = nextZ(); });
+    setElements((prev) => prev.map((e) => (zs[e.id] !== undefined ? { ...e, z: zs[e.id] } : e)));
   }
 
   function changeType(next: ProjectType) {
@@ -520,14 +546,27 @@ export default function MoodboardBuilder() {
     const id = replaceTargetId.current;
     replaceTargetId.current = null;
     if (!file || !id) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      const src = ev.target?.result as string;
-      setElements((prev) =>
-        prev.map((e) => (e.id === id ? { id: e.id, type: "image", src, x: e.x, y: e.y, w: e.w, h: e.h, z: e.z, role: e.role } : e))
-      );
-    };
-    reader.readAsDataURL(file);
+    void readAsDataURL(file).then((src) => placeImage(id, src));
+  }
+
+  /**
+   * Coloca uma imagem como fundo de um bloco. O texto do bloco continua por cima, com as propriedades que já tinha;
+   * só nas áreas de print/tela o texto de apoio ("Print da página interna") sai, porque a imagem é o conteúdo.
+   */
+  function placeImage(id: string, src: string) {
+    const current = elements.find((e) => e.id === id);
+    const textRole = current?.role?.endsWith("-bg") ? current.role.replace(/-bg$/, "-text") : null;
+    const isScreen = !!current?.role && cfg.screenRoles.includes(current.role);
+    const textEl = textRole ? elements.find((e) => e.role === textRole && e.type === "text") : undefined;
+    setSelectedId(!isScreen && textEl ? textEl.id : id);
+    setElements((prev) => {
+      const target = prev.find((e) => e.id === id);
+      if (!target) return prev;
+      const restoreHex = target.type === "color" ? target.hex : target.type === "image" ? target.restoreHex : undefined;
+      return prev
+        .filter((e) => !(isScreen && textRole && e.role === textRole))
+        .map((e) => (e.id === id ? { id: e.id, type: "image" as const, src, x: e.x, y: e.y, w: e.w, h: e.h, z: e.z, role: e.role, restoreHex, fit: /mockup|screen/.test(e.role ?? "") ? ("contain" as const) : ("cover" as const) } : e));
+    });
   }
 
   function resetToTemplate() {
@@ -583,20 +622,16 @@ export default function MoodboardBuilder() {
     }
   }
 
+  /** Cada imagem vai para a próxima área ainda vazia; se todas já têm imagem, troca a partir da primeira. */
   async function applyScreens(fileList: FileList | null) {
     if (!fileList || cfg.screenRoles.length === 0) return;
     const files = Array.from(fileList).slice(0, cfg.screenRoles.length);
     const srcs = await Promise.all(files.map(readAsDataURL));
-    setElements((prev) => {
-      let next = prev;
-      srcs.forEach((src, i) => {
-        const role = cfg.screenRoles[i];
-        const textRole = role.replace(/-bg$/, "-text");
-        next = next
-          .map((e) => (e.role === role ? { id: e.id, type: "image" as const, src, x: e.x, y: e.y, w: e.w, h: e.h, z: e.z, role: e.role } : e))
-          .filter((e) => e.role !== textRole);
-      });
-      return next;
+    const isEmpty = (role: string) => elements.find((e) => e.role === role)?.type !== "image";
+    const order = [...cfg.screenRoles.filter(isEmpty), ...cfg.screenRoles.filter((r) => !isEmpty(r))];
+    srcs.forEach((src, i) => {
+      const target = elements.find((e) => e.role === order[i] && e.type !== "text");
+      if (target) placeImage(target.id, src);
     });
   }
 
@@ -624,6 +659,13 @@ export default function MoodboardBuilder() {
               const availW = Math.max(1, el.w - pad * 2);
               const availH = Math.max(1, el.h - pad * 2);
               const s = Math.min(availW / img.naturalWidth, availH / img.naturalHeight);
+              const dw = img.naturalWidth * s;
+              const dh = img.naturalHeight * s;
+              ctx.drawImage(img, el.x + (el.w - dw) / 2, el.y + (el.h - dh) / 2, dw, dh);
+            } else if (el.fit === "contain") {
+              ctx.fillStyle = "#ffffff";
+              ctx.fillRect(el.x, el.y, el.w, el.h);
+              const s = Math.min(el.w / img.naturalWidth, el.h / img.naturalHeight);
               const dw = img.naturalWidth * s;
               const dh = img.naturalHeight * s;
               ctx.drawImage(img, el.x + (el.w - dw) / 2, el.y + (el.h - dh) / 2, dw, dh);
@@ -674,280 +716,266 @@ export default function MoodboardBuilder() {
     e.stopPropagation();
     setSelectedId(el.id);
     bringToFront(el.id);
-    actionRef.current = { id: el.id, mode: "move", startClientX: e.clientX, startClientY: e.clientY, start: { x: el.x, y: el.y, w: el.w, h: el.h } };
+    const mates = e.altKey ? [] : blockMates(el);
+    actionRef.current = { id: el.id, mode: "move", startClientX: e.clientX, startClientY: e.clientY, start: { x: el.x, y: el.y, w: el.w, h: el.h }, group: mates.map((m) => ({ id: m.id, start: { x: m.x, y: m.y, w: m.w, h: m.h } })) };
   }
 
   function beginResize(e: React.PointerEvent, el: MoodboardElement) {
     e.stopPropagation();
     e.preventDefault();
     setSelectedId(el.id);
-    actionRef.current = { id: el.id, mode: "resize", startClientX: e.clientX, startClientY: e.clientY, start: { x: el.x, y: el.y, w: el.w, h: el.h } };
+    const mates = blockMates(el);
+    actionRef.current = { id: el.id, mode: "resize", startClientX: e.clientX, startClientY: e.clientY, start: { x: el.x, y: el.y, w: el.w, h: el.h }, group: mates.map((m) => ({ id: m.id, start: { x: m.x, y: m.y, w: m.w, h: m.h } })) };
   }
 
   const selected = elements.find((e) => e.id === selectedId) || null;
   const logoEl = elements.find((e) => e.role === cfg.logoBgRole);
-  const hasLogo = logoEl?.type === "image";
-  const screensDone = cfg.screenRoles.filter((r) => elements.find((e) => e.role === r)?.type === "image").length;
-  const bgSiblingRole = selected?.type === "text" && selected.role?.endsWith("-text") ? selected.role.replace(/-text$/, "-bg") : null;
-  const bgSibling = bgSiblingRole ? elements.find((e) => e.role === bgSiblingRole) : undefined;
+  const logoImage = logoEl?.type === "image" ? logoEl : null;
+  const bgRoleOf = (e: MoodboardElement | null) => (!e?.role ? null : e.role.endsWith("-bg") ? e.role : e.role.endsWith("-text") ? e.role.replace(/-text$/, "-bg") : null);
+  const slotBgRole = bgRoleOf(selected);
+  const slotBg = slotBgRole ? elements.find((e) => e.role === slotBgRole && e.type !== "text") : undefined;
+  const fitEl = selected?.type === "image" ? selected : slotBg?.type === "image" ? slotBg : null;
+  const slots = cfg.screenRoles.map((role, i) => ({ role, index: i + 1, el: elements.find((e) => e.role === role && e.type !== "text") }));
+  const screenTitle = cfg.screenLabel ? cfg.screenLabel.charAt(0).toUpperCase() + cfg.screenLabel.slice(1) : "";
+
+  const headerActions = (
+    <button type="button" onClick={handleExport} disabled={exporting} style={{ ...btn, background: "var(--accent-strong)", borderColor: "var(--accent-strong)", color: "#fff", opacity: exporting ? 0.6 : 1 }}>
+      <DownloadSimple size={16} /> {exporting ? "Gerando…" : "Baixar PNG"}
+    </button>
+  );
 
   return (
-    <div>
-      {/* Seletor de tipo de projeto + exportar */}
-      <div style={{ display: "flex", gap: 6, marginBottom: 14, flexWrap: "wrap", alignItems: "center" }}>
-        {(Object.keys(PROJECT_META) as ProjectType[]).map((key) => {
-          const meta = PROJECT_META[key];
-          const Icon = meta.icon;
-          const active = projectType === key;
-          return (
-            <button
-              key={key}
-              onClick={() => changeType(key)}
-              title={meta.hint}
-              style={{
-                display: "flex", alignItems: "center", gap: 6, padding: "6px 12px", borderRadius: 8, cursor: "pointer",
-                border: `1px solid ${active ? "var(--accent)" : "var(--border)"}`,
-                background: active ? "var(--accent)" : "var(--surface)",
-                color: active ? "#fff" : "var(--text)",
-                fontSize: 12, fontWeight: 600,
-              }}
-            >
-              <Icon size={14} color={active ? "#fff" : "var(--text-muted)"} />
-              {meta.label}
-            </button>
-          );
-        })}
-
-        <button onClick={handleExport} disabled={exporting} style={{ ...toolbarBtn, background: "var(--accent)", color: "#fff", border: "none", marginLeft: "auto", opacity: exporting ? 0.6 : 1 }}>
-          <Download size={14} /> {exporting ? "Gerando..." : "Baixar PNG"}
-        </button>
-      </div>
+    <div className="mb-root">
+      <Breadcrumbs items={[{ label: "Início", href: "/" }, { label: "Design", href: "/categoria/design" }, { label: "Criador de Moodboard" }]} />
+      <PageHeader title="Criador de Moodboard" actions={headerActions}>
+        Monte moodboards de branding, app mobile ou website arrastando imagens, cores e textos, e baixe o resultado em PNG.
+      </PageHeader>
 
       <input ref={replaceInputRef} type="file" accept="image/*" style={{ display: "none" }} onChange={(e) => { replaceWithImage(e.target.files?.[0]); e.target.value = ""; }} />
+      <input ref={logoInputRef} type="file" accept="image/*" style={{ display: "none" }} onChange={(e) => { const f = e.target.files?.[0]; if (f) void applyLogo(f); e.target.value = ""; }} />
+      <input ref={screensInputRef} type="file" accept="image/*" multiple style={{ display: "none" }} onChange={(e) => { void applyScreens(e.target.files); e.target.value = ""; }} />
 
-      {/* Board + painel lateral */}
-      <div style={{ display: "flex", gap: 16, alignItems: "flex-start", flexWrap: "wrap" }}>
-        <div ref={wrapRef} style={{ flex: "1 1 480px", minWidth: 280 }}>
-          <div style={{ width: canvasW * scale, height: canvasH * scale, maxWidth: "100%" }}>
-            <div
-              onPointerDown={() => setSelectedId(null)}
-              style={{
-                width: canvasW, height: canvasH, transform: `scale(${scale})`, transformOrigin: "top left",
-                position: "relative", background: bgColor, borderRadius: 12, overflow: "hidden",
-                border: "1px solid var(--border)",
-              }}
-            >
-              {elements.length === 0 && (
-                <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", padding: 40, textAlign: "center" }}>
-                  <span style={{ color: "#00000066", fontSize: 15, maxWidth: 320 }}>
-                    Adicione imagens, cores e textos usando os botões acima para montar seu moodboard.
-                  </span>
-                </div>
-              )}
-              {[...elements].sort((a, b) => a.z - b.z).map((el) => {
-                const isSelected = selectedId === el.id;
-                const isLogo = el.role === "logo-bg";
-                return (
-                  <div
-                    key={el.id}
-                    onPointerDown={(e) => beginMove(e, el)}
-                    style={{
-                      position: "absolute", left: el.x, top: el.y, width: el.w, height: el.h,
-                      outline: isSelected ? "2px solid var(--accent)" : "1px solid transparent",
-                      outlineOffset: 2, cursor: "move", boxSizing: "border-box",
-                    }}
-                  >
-                    {el.type === "image" && (
-                      <div style={{ width: "100%", height: "100%", borderRadius: 6, overflow: "hidden", background: isLogo ? "#ffffff" : "transparent", boxSizing: "border-box" }}>
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={el.src}
-                          alt=""
-                          draggable={false}
-                          style={{
-                            width: "100%", height: "100%", display: "block", pointerEvents: "none", boxSizing: "border-box",
-                            objectFit: isLogo ? "contain" : "cover",
-                            padding: isLogo ? 16 : 0,
-                          }}
-                        />
-                      </div>
-                    )}
-                    {el.type === "color" && (
-                      <div style={{ width: "100%", height: "100%", background: el.hex, borderRadius: 6, display: "flex", alignItems: "flex-end", padding: el.w >= 48 ? 8 : 0, boxSizing: "border-box" }}>
-                        {el.w >= 48 && el.h >= 40 && (
-                          <span style={{ fontSize: 11, fontFamily: "monospace", fontWeight: 700, color: bestTextColor(el.hex), opacity: 0.85 }}>{el.hex.toUpperCase()}</span>
-                        )}
-                      </div>
-                    )}
-                    {el.type === "text" && (
-                      <div
-                        style={{
-                          width: "100%", height: "100%", overflow: "hidden", boxSizing: "border-box",
-                          display: "flex", flexDirection: "column",
-                          justifyContent: el.valign === "center" ? "center" : el.valign === "end" ? "flex-end" : "flex-start",
-                          padding: el.pad ?? 0,
-                        }}
-                      >
-                        <div style={{ fontFamily: el.fontFamily, fontSize: el.fontSize, fontWeight: el.weight, color: el.color, textAlign: el.align, whiteSpace: "pre-wrap", wordBreak: "break-word", lineHeight: 1.25 }}>
-                          {el.content}
-                        </div>
-                      </div>
-                    )}
-                    {isSelected && (
-                      <>
-                        <button
-                          onPointerDown={(e) => e.stopPropagation()}
-                          onClick={(e) => { e.stopPropagation(); removeElement(el.id); }}
-                          title="Remover"
-                          style={{ position: "absolute", top: -10, right: -10, width: 22, height: 22, borderRadius: "50%", background: "#ef4444", color: "#fff", border: "2px solid #fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", padding: 0 }}
-                        >
-                          <X size={12} />
+      <div className="mb-grid">
+        {/* Board */}
+        <div className="cut-box" style={{ padding: 16, minWidth: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginBottom: 12 }}>
+            <h2 style={{ ...boxTitle, margin: 0 }}>Board · {PROJECT_META[projectType].label}</h2>
+            <div style={{ position: "relative" }}>
+              <button type="button" aria-haspopup="menu" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)} style={linkBtn}>
+                <Swatches size={14} /> Presets <CaretDown size={12} />
+              </button>
+              {menuOpen && (
+                <>
+                  <div onClick={() => setMenuOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 40 }} />
+                  <div role="menu" aria-label="Presets do moodboard" style={{ position: "absolute", zIndex: 41, top: "calc(100% + 8px)", right: 0, width: 220, padding: 6, background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 8, boxShadow: "0 8px 24px rgba(0,0,0,0.16)" }}>
+                    {(Object.keys(PROJECT_META) as ProjectType[]).map((key) => {
+                      const Icon = PROJECT_META[key].icon;
+                      return (
+                        <button key={key} role="menuitemradio" aria-checked={projectType === key} type="button" className="mb-menu-item" style={menuItem}
+                          onClick={() => { changeType(key); setMenuOpen(false); }} title={PROJECT_META[key].hint}>
+                          <Icon size={16} /> {PROJECT_META[key].label}
+                          {projectType === key && <Check size={14} weight="bold" style={{ marginLeft: "auto" }} />}
                         </button>
-                        <div
-                          onPointerDown={(e) => beginResize(e, el)}
-                          style={{ position: "absolute", right: -6, bottom: -6, width: 14, height: 14, borderRadius: 4, background: "var(--accent)", border: "2px solid #fff", cursor: "nwse-resize" }}
-                        />
-                      </>
-                    )}
+                      );
+                    })}
+                    <div style={{ height: 1, background: "var(--border)", margin: "6px 4px" }} />
+                    <button role="menuitem" type="button" className="mb-menu-item" style={menuItem} onClick={() => { setMenuOpen(false); resetToTemplate(); }}>
+                      <ArrowCounterClockwise size={16} /> Restaurar modelo
+                    </button>
                   </div>
-                );
-              })}
+                </>
+              )}
             </div>
           </div>
-          <p style={{ fontSize: 12, color: "var(--text-subtle)", marginTop: 10 }}>
-            Arraste para mover · use o canto inferior direito para redimensionar · Delete remove o item selecionado.
-          </p>
+
+          <div ref={wrapRef} style={{ minWidth: 0 }}>
+            <div style={{ width: canvasW * scale, height: canvasH * scale, maxWidth: "100%" }}>
+              <div
+                onPointerDown={() => setSelectedId(null)}
+                style={{ width: canvasW, height: canvasH, transform: `scale(${scale})`, transformOrigin: "top left", position: "relative", background: bgColor, borderRadius: 8, overflow: "hidden", border: "1px solid var(--border)" }}
+              >
+                {elements.length === 0 && (
+                  <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", padding: 40, textAlign: "center" }}>
+                    <span style={{ color: "#00000066", fontSize: 15, maxWidth: 320 }}>O board está vazio. Use Presets, no canto do título, para restaurar um modelo.</span>
+                  </div>
+                )}
+                {[...elements].sort((a, b) => a.z - b.z).map((el) => {
+                  const isSelected = selectedId === el.id;
+                  const isLogo = el.role === "logo-bg";
+                  return (
+                    <div key={el.id} onPointerDown={(e) => beginMove(e, el)}
+                      style={{ position: "absolute", left: el.x, top: el.y, width: el.w, height: el.h, outline: isSelected ? "2px solid var(--accent-strong)" : "1px solid transparent", outlineOffset: 2, cursor: "move", boxSizing: "border-box" }}>
+                      {el.type === "image" && (
+                        <div style={{ width: "100%", height: "100%", borderRadius: 6, overflow: "hidden", background: isLogo || el.fit === "contain" ? "#ffffff" : "transparent", boxSizing: "border-box" }}>
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={el.src} alt="" draggable={false} style={{ width: "100%", height: "100%", display: "block", pointerEvents: "none", boxSizing: "border-box", objectFit: isLogo || el.fit === "contain" ? "contain" : "cover", padding: isLogo ? 16 : 0 }} />
+                        </div>
+                      )}
+                      {el.type === "color" && (
+                        <div style={{ width: "100%", height: "100%", background: el.hex, borderRadius: 6, display: "flex", alignItems: "flex-end", padding: el.w >= 48 ? 8 : 0, boxSizing: "border-box" }}>
+                          {el.w >= 48 && el.h >= 40 && <span style={{ fontSize: 11, fontFamily: "monospace", fontWeight: 700, color: bestTextColor(el.hex), opacity: 0.85 }}>{el.hex.toUpperCase()}</span>}
+                        </div>
+                      )}
+                      {el.type === "text" && (
+                        <div style={{ width: "100%", height: "100%", overflow: "hidden", boxSizing: "border-box", display: "flex", flexDirection: "column", justifyContent: el.valign === "center" ? "center" : el.valign === "end" ? "flex-end" : "flex-start", padding: el.pad ?? 0 }}>
+                          <div style={{ fontFamily: el.fontFamily, fontSize: el.fontSize, fontWeight: el.weight, color: el.color, textAlign: el.align, whiteSpace: "pre-wrap", wordBreak: "break-word", lineHeight: 1.25 }}>{el.content}</div>
+                        </div>
+                      )}
+                      {isSelected && (
+                        <>
+                          <button onPointerDown={(e) => e.stopPropagation()} onClick={(e) => { e.stopPropagation(); removeElement(el.id); }} title="Remover" aria-label="Remover item"
+                            style={{ position: "absolute", top: -10, right: -10, width: 22, height: 22, borderRadius: "50%", background: "#ef4444", color: "#fff", border: "2px solid #fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", padding: 0 }}>
+                            <X size={12} />
+                          </button>
+                          <div onPointerDown={(e) => beginResize(e, el)} style={{ position: "absolute", right: -6, bottom: -6, width: 14, height: 14, borderRadius: 4, background: "var(--accent-strong)", border: "2px solid #fff", cursor: "nwse-resize" }} />
+                        </>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+            <p style={{ fontSize: 12, color: "var(--text-subtle)", margin: "10px 0 0" }}>Arraste para mover (fundo e texto do bloco andam juntos; Alt solta só um) · canto inferior direito redimensiona · Delete remove o item.</p>
+          </div>
         </div>
 
-        {/* Painel lateral: ajustes do board + propriedades do item selecionado */}
-        <div style={{ ...panelStyle, width: 280, flexShrink: 0, padding: 16 }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 10, paddingBottom: 14, marginBottom: 14, borderBottom: "1px solid var(--border)" }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
-              Ajustes do board
-            </div>
-
-            <input ref={logoInputRef} type="file" accept="image/*" style={{ display: "none" }} onChange={(e) => { const f = e.target.files?.[0]; if (f) applyLogo(f); e.target.value = ""; }} />
-            <button onClick={() => logoInputRef.current?.click()} style={{ ...toolbarBtn, width: "100%", justifyContent: "center", background: "var(--accent)", color: "#fff", border: "none" }}>
-              <ImagePlus size={14} /> {hasLogo ? "Trocar logo" : "Enviar logo"}
-            </button>
-            {hasLogo && logoEl?.type === "image" ? (
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={logoEl.src} alt="Logo" style={{ width: 28, height: 28, objectFit: "contain", background: "#fff", borderRadius: 6, border: "1px solid var(--border)", flexShrink: 0 }} />
-                <span style={{ fontSize: 11, color: "var(--text-muted)" }}>Cores extraídas automaticamente no modelo.</span>
-              </div>
-            ) : (
-              <span style={{ fontSize: 11, color: "var(--text-muted)" }}>As cores do board são extraídas da sua logo.</span>
-            )}
-
-            {cfg.screenRoles.length > 0 && (
-              <>
-                <input ref={screensInputRef} type="file" accept="image/*" multiple style={{ display: "none" }} onChange={(e) => { applyScreens(e.target.files); e.target.value = ""; }} />
-                <button onClick={() => screensInputRef.current?.click()} style={{ ...toolbarBtn, width: "100%", justifyContent: "center" }}>
-                  <Images size={14} /> Enviar {cfg.screenLabel} ({screensDone}/{cfg.screenRoles.length})
-                </button>
-              </>
-            )}
-
-            <button onClick={resetToTemplate} style={{ ...toolbarBtn, width: "100%", justifyContent: "center" }} title="Restaura o modelo original deste tipo de projeto (logo e telas enviadas são perdidas).">
-              <RotateCcw size={14} /> Restaurar modelo
-            </button>
-
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <span style={{ fontSize: 12, color: "var(--text-muted)" }}>Fundo do board</span>
-              <input type="color" value={bgColor} onChange={(e) => setBgColor(e.target.value)} style={{ width: 30, height: 30, borderRadius: 7, border: "1px solid var(--border)", padding: 2, cursor: "pointer", background: "none" }} />
-            </div>
-          </div>
-
-          {!selected ? (
-            <p style={{ fontSize: 13, color: "var(--text-muted)", lineHeight: 1.6 }}>
-              Selecione um item no board para editar suas propriedades.
-            </p>
-          ) : (
-            <>
-              <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
-                {selected.type === "image" ? "Imagem" : selected.type === "color" ? "Cor" : "Texto"}
-              </div>
-
-              {selected.type === "text" && (
-                <>
-                  <label style={labelStyle}>Conteúdo</label>
-                  <textarea value={selected.content} onChange={(e) => updateElement(selected.id, { content: e.target.value })} rows={3} style={{ ...inputStyle, resize: "vertical" }} />
-
-                  <label style={labelStyle}>Fonte</label>
-                  <select value={selected.fontFamily} onChange={(e) => updateElement(selected.id, { fontFamily: e.target.value })} style={inputStyle}>
-                    {FONTS.map((f) => (
-                      <option key={f.value} value={f.value}>{f.label}</option>
-                    ))}
-                  </select>
-
-                  <label style={labelStyle}>Tamanho: {selected.fontSize}px</label>
-                  <input type="range" min={12} max={140} value={selected.fontSize} onChange={(e) => updateElement(selected.id, { fontSize: Number(e.target.value) })} style={{ width: "100%" }} />
-
-                  <label style={labelStyle}>Peso</label>
-                  <div style={{ display: "flex", gap: 6 }}>
-                    {[{ v: 400, l: "Normal" }, { v: 600, l: "Médio" }, { v: 800, l: "Negrito" }].map((o) => (
-                      <button key={o.v} onClick={() => updateElement(selected.id, { weight: o.v })} style={toggleBtn(selected.weight === o.v)}>{o.l}</button>
-                    ))}
-                  </div>
-
-                  <label style={labelStyle}>Alinhamento</label>
-                  <div style={{ display: "flex", gap: 6 }}>
-                    {(["left", "center", "right"] as Align[]).map((a) => (
-                      <button key={a} onClick={() => updateElement(selected.id, { align: a })} style={toggleBtn(selected.align === a)}>{a === "left" ? "Esq" : a === "center" ? "Centro" : "Dir"}</button>
-                    ))}
-                  </div>
-
-                  <label style={labelStyle}>Cor do texto</label>
-                  <input type="color" value={selected.color} onChange={(e) => updateElement(selected.id, { color: e.target.value })} style={colorInputBoxStyle} />
-
-                  {bgSibling && (
-                    <>
-                      <label style={labelStyle}>Fundo do bloco</label>
-                      {bgSibling.type === "color" ? (
-                        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                          <input type="color" value={bgSibling.hex} onChange={(e) => updateElement(bgSibling.id, { hex: e.target.value })} style={{ width: 40, height: 34, borderRadius: 8, border: "1px solid var(--border)", cursor: "pointer", padding: 2, background: "none", flexShrink: 0 }} />
-                          <button onClick={() => openReplaceWithImage(bgSibling.id)} style={{ ...smallBtnStyle(), flex: 1 }} title="Usa uma imagem no lugar da cor de fundo deste bloco.">
-                            <ImageIcon size={13} /> Inserir imagem
-                          </button>
-                        </div>
-                      ) : bgSibling.type === "image" ? (
-                        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src={bgSibling.src} alt="" style={{ width: 40, height: 34, objectFit: "cover", borderRadius: 6, border: "1px solid var(--border)", flexShrink: 0 }} />
-                          <button onClick={() => openReplaceWithImage(bgSibling.id)} style={{ ...smallBtnStyle(), flex: 1 }}>
-                            <ImageIcon size={13} /> Trocar imagem
-                          </button>
-                        </div>
-                      ) : null}
-                    </>
-                  )}
-                </>
+        {/* Ajustes: uma caixa para cada assunto */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 16, minWidth: 0 }}>
+          <Box heading="Branding">
+            <div style={{ display: "grid", gridTemplateColumns: "56px minmax(0, 1fr)", gap: 12, alignItems: "center" }}>
+              {logoImage ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={logoImage.src} alt="Logo" style={{ width: 56, height: 56, objectFit: "contain", background: "#fff", borderRadius: 8, border: "1px solid var(--border)" }} />
+              ) : (
+                <span aria-hidden="true" style={{ width: 56, height: 56, borderRadius: 8, border: "1px dashed var(--border)", background: "var(--surface-2)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-subtle)" }}><ImageSquare size={22} /></span>
               )}
-
-              {selected.type === "color" && (
-                <>
-                  <label style={labelStyle}>Cor</label>
-                  <input type="color" value={selected.hex} onChange={(e) => updateElement(selected.id, { hex: e.target.value })} style={colorInputBoxStyle} />
-                  <button onClick={() => openReplaceWithImage(selected.id)} style={{ ...smallBtnStyle(), width: "100%", marginTop: 10 }} title="Substitui este bloco por uma imagem (ex: sua logo), mantendo o mesmo tamanho e posição.">
-                    <ImageIcon size={13} /> Usar imagem (logo, foto...)
-                  </button>
-                </>
-              )}
-
-              {selected.type === "image" && (
-                <p style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 12, lineHeight: 1.6 }}>
-                  Arraste para mover e use o canto inferior direito para redimensionar a imagem.
-                </p>
-              )}
-
-              <button onClick={() => removeElement(selected.id)} style={{ ...smallBtnStyle(true), width: "100%", marginTop: 16 }}>
-                <Trash2 size={13} /> Remover
+              <button type="button" onClick={() => logoInputRef.current?.click()} style={{ ...btn, justifyContent: "center" }}>
+                <UploadSimple size={14} /> {logoImage ? "Trocar logo" : "Enviar logo"}
               </button>
-            </>
+            </div>
+            <label style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginTop: 14, fontSize: 12, color: "var(--text-muted)" }}>
+              Fundo do board
+              <input type="color" value={bgColor} onChange={(e) => setBgColor(e.target.value)} style={swatchInput} />
+            </label>
+          </Box>
+
+          {slots.length > 0 && (
+            <Box heading={screenTitle} action={<button type="button" onClick={() => screensInputRef.current?.click()} style={linkBtn}><Images size={14} /> Enviar vários</button>}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 12 }}>
+                {slots.map(({ role, index, el }) => (
+                  <button key={role} type="button" disabled={!el} onClick={() => el && openReplaceWithImage(el.id)} aria-label={`${el?.type === "image" ? "Trocar" : "Enviar"} imagem ${index}`}
+                    style={{ padding: 0, border: "1px solid var(--border)", borderRadius: 8, overflow: "hidden", background: "var(--surface-2)", cursor: el ? "pointer" : "not-allowed", textAlign: "left", color: "var(--text)" }}>
+                    <span style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 96, background: el?.type === "image" ? "var(--surface-2)" : el?.type === "color" ? el.hex : "var(--surface-2)" }}>
+                      {el?.type === "image" ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={el.src} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      ) : (
+                        <UploadSimple size={20} color={el?.type === "color" ? bestTextColor(el.hex) : "var(--text-subtle)"} />
+                      )}
+                    </span>
+                    <span style={{ display: "block", padding: "6px 8px", fontSize: 11, fontWeight: 600 }}>{index}ª imagem</span>
+                  </button>
+                ))}
+              </div>
+            </Box>
+          )}
+
+          {selected && (
+            <Box
+              heading={selected.type === "image" ? "Imagem" : selected.type === "color" ? "Cor" : "Texto"}
+              action={<button type="button" onClick={() => removeElement(selected.id)} style={{ ...linkBtn, color: "#ef4444" }}><Trash size={14} /> {selected.type === "image" && selected.restoreHex ? "Remover imagem" : "Remover"}</button>}
+            >
+              <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                {slotBg && (
+                  <div style={{ display: "grid", gridTemplateColumns: "56px minmax(0, 1fr)", gap: 12, alignItems: "center" }}>
+                    {slotBg.type === "image" ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={slotBg.src} alt="" style={{ width: 56, height: 56, objectFit: "cover", borderRadius: 8, border: "1px solid var(--border)" }} />
+                    ) : (
+                      <span aria-hidden="true" style={{ width: 56, height: 56, borderRadius: 8, border: "1px solid var(--border)", background: slotBg.type === "color" ? slotBg.hex : "var(--surface-2)" }} />
+                    )}
+                    <button type="button" onClick={() => openReplaceWithImage(slotBg.id)} style={{ ...btn, justifyContent: "center" }}>
+                      <UploadSimple size={14} /> {slotBg.type === "image" ? "Trocar imagem" : "Enviar imagem"}
+                    </button>
+                  </div>
+                )}
+                {slotBg?.type === "image" && slotBg.restoreHex && (
+                  <button type="button" onClick={() => removeElement(slotBg.id)} style={{ ...linkBtn, color: "#ef4444", marginTop: -4 }}><Trash size={14} /> Remover imagem de fundo</button>
+                )}
+
+                {fitEl && (
+                  <div role="group" aria-label="Ajuste da imagem" style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: "var(--text-muted)", marginRight: "auto" }}>Ajuste</span>
+                    {([["contain", "Mostrar inteira"], ["cover", "Preencher"]] as const).map(([value, text]) => {
+                      const active = (fitEl.fit ?? "cover") === value;
+                      return (
+                        <button key={value} type="button" aria-pressed={active} onClick={() => updateElement(fitEl.id, { fit: value })}
+                          style={{ ...btn, minHeight: 32, padding: "6px 10px", border: `1px solid ${active ? "var(--accent-strong)" : "var(--border)"}`, background: active ? "var(--accent-strong)" : "var(--surface)", color: active ? "#fff" : "var(--text)" }}>
+                          {text}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {selected.type === "text" && (
+                  <>
+                    <label style={field}>Conteúdo
+                      <textarea value={selected.content} onChange={(e) => updateElement(selected.id, { content: e.target.value })} rows={3} style={{ ...control, resize: "vertical", height: "auto", padding: 10 }} />
+                    </label>
+                    <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 2fr) minmax(0, 1fr)", gap: 10 }}>
+                      <label style={field}>Fonte
+                        <select value={selected.fontFamily} onChange={(e) => updateElement(selected.id, { fontFamily: e.target.value })} style={control}>
+                          {FONTS.map((f) => <option key={f.value} value={f.value}>{f.label}</option>)}
+                        </select>
+                      </label>
+                      <label style={field}>Tamanho
+                        <input type="number" min={8} max={200} value={selected.fontSize} onChange={(e) => updateElement(selected.id, { fontSize: Math.max(8, Math.min(200, Number(e.target.value) || 8)) })} style={{ ...control, fontFamily: mono }} />
+                      </label>
+                    </div>
+                    <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) auto auto", gap: 10, alignItems: "end" }}>
+                      <label style={field}>Peso
+                        <select value={selected.weight} onChange={(e) => updateElement(selected.id, { weight: Number(e.target.value) })} style={control}>
+                          {[{ v: 400, l: "Normal" }, { v: 600, l: "Médio" }, { v: 800, l: "Negrito" }].map((o) => <option key={o.v} value={o.v}>{o.l}</option>)}
+                        </select>
+                      </label>
+                      <div role="group" aria-label="Alinhamento" style={{ display: "flex", gap: 4 }}>
+                        {([["left", TextAlignLeft], ["center", TextAlignCenter], ["right", TextAlignRight]] as const).map(([a, Icon]) => (
+                          <button key={a} type="button" aria-pressed={selected.align === a} aria-label={`Alinhar ${a === "left" ? "à esquerda" : a === "center" ? "ao centro" : "à direita"}`} onClick={() => updateElement(selected.id, { align: a })}
+                            style={{ width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", borderRadius: 8, border: `1px solid ${selected.align === a ? "var(--accent-strong)" : "var(--border)"}`, background: selected.align === a ? "var(--accent-strong)" : "var(--surface)", color: selected.align === a ? "#fff" : "var(--text)" }}>
+                            <Icon size={16} />
+                          </button>
+                        ))}
+                      </div>
+                      <label style={field}>Cor
+                        <input type="color" value={selected.color} onChange={(e) => updateElement(selected.id, { color: e.target.value })} style={swatchInput} />
+                      </label>
+                    </div>
+                  </>
+                )}
+
+                {selected.type === "color" && (
+                  <label style={{ ...field, flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+                    <span style={{ fontFamily: mono, color: "var(--text)" }}>{selected.hex.toUpperCase()}</span>
+                    <input type="color" value={selected.hex} onChange={(e) => updateElement(selected.id, { hex: e.target.value })} style={swatchInput} />
+                  </label>
+                )}
+
+                {selected.type === "image" && !slotBg && (
+                  <button type="button" onClick={() => openReplaceWithImage(selected.id)} style={{ ...btn, justifyContent: "center" }}><UploadSimple size={14} /> Trocar imagem</button>
+                )}
+              </div>
+            </Box>
           )}
         </div>
       </div>
+
+      <style>{`
+        .mb-root { container-type: inline-size; }
+        .mb-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; align-items: start; }
+        @container (min-width: 900px) { .mb-grid { grid-template-columns: minmax(0, 1fr) 320px; } }
+        .mb-menu-item:hover { background: var(--surface-2) !important; }
+      `}</style>
     </div>
   );
 }

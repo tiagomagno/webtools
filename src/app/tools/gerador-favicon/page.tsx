@@ -44,7 +44,7 @@ export default function Page() {
         ),
       }}
       faq={FAQ}
-      related={["cortador-imagem", "redimensionador-imagem", "compressor-imagem"]}
+      related={["editor-imagem", "color-palette", "moodboard"]}
       ctaText="Precisa de mais ferramentas de imagem?"
     >
       <FaviconGenerator />
