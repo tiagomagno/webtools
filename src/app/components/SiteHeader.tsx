@@ -59,6 +59,7 @@ export default function SiteHeader({ theme, fontSize, onToggleTheme, onCycleFont
       </div>
 
       <style>{`
+        .site-header { z-index: 60; }
         .site-header-link:hover { background: var(--surface-2); }
         [data-theme="dark"] .site-header-wordmark { filter: invert(1) hue-rotate(180deg); }
         @media (max-width: 1099px) { .site-header-hint { display: none; } }
