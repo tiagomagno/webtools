@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { LayoutGrid } from "lucide-react";
-import { TOOLS, CATEGORIES, CATEGORY_META, categorySlug } from "../../lib/tools";
+import { TOOLS, CATEGORIES, categorySlug } from "../../lib/tools";
 import { categoryMetadata } from "../../lib/seo";
 import Breadcrumbs from "../../components/Breadcrumbs";
+import { jakarta, kodeMono } from "../../lib/fonts";
 import type { Metadata } from "next";
+import { ToolIcon, CategoryIcon } from "../../components/ToolIcon";
 
 export function generateStaticParams() {
   return CATEGORIES.map((cat) => ({ slug: categorySlug(cat) }));
@@ -31,85 +32,62 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
   const category = findCategory(slug);
   if (!category) notFound();
 
-  const meta = CATEGORY_META[category] ?? { icon: LayoutGrid, color: "#888" };
-  const Icon = meta.icon;
   const catTools = TOOLS.filter((t) => t.category === category);
 
   return (
-    <div style={{ padding: "40px 0" }}>
+    <div className={`${jakarta.variable} ${kodeMono.variable}`} style={{ fontFamily: "var(--font-jakarta), Inter, system-ui, sans-serif" }}>
       <Breadcrumbs items={[{ label: "Início", href: "/" }, { label: category }]} />
 
-      <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 28 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 16, padding: "16px 0" }}>
         <div
-          style={{
-            width: 44, height: 44, borderRadius: 12, flexShrink: 0,
-            background: `${meta.color}18`, border: `1px solid ${meta.color}30`,
-            display: "flex", alignItems: "center", justifyContent: "center",
-          }}
+          aria-hidden="true"
+          style={{ width: 44, height: 44, flexShrink: 0, background: "var(--accent-strong)", display: "flex", alignItems: "center", justifyContent: "center", clipPath: "polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px)" }}
         >
-          <Icon size={22} color={meta.color} />
+          <span style={{ color: "#fff", display: "flex" }}><CategoryIcon category={category} size={22} weight="bold" /></span>
         </div>
-        <div>
-          <h1 style={{ fontSize: 22, fontWeight: 700, letterSpacing: "-0.02em", color: "var(--text)", margin: 0 }}>
+        <div style={{ flex: 1, minWidth: 0, display: "flex", alignItems: "flex-end", gap: 12, flexWrap: "wrap" }}>
+          <h1 style={{ fontFamily: "var(--font-kode), ui-monospace, monospace", fontSize: "clamp(32px, 8vw, 48px)", fontWeight: 700, lineHeight: 1, letterSpacing: "-0.01em", color: "var(--text)", margin: 0, flex: 1 }}>
             {category}
           </h1>
-          <p style={{ fontSize: 13, color: "var(--text-muted)", margin: "2px 0 0" }}>
+          <p style={{ fontSize: 13, lineHeight: "19.5px", color: "var(--text-muted)", margin: 0 }}>
             {catTools.length} {catTools.length === 1 ? "ferramenta" : "ferramentas"}
           </p>
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 12 }}>
+      <ul className="cat-list" style={{ listStyle: "none", margin: 0, padding: "16px 0" }}>
         {catTools.map((tool) => (
-          <Link key={tool.slug} href={tool.href} style={{ textDecoration: "none" }}>
-            <div
-              className="tool-card"
-              style={{
-                background: "var(--surface)",
-                border: "1px solid var(--border)",
-                borderRadius: 10,
-                padding: "16px 18px",
-                display: "flex",
-                alignItems: "center",
-                gap: 14,
-                cursor: "pointer",
-                transition: "border-color 0.12s, transform 0.12s",
-              }}
-            >
+          <li key={tool.slug} style={{ breakInside: "avoid", paddingBottom: 16 }}>
+            <Link href={tool.href} style={{ textDecoration: "none", display: "block" }}>
               <div
-                style={{
-                  width: 38,
-                  height: 38,
-                  borderRadius: 9,
-                  background: `${tool.color}18`,
-                  border: `1px solid ${tool.color}28`,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: 18,
-                  flexShrink: 0,
-                }}
+                className="tool-card cut-box"
+                style={{ padding: 16, display: "flex", alignItems: "flex-start", gap: 16, minHeight: 72 }}
               >
-                {tool.emoji}
-              </div>
-              <div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text)", marginBottom: 3 }}>
-                  {tool.label}
+                <div
+                  aria-hidden="true"
+                  className="cut-box" style={{ width: 38, height: 38, ["--cut" as string]: "8px", ["--cut-border" as string]: "color-mix(in srgb, var(--accent) 70%, var(--surface))", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0 }}
+                >
+                  <ToolIcon slug={tool.slug} size={18} />
                 </div>
-                <div style={{ fontSize: 12, color: "var(--text-muted)", lineHeight: 1.5 }}>
-                  {tool.description}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontFamily: "var(--font-kode), ui-monospace, monospace", fontSize: 14, fontWeight: 600, lineHeight: "19.5px", color: "var(--text)" }}>
+                    {tool.label}
+                  </div>
+                  <div style={{ fontSize: 10, lineHeight: "18px", color: "var(--text-muted)" }}>
+                    {tool.description}
+                  </div>
                 </div>
               </div>
-            </div>
-          </Link>
+            </Link>
+          </li>
         ))}
-      </div>
+      </ul>
 
       <style>{`
-        .tool-card:hover { border-color: var(--text-subtle) !important; transform: translateY(-1px); }
-        @media (max-width: 767px) {
-          .tool-card { padding: 14px !important; }
-        }
+        .tool-card { transition: none; }
+        .tool-card:hover { --cut-border: var(--text-subtle); }
+        .cat-list { columns: 1; column-gap: 16px; }
+        @media (min-width: 900px) { .cat-list { columns: 2; } }
       `}</style>
     </div>
   );

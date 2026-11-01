@@ -3,6 +3,7 @@ import Link from "next/link";
 import { TOOLS, categorySlug } from "../lib/tools";
 import { SITE_URL } from "../lib/seo";
 import Breadcrumbs from "./Breadcrumbs";
+import PageHeader from "./PageHeader";
 
 export interface FaqItem {
   q: string;
@@ -11,7 +12,8 @@ export interface FaqItem {
 
 interface ToolPageProps {
   slug: string;
-  emoji: string;
+  /** Mantido para compatibilidade com as páginas; o título não usa mais emoji. */
+  emoji?: string;
   /** Título curto exibido no H1 (sem cauda de SEO). */
   title: string;
   heroDescription: ReactNode;
@@ -27,11 +29,12 @@ interface ToolPageProps {
   /** Slugs de ferramentas relacionadas. */
   related?: string[];
   ctaText?: string;
+  /** Ações alinhadas à direita do título. */
+  actions?: ReactNode;
 }
 
 export default function ToolPage({
   slug,
-  emoji,
   title,
   heroDescription,
   schemaName,
@@ -42,6 +45,7 @@ export default function ToolPage({
   faq,
   related = [],
   ctaText,
+  actions,
 }: ToolPageProps) {
   const path = `/tools/${slug}`;
   const tool = TOOLS.find((t) => t.slug === slug);
@@ -80,14 +84,7 @@ export default function ToolPage({
         ]}
       />
 
-      <header style={{ marginBottom: 28 }}>
-        <h1 style={{ fontSize: 30, fontWeight: 700, letterSpacing: "-0.03em", marginBottom: 8 }}>
-          {emoji} {title}
-        </h1>
-        <p style={{ color: "var(--text-muted)", fontSize: 15, lineHeight: 1.6, maxWidth: 660 }}>
-          {heroDescription}
-        </p>
-      </header>
+      <PageHeader title={title} actions={actions}>{heroDescription}</PageHeader>
 
       {children}
     </div>

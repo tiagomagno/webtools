@@ -10,6 +10,7 @@ import { useAuth } from "../lib/auth/AuthProvider";
 import { loginHref } from "../lib/auth/next";
 import { initials } from "../lib/initials";
 import FavoritesConfigModal from "./FavoritesConfigModal";
+import { ToolIcon } from "./ToolIcon";
 
 export default function MobileUserMenu() {
   const { user, logout, status } = useAuth();
@@ -117,7 +118,7 @@ export default function MobileUserMenu() {
                 {pinnedTools.map((tool) => (
                   <Link key={tool.slug} href={tool.href} onClick={close} style={{ textDecoration: "none" }}>
                     <div className="mobile-user-menu-row" style={{ display: "flex", alignItems: "center", gap: 10, padding: 8, borderRadius: 8 }}>
-                      <span style={{ fontSize: 16 }}>{tool.emoji}</span>
+                      <ToolIcon slug={tool.slug} />
                       <span style={{ fontSize: 13, fontWeight: 600, color: "var(--text)" }}>{tool.label}</span>
                     </div>
                   </Link>

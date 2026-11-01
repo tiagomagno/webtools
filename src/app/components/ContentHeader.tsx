@@ -10,6 +10,7 @@ import { useAuth } from "../lib/auth/AuthProvider";
 import { loginHref } from "../lib/auth/next";
 import { initials } from "../lib/initials";
 import FavoritesConfigModal from "./FavoritesConfigModal";
+import { ToolIcon } from "./ToolIcon";
 
 type Theme = "dark" | "light";
 type FontSize = "sm" | "md" | "lg";
@@ -47,10 +48,10 @@ export default function ContentHeader({ theme, fontSize, onToggleTheme, onCycleF
   if (!user && status === "unauthenticated") {
     return (
       <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", gap: 12 }}>
-        <span style={{ fontSize: 12.5, color: "var(--text-muted)" }}>Entre para guardar seu histórico</span>
+        <span className="site-header-hint" style={{ fontSize: 12, fontWeight: 600, lineHeight: "18.75px", color: "var(--text-muted)", whiteSpace: "nowrap" }}>Entre para guardar seu histórico</span>
         <Link
           href={loginHref(pathname)}
-          style={{ padding: "8px 18px", borderRadius: 999, background: "var(--accent-strong)", color: "#fff", fontSize: 13, fontWeight: 600, textDecoration: "none" }}
+          style={{ padding: "8px 18px", borderRadius: 8, background: "var(--accent-strong)", color: "#fff", fontSize: 12, fontWeight: 600, lineHeight: "19.5px", textDecoration: "none" }}
         >
           Entrar
         </Link>
@@ -143,7 +144,7 @@ export default function ContentHeader({ theme, fontSize, onToggleTheme, onCycleF
                   {pinnedTools.map((tool) => (
                     <Link key={tool.slug} href={tool.href} onClick={close} style={{ textDecoration: "none" }}>
                       <div className="content-header-row" style={{ display: "flex", alignItems: "center", gap: 10, padding: 8, borderRadius: 8 }}>
-                        <span style={{ fontSize: 16 }}>{tool.emoji}</span>
+                        <ToolIcon slug={tool.slug} />
                         <span style={{ fontSize: 13, fontWeight: 600, color: "var(--text)" }}>{tool.label}</span>
                       </div>
                     </Link>

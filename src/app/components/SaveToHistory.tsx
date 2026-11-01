@@ -11,6 +11,8 @@ interface Props<T> {
   /** Monta o que será guardado no momento do clique. */
   getPayload: () => T;
   disabled?: boolean;
+  /** Sem conta: não mostra o convite "Entre para guardar seu histórico". */
+  hideInvite?: boolean;
 }
 
 const buttonStyle: React.CSSProperties = {
@@ -19,7 +21,7 @@ const buttonStyle: React.CSSProperties = {
 };
 
 /** Botão "Salvar no histórico" para quem tem conta; convite para entrar para quem não tem. */
-export default function SaveToHistory<T>({ slug, getPayload, disabled }: Props<T>) {
+export default function SaveToHistory<T>({ slug, getPayload, disabled, hideInvite }: Props<T>) {
   const pathname = usePathname();
   const { canSave, loading, save } = useToolHistory<T>(slug, { autoLoad: false });
   const [state, setState] = useState<"idle" | "saving" | "saved" | "error">("idle");
@@ -27,6 +29,7 @@ export default function SaveToHistory<T>({ slug, getPayload, disabled }: Props<T
   if (loading) return null;
 
   if (!canSave) {
+    if (hideInvite) return null;
     return (
       <p style={{ fontSize: 12, color: "var(--text-muted)", margin: 0 }}>
         <Link href={loginHref(pathname)} style={{ color: "var(--accent)", fontWeight: 600 }}>Entre</Link> para guardar seu histórico.

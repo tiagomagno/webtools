@@ -15,6 +15,11 @@
   --text: #111111;
   --text-muted: #52606d;
   --text-subtle: #6b7280;
+  /* Fundo pontilhado da página (Figma): pontos discretos a cada 24px, no estilo do Coolify. */
+  --page-bg: #e9ebef;
+  --page-dot: #c5c9d1;
+  /* Tamanho do corte diagonal dos boxes principais (cantos superior esquerdo e inferior direito). */
+  --cut: 12px;
 }
 
 /* ── Dark theme ────────────────────────────────────────────────────────────── */
@@ -31,6 +36,40 @@
   --text: #f4f4f5;
   --text-muted: #9a9aa2;
   --text-subtle: #7d7d86;
+  --page-bg: #161616;
+  --page-dot: #2e2e2e;
+}
+
+.page-bg {
+  background-color: var(--page-bg);
+  background-image: radial-gradient(circle, var(--page-dot) 1px, transparent 1.5px);
+  background-size: 24px 24px;
+  background-position: 12px 12px;
+}
+
+/* Box com canto cortado (referência do usuário): fundo e borda são desenhados por pseudo-elementos
+   recortados em diagonal, então o conteúdo (menus, sombras) não é cortado junto. */
+.cut-box { position: relative; isolation: isolate; }
+.cut-box::before, .cut-box::after { content: ""; position: absolute; z-index: -1; pointer-events: none; }
+.cut-box::before {
+  inset: 0;
+  background: var(--cut-border, var(--border));
+  clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
+}
+.cut-box::after {
+  inset: 1px;
+  background: var(--cut-bg, var(--surface));
+  clip-path: polygon(calc(var(--cut) - 0.6px) 0, 100% 0, 100% calc(100% - var(--cut) + 0.6px), calc(100% - var(--cut) + 0.6px) 100%, 0 100%, 0 calc(var(--cut) - 0.6px));
+}
+
+/* Dica ao passar o mouse ou focar (botões só com ícone): <button className="has-tip" data-tip="Texto"> */
+.has-tip { position: relative; }
+.has-tip[data-tip]:hover::after, .has-tip[data-tip]:focus-visible::after {
+  content: attr(data-tip);
+  position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%);
+  z-index: 30; max-width: 260px; width: max-content; padding: 6px 10px; border-radius: 6px;
+  background: var(--text); color: var(--surface); font-size: 11px; font-weight: 500; line-height: 1.4; text-align: center;
+  pointer-events: none;
 }
 
 /* ── Font size scale ──────────────────────────────────────────────────────── */
@@ -45,7 +84,7 @@
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: var(--font-jakarta), 'Inter', system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
 }

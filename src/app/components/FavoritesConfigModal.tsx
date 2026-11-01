@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { X, Check } from "lucide-react";
 import { usePinnedTools } from "../hooks/usePinnedTools";
 import { TOOLS } from "../lib/tools";
+import { ToolIcon } from "./ToolIcon";
 
 export default function FavoritesConfigModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { pinned, toggle, MAX_PINS } = usePinnedTools();
@@ -55,7 +56,7 @@ export default function FavoritesConfigModal({ open, onClose }: { open: boolean;
             ) : (
               TOOLS.filter((t) => pinned.includes(t.slug)).map((tool) => (
                 <div key={tool.slug} style={{ display: "flex", alignItems: "center", gap: 6, background: `${tool.color}18`, border: `1px solid ${tool.color}40`, borderRadius: 8, padding: "5px 10px", fontSize: 12, color: "var(--text)" }}>
-                  <span>{tool.emoji}</span>
+                  <ToolIcon slug={tool.slug} />
                   <span>{tool.label.split(" ")[0]}</span>
                 </div>
               ))

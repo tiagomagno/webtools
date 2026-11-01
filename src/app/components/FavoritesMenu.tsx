@@ -6,6 +6,7 @@ import { Star, Settings } from "lucide-react";
 import { usePinnedTools } from "../hooks/usePinnedTools";
 import { TOOLS } from "../lib/tools";
 import FavoritesConfigModal from "./FavoritesConfigModal";
+import { ToolIcon } from "./ToolIcon";
 
 export default function FavoritesMenu({ placement = "down-right" }: { placement?: "down-right" | "up-left" }) {
   const { pinned, mounted } = usePinnedTools();
@@ -68,7 +69,7 @@ export default function FavoritesMenu({ placement = "down-right" }: { placement?
                 {pinnedTools.map((tool) => (
                   <Link key={tool.slug} href={tool.href} onClick={() => setOpen(false)} style={{ textDecoration: "none" }}>
                     <div className="fav-menu-row" style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px", borderRadius: 8 }}>
-                      <span style={{ fontSize: 16 }}>{tool.emoji}</span>
+                      <ToolIcon slug={tool.slug} />
                       <span style={{ fontSize: 13, fontWeight: 600, color: "var(--text)" }}>{tool.label}</span>
                     </div>
                   </Link>

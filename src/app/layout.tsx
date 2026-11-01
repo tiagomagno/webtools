@@ -5,6 +5,7 @@ import AppChrome from "./components/AppChrome";
 import RecentTracker from "./components/RecentTracker";
 import { AuthProvider } from "./lib/auth/AuthProvider";
 import { SITE_URL } from "./lib/seo";
+import { jakarta, kodeMono } from "./lib/fonts";
 
 const THEME_INIT_SCRIPT = `
 (function () {
@@ -36,7 +37,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR" suppressHydrationWarning>
+    <html lang="pt-BR" className={`${jakarta.variable} ${kodeMono.variable}`} suppressHydrationWarning>
       <head>
         <Script id="theme-init" strategy="beforeInteractive">
           {THEME_INIT_SCRIPT}
