@@ -27,7 +27,7 @@ export default function FavoritesConfigModal({ open, onClose }: { open: boolean;
     <div style={{ position: "fixed", inset: 0, zIndex: 100, display: "flex", flexDirection: "column", justifyContent: "flex-end" }}>
       <div onClick={onClose} style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.6)" }} />
       <div role="dialog" aria-modal="true" aria-label="Configurar favoritos"
-        style={{ position: "relative", background: "var(--surface)", borderTop: "1px solid var(--border)", borderRadius: "16px 16px 0 0", maxHeight: "82vh", maxWidth: 560, width: "100%", margin: "0 auto", display: "flex", flexDirection: "column", paddingBottom: "env(safe-area-inset-bottom)" }}>
+        style={{ position: "relative", background: "var(--surface)", borderTop: "1px solid var(--border)", borderRadius: "16px 16px 0 0", height: "50dvh", maxWidth: 560, width: "100%", margin: "0 auto", display: "flex", flexDirection: "column", paddingBottom: "env(safe-area-inset-bottom)" }}>
         <div style={{ display: "flex", justifyContent: "center", padding: "10px 0 4px" }}>
           <div aria-hidden="true" style={{ width: 36, height: 4, borderRadius: 2, background: "var(--border)" }} />
         </div>
@@ -43,7 +43,7 @@ export default function FavoritesConfigModal({ open, onClose }: { open: boolean;
           </button>
         </div>
 
-        <div role="tablist" aria-label="Categorias" style={{ display: "flex", gap: 20, padding: "0 20px", borderBottom: "1px solid var(--border)", overflowX: "auto", flexShrink: 0 }}>
+        <div role="tablist" aria-label="Categorias" style={{ display: "flex", gap: 20, padding: "0 20px", borderBottom: "1px solid var(--border)", overflowX: "auto", flexShrink: 0 }} className="fav-scroll">
           {CATEGORIES.map((cat) => {
             const active = cat === category;
             return (
@@ -55,7 +55,7 @@ export default function FavoritesConfigModal({ open, onClose }: { open: boolean;
           })}
         </div>
 
-        <div role="tabpanel" style={{ padding: 20, overflowY: "auto", display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 8, alignContent: "start" }}>
+        <div role="tabpanel" className="fav-scroll" style={{ padding: 20, overflowY: "auto", flex: 1, minHeight: 0, display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 8, alignContent: "start" }}>
           {tools.map((tool) => {
             const isPinned = pinned.includes(tool.slug);
             const disabled = !isPinned && full;
@@ -70,6 +70,7 @@ export default function FavoritesConfigModal({ open, onClose }: { open: boolean;
           })}
         </div>
       </div>
+      <style>{`.fav-scroll { scrollbar-width: none; } .fav-scroll::-webkit-scrollbar { display: none; }`}</style>
     </div>
   );
 }
