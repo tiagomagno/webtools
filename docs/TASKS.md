@@ -5,7 +5,7 @@
 |---|---|---|---|
 | 0.1 | 2026-10-08 | 📝 Rascunho | 6 (Qualidade e entrega) |
 
-> **Total** 43 · **Concluídas** 40 (93%) · **Em andamento** 2
+> **Total** 43 · **Concluídas** 42 (98%) · **Em andamento** 0
 
 Legenda: ✅ confirmado · 💡 hipótese · ❓ em aberto. Status: ✅ Concluída · 🔄 Em andamento · ⬜ Não iniciada · ⏸️ Bloqueada.
 Datas "💡" vêm do `git log` (18/06 a 29/09/2026), sem data exata por tarefa.
@@ -66,9 +66,9 @@ Datas "💡" vêm do `git log` (18/06 a 29/09/2026), sem data exata por tarefa.
 | # | Tarefa | Itens | Prioridade | Status | Pronto quando | Concluída em |
 |---|---|---|---|---|---|---|
 | 7.1 | Acesso livre às ferramentas: login só em `/conta` e `/admin`, botão "Entrar" com retorno à ferramenta, `useToolHistory` seguro sem sessão | T1, T2, T4 | 🔴 | ✅ | Ver spec `docs/tarefas/7.1.md`. Publicado e verificado em produção (HTML sem sessão, `/conta` e `/admin` protegidos) | 2026-10-08 |
-| 7.2 | Histórico de uso de verdade: ligar `useToolHistory` às ferramentas que fizerem sentido (QR, senha, conversões...), criar a página de histórico em `/conta` e convidar quem está sem conta ("Entre para guardar") | T2, T5, E4 | 🔴 | 🔄 | Logado: usar uma ferramenta grava a entrada e ela aparece no histórico; deslogado: nada é gravado. Pede spec antes | — |
+| 7.2 | Histórico de uso de verdade: ligar `useToolHistory` às ferramentas que fizerem sentido (QR, senha, conversões...), criar a página de histórico em `/conta` e convidar quem está sem conta ("Entre para guardar") | T2, T5, E4 | 🔴 | ✅ | Logado: usar uma ferramenta grava a entrada e ela aparece no histórico; deslogado: nada é gravado. Pede spec antes | 2026-10-31 |
 | 7.3 | SEO do conteúdo: o `ToolPage` não renderiza `content`, `faq`, `related` nem `ctaText` (decisão de design do painel compacto); decidir como mostrar (bloco recolhível abaixo da ferramenta) e emitir o JSON-LD `FAQPage` | T2 | 🟡 | ⬜ | `<h1>`, texto explicativo e FAQ no HTML sem sessão; JSON-LD com `FAQPage`; layout aprovado pelo usuário | — |
-| 7.4 | `sitemap.xml` e `robots.txt` (não existem: `src/app/sitemap.ts` e `robots.ts`) | — | 🟡 | 🔄 | `/sitemap.xml` lista as ferramentas e `/robots.txt` aponta para ele | — |
+| 7.4 | `sitemap.xml` e `robots.txt` (não existem: `src/app/sitemap.ts` e `robots.ts`) | — | 🟡 | ✅ | `/sitemap.xml` lista as ferramentas e `/robots.txt` aponta para ele | 2026-10-31 |
 | 7.5 | Publicar as fases 6 e 7 no Coolify: os deploys são **manuais** (clicar em Deploy no site e na API; ou ligar o webhook do GitHub) e a produção ainda está no commit `d7e5a1a` | — | 🔴 | ✅ | Em produção: `/icon.svg` 200, `<main>` no `/login`, `<meta name="keywords">` em `/tools/validador-luhn`, ferramenta abre sem login | 2026-10-08 |
 | 7.6 | Layout do Figma: cabeçalho global no desktop (logo, categorias, conta) no lugar da sidebar, fundo pontilhado discreto (estilo Coolify) e página Contraste de Cores refeita e responsiva | T2 | 🟡 | ✅ | Desktop com `SiteHeader` e fundo pontilhado; Contraste de Cores igual ao Figma (nó 1:2) em 375, 900 e 1440 px; usuário aprovou o visual | 2026-10-31 |
 | 7.7 | Unificar as ferramentas de Design: Conversor de Imagens (formatos, HEIC e Base64), Editor de Imagem (redimensionar, cortar, aumentar e comprimir) e Extrator de Cores dentro da Paleta; páginas antigas redirecionam | T2, T3 | 🟡 | ✅ | Ver spec `docs/tarefas/7.7.md`; usuário testou cada aba com arquivos reais | 2026-10-31 |

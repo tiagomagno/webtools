@@ -1,4 +1,4 @@
-> **Atualizado** 2026-10-31 · **Fase** 7 (Acesso aberto e histórico) · **Progresso** 40/43 (93%)
+> **Atualizado** 2026-10-31 · **Fase** 7 (Acesso aberto e histórico) · **Progresso** 42/43 (98%)
 
 ## 🎯 Onde estamos
 - ✅ Catálogo de ferramentas completo (roadmap 100/100), login (e-mail e Google, confirmado em produção pelo usuário), admin, API e app Electron funcionando.
@@ -6,7 +6,7 @@
 - ✅ Qualidade: `tsc` 0 erros, 83 testes (`npm test`), `npm run lint` 0 erros.
 - ✅ **Em produção (commit `83df1cf`):** ferramentas abertas sem login (HTML com `<h1>` e JSON-LD, sem "Carregando…"), `Entrar` com retorno à ferramenta, favicon, `<main>` no login, `/conta` e `/admin` protegidos. Lighthouse em produção: `/login` 99/100 · 100 · 100 · 81 e ferramenta 98/100 · 100 · 100/96 · 81 (Perf · SEO · A11y · Boas práticas; celular/desktop). O 81 é só o script de desafio da Cloudflare.
 - ✅ A API continua respondendo (`401` sem token). O deploy da API não mudou de código nesta leva.
-- 🔄 **7.4 publicada, falta conferir:** `src/app/sitemap.ts` (home, 5 categorias e as ferramentas de `tools.ts`) e `src/app/robots.ts` (bloqueia `/conta`, `/admin`, `/login`, `/auth`). `tsc`, lint e build ok; saída conferida no build local.
+- ✅ **7.4 concluída:** `src/app/sitemap.ts` (home, 5 categorias e as ferramentas de `tools.ts`) e `src/app/robots.ts` (bloqueia `/conta`, `/admin`, `/login`, `/auth`). `tsc`, lint e build ok; saída conferida no build local.
 - ✅ **7.15 em produção:** `/conta` ganhou "Sugestões e bugs" (tipo, mensagem até 2000 caracteres, ferramenta opcional) e `/admin` lista e apaga as mensagens. API: `POST /feedback` (5 por hora por usuário), `GET`/`DELETE /admin/feedback`, tabela `Feedback`. **Para publicar:** rodar `db:migrate:deploy` (migration `20261031120000_add_feedback`, escrita à mão no formato das anteriores e ainda não aplicada em nenhum banco) e fazer o deploy da API e do site. As telas ocupam 100% da largura (sem limite de 1352 px); `/conta` virou grade (histórico, sugestões/bugs em janela, senha) e a categoria usa 3 colunas em tela larga. Testado só com uma API de mentira; falta testar com o banco real. Trocar o nome do perfil ainda não existe na API (só a senha).
 - ✅ **7.14 concluída:** Home refeita no visual novo (sem lucide); no celular a home mostra só busca, categorias e últimas, com a logo no cabeçalho, menu inferior em Phosphor (nomes curtos em uma linha, ex.: PDF; toque longo abre os favoritos) e o seletor de favoritos com abas por categoria e 2 colunas (favoritos salvos de ferramentas que não existem mais são ignorados): busca, cartões de categoria com canto cortado (contagem + primeiras ferramentas) e últimas ferramentas. Calculadoras: seletor de tipo agrupado por assunto no canto direito do título (placeholder "Selecione o tipo de calculadora"; `?tipo=` continua). Dentro das ferramentas de Dev, Utilidades, Finanças, Marketing e Calculadoras só a moldura é nova (cabeçalho, abas, fundo); os boxes internos ainda estão no estilo antigo (raio 10–14 px, sem `.cut-box`).
 - ✅ **7.13 concluída:** Utilidades (32 → 10) e Finanças (8 → 3) agrupadas com abas sublinhadas: Analisador de Texto, Editor de Texto, Codificações de Texto, Extrator de Documentos, Ferramentas de PDF, QR Code, Geradores, Documentos BR (Comparador e Cronômetro ficam soltos; Área e Tinta virou aba de Calculadoras, que agora escolhe a calculadora num menu agrupado por assunto: Tempo e datas, Dinheiro, Números, Conversores, Saúde, Casa e Carro) e Trabalho e Impostos, Imóveis, Investimentos. 41 URLs antigas redirecionam (308). tsc, lint (0 erros) e 179 testes ok; falta testar cada aba. As 4 páginas monolíticas (PDF Extractor, PDF Compressor, Documento→Markdown, Área e Tinta) viraram componentes sem cabeçalho.
@@ -17,15 +17,14 @@
 - ✅ **7.8 concluída:** Paleta de Cores refeita (modos Cor base/Imagem/Roda, harmonias em ícones, 5 cores com copiar, ações no topo, preview claro/escuro). Conversor de Cores (valores RGB/HSL abaixo de cada cor) e Extrator viraram parte dela. 127 testes (23 novos em `palette.test.ts`), tsc, lint e build ok; falta testar com imagem real e o usuário aprovar.
 - ✅ **7.7 concluída:** Design agora tem 9 ferramentas: Conversor de Imagens e Editor de Imagem (novo) com abas, Extrator dentro da Paleta; 10 URLs antigas redirecionam (308). `tsc`, 104 testes e build ok; falta testar com arquivos reais. BMP ficou de fora do conversor (❓).
 - ✅ **7.6 concluída:** cabeçalho global (`SiteHeader`) no lugar da sidebar no desktop, fundo pontilhado discreto (tokens `--page-bg`/`--page-dot`) e Contraste de Cores no layout do Figma, responsivo. Fontes novas (Plus Jakarta Sans, Kode Mono) só no cabeçalho e nessa página. Mobile não mudou. `tsc`, 104 testes e build ok; falta o usuário aprovar o visual.
-- 🔄 **7.2 publicada, falta conferir:** botão "Salvar no histórico" no Gerador de QR, Conversor de Cores e Paleta de Cores; seção "Meu histórico" em `/conta` (filtro, carregar mais, apagar, reabrir). 104 testes, tsc, lint e build ok; falta testar logado.
+- ✅ **7.2 concluída:** botão "Salvar no histórico" no Gerador de QR, Conversor de Cores e Paleta de Cores; seção "Meu histórico" em `/conta` (filtro, carregar mais, apagar, reabrir). 104 testes, tsc, lint e build ok; falta testar logado.
 
 ## ➡️ Próximos passos
-1. **Conferir em produção e fechar 7.4 e 7.2:** `/sitemap.xml` e `/robots.txt` (7.4); logado, salvar no Gerador de QR, Conversor de Cores ou Paleta e reabrir por `/conta` (7.2). Só então marcar ✅.
-2. **Visual por dentro das ferramentas:** Dev, Utilidades, Finanças e Calculadoras só têm a moldura nova; passar o estilo interno (boxes com canto cortado, campos e botões de 8 px) uma categoria por vez.
-3. **Marketing:** agrupar as 4 ferramentas (Open Graph, robots.txt, UTM, SERP) num "SEO e Marketing" com abas e refazer o visual.
-4. **Perfil:** API para trocar o nome (hoje só existe a troca de senha em `/me/password`).
-5. **SEO do conteúdo (7.3):** pede decisão de layout; ver pendências abaixo.
-6. Opcional: ligar o webhook do GitHub no Coolify para o deploy ser automático; rodar `prisma migrate deploy` no start da API.
+1. **Visual por dentro das ferramentas:** Dev, Utilidades, Finanças e Calculadoras só têm a moldura nova; passar o estilo interno (boxes com canto cortado, campos e botões de 8 px) uma categoria por vez.
+2. **Marketing:** agrupar as 4 ferramentas (Open Graph, robots.txt, UTM, SERP) num "SEO e Marketing" com abas e refazer o visual.
+3. **Perfil:** API para trocar o nome (hoje só existe a troca de senha em `/me/password`).
+4. **SEO do conteúdo (7.3):** pede decisão de layout; ver pendências abaixo.
+5. Opcional: ligar o webhook do GitHub no Coolify para o deploy ser automático; rodar `prisma migrate deploy` no start da API.
 
 ## ⚠️ Atenção
 - **Deploy do Coolify é manual** (origem "Manual"): `git push` não publica; clicar em Deploy no site e na API, ou ligar o webhook do GitHub (Webhooks do recurso no Coolify + Settings > Webhooks no repo, evento `push`).
