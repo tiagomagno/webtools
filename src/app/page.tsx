@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Clock, MagnifyingGlass, SquaresFour } from "@phosphor-icons/react";
-import { TOOLS, CATEGORIES, categorySlug } from "./lib/tools";
+import { TOOLS, CATEGORIES, categorySlug, shortLabel } from "./lib/tools";
 import { useRecentTools } from "./hooks/useRecentTools";
 import { ToolIcon, CategoryIcon } from "./components/ToolIcon";
 import PageHeader from "./components/PageHeader";
@@ -21,7 +21,7 @@ export default function Home() {
   }, [query]);
 
   const recentTools = recentMounted
-    ? (recent.map((slug) => TOOLS.find((t) => t.slug === slug)).filter(Boolean) as typeof TOOLS).slice(0, 5)
+    ? (recent.map((slug) => TOOLS.find((t) => t.slug === slug)).filter(Boolean) as typeof TOOLS).slice(0, 10)
     : [];
 
   const categories = CATEGORIES.map((cat) => ({
@@ -70,15 +70,18 @@ export default function Home() {
           <h2 style={{ display: "flex", alignItems: "center", gap: 8, margin: "0 0 12px", fontSize: 13, fontWeight: 600, color: "var(--text-muted)" }}>
             <Clock size={16} aria-hidden="true" /> Últimas ferramentas
           </h2>
-          <div className="cut-box" style={{ padding: 8 }}>
+          <ul className="home-stories hide-scrollbar">
             {recentTools.map((tool) => (
-              <Link key={tool.slug} href={tool.href} className="home-row" style={{ textDecoration: "none" }}>
-                <ToolIcon slug={tool.slug} />
-                <span style={{ flex: 1, minWidth: 0, fontSize: 13, fontWeight: 600, color: "var(--text)" }}>{tool.label}</span>
-                <span style={{ fontSize: 11, color: "var(--text-muted)" }}>{tool.category}</span>
-              </Link>
+              <li key={tool.slug}>
+                <Link href={tool.href} className="home-story" title={tool.label}>
+                  <span aria-hidden="true" className="cut-box home-story-tile" style={{ ["--cut" as string]: "10px", ["--cut-border" as string]: "var(--accent-strong)" }}>
+                    <ToolIcon slug={tool.slug} size={26} />
+                  </span>
+                  <span className="home-story-name">{shortLabel(tool)}</span>
+                </Link>
+              </li>
             ))}
-          </div>
+          </ul>
         </section>
       )}
 
@@ -111,6 +114,12 @@ export default function Home() {
         @media (min-width: 640px) { .home-cats { grid-template-columns: repeat(3, 1fr); gap: 16px; } }
         @media (min-width: 1024px) { .home-cats { grid-template-columns: repeat(5, 1fr); } }
         .home-card:hover { --cut-border: var(--text-subtle); }
+        .home-stories { display: flex; gap: 12px; list-style: none; margin: 0; padding: 2px 2px 4px; overflow-x: auto; scroll-snap-type: x proximity; }
+        .home-stories li { flex: 0 0 auto; scroll-snap-align: start; }
+        .home-story { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 76px; text-decoration: none; }
+        .home-story-tile { width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; color: var(--text); }
+        .home-story:hover .home-story-tile, .home-story:focus-visible .home-story-tile { --cut-bg: color-mix(in srgb, var(--accent-strong) 12%, var(--surface)); }
+        .home-story-name { width: 100%; text-align: center; font-size: 11px; font-weight: 600; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .home-row { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 8px 10px; border-radius: 8px; }
         .home-row:hover { background: var(--surface-2); }
       `}</style>

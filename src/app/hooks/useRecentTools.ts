@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 
 const STORAGE_KEY = "webtools:recent";
-const MAX_RECENT = 5;
+const MAX_RECENT = 10;
 
 export function useRecentTools() {
   const [recent, setRecent] = useState<string[]>([]);
