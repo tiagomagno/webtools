@@ -1,8 +1,6 @@
 ﻿"use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import Breadcrumbs from "../../components/Breadcrumbs";
 
 const BASE_FONT_SIZE = 16;
 const VIEWPORT_WIDTH = 1440;
@@ -44,7 +42,7 @@ const UNIT_LABELS: Record<Unit, string> = {
 
 const UNITS: Unit[] = ["px", "rem", "em", "vw", "vh", "%"];
 
-export default function CssUnitsPage() {
+export default function CssUnits() {
   const [value, setValue] = useState("16");
   const [from, setFrom] = useState<Unit>("px");
   const [baseFontSize, setBaseFontSize] = useState(BASE_FONT_SIZE);
@@ -62,16 +60,6 @@ export default function CssUnitsPage() {
 
   return (
     <div>
-      <Breadcrumbs items={[{ label: "Início", href: "/" }, { label: "Dev", href: "/categoria/dev" }, { label: "Conversor CSS" }]} />
-      <div style={{ marginBottom: 32 }}>
-
-        <h1 style={{ fontSize: 28, fontWeight: 700, letterSpacing: "-0.03em", marginBottom: 6 }}>
-          📐 Conversor CSS
-        </h1>
-        <p style={{ color: "var(--text-muted)", fontSize: 14 }}>
-          Converta entre unidades CSS. Viewport: {VIEWPORT_WIDTH}×{VIEWPORT_HEIGHT}px. Clique no resultado para copiar.
-        </p>
-      </div>
 
       <div
         style={{
