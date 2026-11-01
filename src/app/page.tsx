@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Clock, MagnifyingGlass, SquaresFour } from "@phosphor-icons/react";
-import { TOOLS, CATEGORIES, categorySlug, shortLabel } from "./lib/tools";
+import { TOOLS, CATEGORIES, categorySlug } from "./lib/tools";
 import { useRecentTools } from "./hooks/useRecentTools";
 import { ToolIcon, CategoryIcon } from "./components/ToolIcon";
 import PageHeader from "./components/PageHeader";
@@ -77,7 +77,7 @@ export default function Home() {
                   <span aria-hidden="true" className="cut-box home-story-tile" style={{ ["--cut" as string]: "10px", ["--cut-border" as string]: "var(--accent-strong)" }}>
                     <ToolIcon slug={tool.slug} size={26} />
                   </span>
-                  <span className="home-story-name">{shortLabel(tool)}</span>
+                  <span className="home-story-name">{tool.label}</span>
                 </Link>
               </li>
             ))}
@@ -119,7 +119,7 @@ export default function Home() {
         .home-story { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 76px; text-decoration: none; }
         .home-story-tile { width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; color: var(--text); }
         .home-story:hover .home-story-tile, .home-story:focus-visible .home-story-tile { --cut-bg: color-mix(in srgb, var(--accent-strong) 12%, var(--surface)); }
-        .home-story-name { width: 100%; text-align: center; font-size: 11px; font-weight: 600; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .home-story-name { width: 100%; min-height: 2.5em; text-align: center; font-size: 11px; font-weight: 600; line-height: 1.25; color: var(--text); overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow-wrap: anywhere; }
         .home-row { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 8px 10px; border-radius: 8px; }
         .home-row:hover { background: var(--surface-2); }
       `}</style>
