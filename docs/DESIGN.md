@@ -47,13 +47,13 @@ Pessoas comuns resolvendo tarefas pontuais do dia a dia (contar texto, converter
 ### Tipografia
 | Papel | Família | Tamanho | Peso |
 |---|---|---|---|
-| Corpo e títulos | Inter (fallback system-ui) | 13 / 15 / 17 px via `data-font` sm/md/lg (preferência salva em `localStorage` `wt-font`) | ❓ |
+| Corpo | Plus Jakarta Sans (fallback Inter, system-ui); títulos e números em Kode Mono | 13 / 15 / 17 px via `data-font` sm/md/lg (preferência salva em `localStorage` `wt-font`) | ❓ |
 
 ### Componentes
 | Componente | Onde fica |
 |---|---|
 | ToolPage (shell server) | `src/app/components/ToolPage.tsx` |
-| AppShell, MobileLayout, MobileHeader | `src/app/components/` |
+| AppShell (fundo pontilhado `.page-bg`), SiteHeader (cabeçalho do desktop), MobileLayout, MobileHeader | `src/app/components/` |
 | Breadcrumbs, ContentHeader | `src/app/components/` |
 | FavoritesMenu / FavoritesConfigModal | `src/app/components/` |
 | FormatConverter, Base64Tool, CsvJsonTool (compartilhados por prop `mode`) | `src/app/components/` |

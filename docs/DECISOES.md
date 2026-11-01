@@ -138,3 +138,47 @@ Decisões técnicas de 2026-06-21/22 (padrão server page + client component, `T
 - **Observação lateral:** `src/app/robots.ts` e `src/app/sitemap.ts` (tarefa 7.4, ainda não publicada) não tinham `export const dynamic = "force-static"`, o que quebrava especificamente o `build:electron` (`output: export`). Corrigido nesta mudança — não é um problema do pnpm, só apareceu ao validar o build do Electron de ponta a ponta.
 - **Tarefa relacionada:** nenhuma em TASKS.md (infraestrutura entre projetos, pedida fora do fluxo de tarefas)
 - **Certeza:** ✅ build, testes (104) e lint (0 erros) validados nos 3 sub-projetos.
+
+## 2026-10-31: Ferramentas de imagem e cor unificadas em abas (tarefa 7.7)
+- **Decisão:** Conversor de Imagens (formatos + HEIC + Base64), Editor de Imagem (redimensionar, cortar, aumentar, comprimir) e Paleta de Cores (+ extrair de imagem) viram ferramentas com abas, no padrão das Calculadoras. As páginas antigas redirecionam (308) para a aba certa.
+- **Por quê:** o usuário quer menos itens em Design e uma escolha clara dentro de cada ferramenta (decidido no Figma, nó 7:2).
+- **Como evitar problemas:** nova aba = novo item em `TABS` + `key` igual ao `?tipo=` do redirect em `next.config.ts` (`MERGED_TOOLS`). O hash/links antigos continuam por redirect.
+- **Tarefa relacionada:** 7.7
+- **Certeza:** ✅ (BMP removido do conversor: ❓)
+
+## 2026-10-31: Identidade visual nova: canto cortado, Phosphor e fontes (tarefa 7.6)
+- **Decisão:** boxes principais (cabeçalho, conteúdo, cartões da categoria) usam canto cortado em diagonal (superior esquerdo e inferior direito, token `--cut`, classe `.cut-box`), no lugar de cantos arredondados. Ícones de ferramentas e categorias vêm da Phosphor (`@phosphor-icons/react`), sem emoji. Fontes: Plus Jakarta Sans (texto) e Kode Mono (títulos) no site todo.
+- **Por quê:** harmonia com a Kode Mono, que tem cantos retos; pedido do usuário com referência visual.
+- **Como evitar problemas:** ícone de ferramenta nova entra em `src/app/lib/tool-icons.ts` (sem entrada usa um quadrado). Em Server Components importar Phosphor de `@phosphor-icons/react/dist/ssr` (o pacote principal usa `createContext` e quebra o build). A borda do `.cut-box` é feita por pseudo-elementos, então menus dentro do box não são cortados.
+- **Tarefa relacionada:** 7.6
+- **Certeza:** ✅
+
+## 2026-10-31: Paleta de Cores no modelo da Adobe (tarefa 7.8)
+- **Decisão:** a Paleta parte de Cor base, Imagem ou Roda de cores e sempre mostra 5 cores (harmonias em ícones, cada cor com um HEX e botão de copiar). Aleatória, Exportar e Biblioteca ficam ao lado do título; RGB e HSL aparecem abaixo de cada cor (sem modal de conversão). O preview de UI tem fundo claro/escuro. O Conversor de Cores e o Extrator de Cores deixaram de ser ferramentas e redirecionam para a Paleta.
+- **Por quê:** referência da Adobe Express enviada pelo usuário; a tela antiga repetia HEX, HSL e RGB em vários lugares.
+- **Como evitar problemas:** a lógica fica em `src/app/lib/palette.ts` (testada); SVG gerado com número arredondado para não quebrar a hidratação. A biblioteca mantém a chave `cp-library-v2` e lê as paletas salvas antes.
+- **Tarefa relacionada:** 7.8
+- **Certeza:** ✅ (o cadeado por cor do gerador antigo ficou de fora: ❓)
+
+## 2026-10-31: Gerador de Gradientes (tarefa 7.9)
+- **Decisão:** a lógica do gradiente vive em `src/app/lib/gradient.ts` (testada). O preview ao vivo roda o mesmo CSS que o usuário copia (`previewCss`), em vez de uma animação em JavaScript separada. Fora do sRGB, o CSS leva antes uma linha de reserva em sRGB. SVG e PNG só existem para linear e radial sem repetição.
+- **Por quê:** o que se vê é exatamente o que se exporta, e a mistura em OKLCH evita o meio acinzentado entre cores.
+- **Tarefa relacionada:** 7.9
+- **Certeza:** ✅
+
+## 2026-10-31: Conversor e Editor de Imagem viram uma só ferramenta (tarefa 7.10)
+- **Decisão:** o Conversor de Imagens foi absorvido pelo Editor de Imagem (`/tools/editor-imagem`), que virou uma página só de edição: caixas Redimensionar, Cortar e Aumentar aplicam edições na imagem de trabalho (PNG sem perda, com Desfazer e Original); Comprimir e Converter viraram o menu **Exportar** (PNG, JPG, WebP ou Base64, com qualidade e o tamanho real do arquivo); "Colar Base64" abre uma imagem a partir de código. As páginas antigas redirecionam com `?acao=exportar&formato=`.
+- **Por quê:** pedido do usuário: quem edita a imagem também quer escolher o formato ao salvar; era a mesma função em duas telas.
+- **Como evitar problemas:** a lógica de imagem fica em `lib/image-tools.ts` (`encodeImage`, `upscaleImage`, `scaleCrop`…); novo modo = nova entrada em `MODES` + painel em `ImageEditor.tsx`. O campo de envio compartilhado é `components/ImageDrop.tsx`.
+- **Tarefa relacionada:** 7.10
+- **Certeza:** ✅ (BMP continua fora)
+
+## 2026-10-31 · 7.12 — Dev em 5 ferramentas com abas
+- **Decisão:** as 16 ferramentas de Dev e o UUID em massa viram 5: `formatador-dados`, `codificadores`, `hash-uuid`, `conversores-tecnicos`, `regex-cron`. Markdown → HTML fica no Formatador; Unidades CSS em Conversores Técnicos; UUID em massa sai de Utilidades e entra em Hash e UUID.
+- **Como:** componente `components/ToolTabs.tsx` (abas sublinhadas, `?tipo=`, abas visitadas continuam montadas para não perder o que foi digitado); as páginas antigas foram removidas e viraram redirects 308 em `MERGED_TOOLS` (`next.config.ts`).
+- **Por quê:** menos ferramentas soltas no catálogo, mesmo padrão já usado em Design e Calculadoras.
+- **Observação:** `AppChrome` renderiza o conteúdo duas vezes (desktop e mobile, um escondido por CSS), então há dois `<h1>` no HTML de qualquer ferramenta; é anterior a esta tarefa.
+
+## 2026-10-31 · 7.13 — Utilidades e Finanças em abas
+- **Decisão:** agrupamento aprovado pelo usuário (ver `docs/tarefas/7.13.md`): Utilidades 32 → 10 e Finanças 8 → 3; Comparador de Textos e Cronômetro ficam soltos; Área e Tinta vira aba de Calculadoras. A página `ferramentas-texto` (hub antigo) e `salario` (hub de Salário/Rescisão) foram removidas e redirecionam.
+- **Como:** mesmo `ToolTabs` da 7.12; redirects em `MERGED_TOOLS`. O histórico do QR continua guardado com a chave `gerador-qr` (não muda o que já está no banco), mas o link para reabrir aponta para `/tools/qr-code?tipo=gerar#h=…` (`HISTORY_PAGES` em `lib/historico.ts`).

@@ -39,11 +39,12 @@ flowchart LR
 ```text
 src/app/
   tools/<slug>/        # uma pasta por ferramenta: page.tsx (server) + componente "use client"
-  components/          # ToolPage (shell), AppShell, MobileLayout, Base64Tool, FormatConverter...
+  components/          # ToolPage (shell), TabbedTools (abas com ?tipo=), AppShell, SiteHeader (cabeçalho do desktop), MobileLayout, Base64Tool, FormatConverter...
   lib/                 # lógica pura por domínio (text-stats, json-tools, pdf-tools, finance...)
   lib/tools.ts         # REGISTRO ÚNICO de ferramentas (sidebar, home e bottom nav consomem daqui)
   lib/seo.ts           # toolMetadata() e SITE_URL
   lib/auth/            # AuthProvider e ponte com o Electron
+  ../public/brand/      # logo (webtools-icon.svg, webtools-wordmark.svg) exportado do Figma
   hooks/               # favoritos e recentes
   lib/historico.ts     # histórico de uso: ferramentas habilitadas, validação, resumo e link de reabertura (#h=)
   components/SaveToHistory.tsx, HistorySection.tsx  # botão de salvar nas ferramentas e lista em /conta
