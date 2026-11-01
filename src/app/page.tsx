@@ -65,11 +65,28 @@ export default function Home() {
         )}
       </div>
 
+      {recentTools.length > 0 && (
+        <section aria-label="Últimas ferramentas" style={{ marginBottom: 32 }}>
+          <h2 style={{ display: "flex", alignItems: "center", gap: 8, margin: "0 0 12px", fontSize: 13, fontWeight: 600, color: "var(--text-muted)" }}>
+            <Clock size={16} aria-hidden="true" /> Últimas ferramentas
+          </h2>
+          <div className="cut-box" style={{ padding: 8 }}>
+            {recentTools.map((tool) => (
+              <Link key={tool.slug} href={tool.href} className="home-row" style={{ textDecoration: "none" }}>
+                <ToolIcon slug={tool.slug} />
+                <span style={{ flex: 1, minWidth: 0, fontSize: 13, fontWeight: 600, color: "var(--text)" }}>{tool.label}</span>
+                <span style={{ fontSize: 11, color: "var(--text-muted)" }}>{tool.category}</span>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* Categorias */}
       <h2 style={{ display: "flex", alignItems: "center", gap: 8, margin: "0 0 12px", fontSize: 13, fontWeight: 600, color: "var(--text-muted)" }}>
         <SquaresFour size={16} aria-hidden="true" /> Categorias
       </h2>
-      <div id="categorias" className="home-cats" style={{ marginBottom: 32 }}>
+      <div id="categorias" className="home-cats">
         {categories.map(({ cat, tools }) => (
           <Link key={cat} href={`/categoria/${categorySlug(cat)}`} style={{ textDecoration: "none" }}>
             <div className="cut-box home-card" style={{ padding: 14, height: "100%", display: "flex", flexDirection: "column", gap: 14 }}>
@@ -86,26 +103,6 @@ export default function Home() {
             </div>
           </Link>
         ))}
-      </div>
-
-      {/* Últimas ferramentas */}
-      <h2 style={{ display: "flex", alignItems: "center", gap: 8, margin: "0 0 12px", fontSize: 13, fontWeight: 600, color: "var(--text-muted)" }}>
-        <Clock size={16} aria-hidden="true" /> Últimas ferramentas
-      </h2>
-      <div className="cut-box" style={{ padding: 8 }}>
-        {recentTools.length > 0 ? (
-          recentTools.map((tool) => (
-            <Link key={tool.slug} href={tool.href} className="home-row" style={{ textDecoration: "none" }}>
-              <ToolIcon slug={tool.slug} />
-              <span style={{ flex: 1, minWidth: 0, fontSize: 13, fontWeight: 600, color: "var(--text)" }}>{tool.label}</span>
-              <span style={{ fontSize: 11, color: "var(--text-muted)" }}>{tool.category}</span>
-            </Link>
-          ))
-        ) : (
-          <p style={{ margin: 0, padding: 12, fontSize: 13, color: "var(--text-muted)" }}>
-            Nenhuma ferramenta visitada ainda. Escolha uma categoria acima para começar.
-          </p>
-        )}
       </div>
 
       <style>{`
