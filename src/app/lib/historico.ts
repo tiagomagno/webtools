@@ -89,10 +89,14 @@ const fromBase64Url = (text: string) => {
   return Uint8Array.from(bin, (c) => c.charCodeAt(0));
 };
 
+/** Página que reabre cada ferramenta do histórico quando ela não tem página própria. */
+const HISTORY_PAGES: Record<string, string> = { "gerador-qr": "/tools/qr-code?tipo=gerar" };
+
 /** Endereço que reabre a ferramenta com os dados no fragmento (`#h=`), que nunca vai ao servidor. */
 export function historyHref(slug: string, payload: unknown): string {
   const json = new TextEncoder().encode(JSON.stringify(payload));
-  return `/tools/${slug}#h=${toBase64Url(json)}`;
+  const page = HISTORY_PAGES[slug] ?? `/tools/${slug}`;
+  return `${page}#h=${toBase64Url(json)}`;
 }
 
 /** Lê o payload de um fragmento `#h=...`; null se ausente ou ilegível. */

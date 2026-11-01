@@ -55,7 +55,7 @@ export default function Page() {
         ),
       }}
       faq={FAQ}
-      related={["text-cleaner", "json-diff", "removedor-linhas"]}
+      related={["editor-texto", "json-diff", "removedor-linhas"]}
       ctaText="Precisa de mais ferramentas de texto?"
     >
       <TextCompare />

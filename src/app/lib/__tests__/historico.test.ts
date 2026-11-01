@@ -42,7 +42,7 @@ describe("summarizeHistory", () => {
 describe("historyHref / readHistoryHash", () => {
   it("ida e volta preservando acentos e símbolos", () => {
     const href = historyHref("gerador-qr", qr);
-    expect(href.startsWith("/tools/gerador-qr#h=")).toBe(true);
+    expect(href.startsWith("/tools/qr-code?tipo=gerar#h=")).toBe(true);
     expect(readHistoryHash(href.slice(href.indexOf("#")))).toEqual(qr);
   });
 

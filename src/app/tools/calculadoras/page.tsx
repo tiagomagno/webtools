@@ -1,6 +1,7 @@
 import ToolPage from "../../components/ToolPage";
 import { toolMetadata } from "../../lib/seo";
 import CalculadorasHub from "./CalculadorasHub";
+import CalculatorPicker from "./CalculatorPicker";
 
 const DESCRIPTION = "20 calculadoras em um só lugar: idade, IMC, porcentagem, desconto, juros, datas, horas, temperatura, unidades, combustível, gorjeta, regra de três, calorias, macros, energia, m², tela e tempo. Grátis, sem cadastro.";
 
@@ -22,7 +23,7 @@ export default function Page() {
       slug="calculadoras"
       emoji="🧮"
       title="Calculadoras"
-      heroDescription={<>Mais de <strong style={{ color: "var(--text)" }}>20 calculadoras</strong> em um só lugar — escolha o tipo abaixo e calcule na hora.</>}
+      heroDescription={<>Mais de <strong style={{ color: "var(--text)" }}>20 calculadoras</strong> em um só lugar — escolha o tipo no menu ao lado e calcule na hora.</>}
       schemaName="Calculadoras Online"
       schemaDescription={DESCRIPTION}
       content={{
@@ -30,8 +31,9 @@ export default function Page() {
         body: <p>Selecione o tipo de cálculo nas abas acima — idade, IMC, juros, datas, conversões e várias outras opções. Cada calculadora mantém sua própria lógica e resultado, tudo na mesma página.</p>,
       }}
       faq={FAQ}
-      related={["simulador-financiamento", "calculadora-investimento", "conversor-cores"]}
+      related={["imoveis", "investimentos", "color-palette"]}
       ctaText="Precisa de mais ferramentas?"
+      actions={<CalculatorPicker />}
     >
       <CalculadorasHub />
     </ToolPage>
